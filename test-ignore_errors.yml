@@ -1,0 +1,13 @@
+---
+
+- name: Test ignore_errors
+  hosts: localhost
+  gather_facts: no
+  tasks:
+  - name: (STEP1) connect to url
+    uri:
+      url: http://test.com
+    ignore_errors: true
+
+  - name: (STEP2) run next task
+    debug: msg="run!!!"

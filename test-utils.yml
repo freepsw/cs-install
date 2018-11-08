@@ -1,0 +1,10 @@
+---
+
+- name: Test Utils
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - inventories/group_vars/main.yml
+  tasks:
+  - name: print host var
+    debug: msg="{{ rancher_ip }}"

@@ -1,0 +1,23 @@
+---
+
+- name: Install Rancher Server
+  hosts: "Server"
+  gather_facts: no
+  vars_files:
+    - inventories/group_vars/main.yml
+  tasks:
+  - name: Test connections
+    shell: ls -al
+    args:
+      chdir: /home/freepsw_02/
+    register: output_msg
+
+  - name: Print results
+    debug: msg="{{ output_msg }}"
+
+# - name: copy server's public key to agent server
+#   hosts: all
+#   vars_files:
+#     - inventories/group_vars/main.yml
+#   roles:
+#     - { role: copy-ssh-id }

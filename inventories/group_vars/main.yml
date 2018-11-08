@@ -1,0 +1,24 @@
+---
+
+rancher_server_version: "v1.6.23"
+rancher_agent_version: "v1.2.11"
+rancher_name: "rancher_server"
+rancher_agent_name: "rancher_agent"
+rancher_ip: "{{ hostvars['server1'].ansible_ssh_host }}"
+rancher_port: 8080
+
+rancher_server_image: "racher_server.tar.gz"
+rancher_agent_image: "racher_agent.tar.gz"
+
+
+remote_user: 'freepsw_02'
+remote_temp_directory: "/home/{{ remote_user }}/temp"
+
+rancher_data_folder: data/rancher/
+
+
+
+# docker-ce version
+docker_data_folder: data/docker/
+docker_repo_file: docker-ce.repo
+docker_rpm_file: docker-ce-17.12.1.ce-1.el7.centos.x86_64.rpm

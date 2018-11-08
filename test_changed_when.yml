@@ -1,0 +1,24 @@
+---
+
+- name: TEST changed_when
+  hosts: "Agents"
+  gather_facts: no
+  tasks:
+
+  - name: "Start the Apache HTTPD Server"
+    become: true
+    become_user: root
+    register: starthttpdout
+    shell: "httpd -k start"
+    changed_when: " 'already running' not in starthttpdout.stdout "
+
+  - debug:
+      msg: "{{starthttpdout.stdout}}"
+
+
+  # - name: Ensure Apache is at the Latest version
+  #   become: yes
+  #   yum:
+  #     name: httpd
+  #     state: latest
+    # when: "not found" in validatehttpd.stdout
