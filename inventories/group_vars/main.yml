@@ -22,3 +22,8 @@ rancher_data_folder: data/rancher/
 docker_data_folder: data/docker/
 docker_repo_file: docker-ce.repo
 docker_rpm_file: docker-ce-17.12.1.ce-1.el7.centos.x86_64.rpm
+
+# docker registry
+docker_registry_data_directory: /home/{{ remote_user }}/docker-registry-images
+docker_registry_expose_port: 5000
+docker_registry_url: "{{ hostvars['server1'].ansible_ssh_host }}:{{ docker_registry_expose_port }}"

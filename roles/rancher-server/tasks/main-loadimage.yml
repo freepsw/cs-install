@@ -1,20 +1,20 @@
 ---
 
-# - name: Copy rancher/server images file to ~/home/user/temp directory
-#   copy:
-#     src: "{{ rancher_data_folder }}/{{ rancher_server_image }}"
-#     dest: "{{ remote_temp_directory }}"
-#     force: no
-#
-# - name: Load rancher/server image from archive
-#   docker_image:
-#     name: rancher/server
-#     load_path: "{{ remote_temp_directory }}/{{ rancher_server_image }}"
+- name: Copy rancher/server images file to ~/home/user/temp directory
+  copy:
+    src: "{{ rancher_data_folder }}/{{ rancher_server_image }}"
+    dest: "{{ remote_temp_directory }}"
+    force: no
+
+- name: Load rancher/server image from archive
+  docker_image:
+    name: rancher/server
+    load_path: "{{ remote_temp_directory }}/{{ rancher_server_image }}"
 
 - name: Run the Rancher/server contianer
   docker_container:
       name: "{{ rancher_name }}"
-      image: "{{ docker_registry_url }}/rancher/server:{{ rancher_server_version }}"
+      image: rancher/server:{{ rancher_server_version }}
       restart_policy: always
       ports:
         - "{{ rancher_port }}:8080"

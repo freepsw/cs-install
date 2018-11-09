@@ -1,0 +1,7 @@
+
+[Server]
+server1 ansible_ssh_port=22 ansible_ssh_host=35.220.163.59  ansible_user=freepsw_02 ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+
+[Agents]
+agent1 ansible_ssh_port=22 ansible_ssh_host=35.241.103.116  ansible_user=freepsw_02 ansible_ssh_private_key_file=~/.ssh/id_rsa

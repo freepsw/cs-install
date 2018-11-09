@@ -5,19 +5,22 @@
   register: agent_installed
   ignore_errors: true
   changed_when: false
-#
-# - name: Copy rancher/agent images file to ~/home/user/temp directory
-#   copy:
-#     src: "{{ rancher_data_folder }}/{{ rancher_agent_image }}"
-#     dest: "{{ remote_temp_directory }}"
-#     force: no
-#   when: agent_installed|failed
-#
-# - name: Load rancher/agent image from archive
-#   docker_image:
-#     name: rancher/server
-#     load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
-#   when: agent_installed|failed
+
+- name: Copy rancher/agent images file to ~/home/user/temp directory
+  copy:
+    src: "{{ rancher_data_folder }}/{{ rancher_agent_image }}"
+    dest: "{{ remote_temp_directory }}"
+    force: no
+  when: agent_installed|failed
+
+- name: Load rancher/agent image from archive
+  docker_image:
+    name: rancher/server
+    load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
+  when: agent_installed|failed
+
+- name: print ip
+  debug: msg="{{ hostvars['server1'].ansible_ssh_host }}"
 
 
 - name: Get the default project id
@@ -51,7 +54,7 @@
 - name: Register the Host machine with the Rancher server
   docker_container:
       name: "{{ rancher_agent_name }}"
-      image: "{{ docker_registry_url }}/{{ rancher_token.json['image'] }}"
+      image: "{{ rancher_token.json['image'] }}"
       privileged: yes
       detach: True
       volumes:
