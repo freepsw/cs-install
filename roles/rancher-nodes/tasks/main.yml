@@ -5,13 +5,13 @@
   register: agent_installed
   ignore_errors: true
   changed_when: false
-#
-# - name: Copy rancher/agent images file to ~/home/user/temp directory
-#   copy:
-#     src: "{{ docker_image_file_folder }}/{{ rancher_agent_image }}"
-#     dest: "{{ remote_temp_directory }}"
-#     force: no
-#   when: agent_installed|failed
+
+- name: Copy rancher/agent images file to ~/home/user/temp directory
+  copy:
+    src: "{{ docker_image_file_folder }}/{{ rancher_agent_image }}"
+    dest: "{{ remote_temp_directory }}"
+    force: no
+  when: agent_installed|failed
 #
 # - name: Load rancher/agent image from archive
 #   docker_image:
@@ -19,6 +19,13 @@
 #     load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
 #   when: agent_installed|failed
 
+- name: Load image from archive and push to a private registry
+  docker_image:
+    name: "rancher/agent"
+    repository: "{{ docker_registry_url }}/rancher/agent"
+    tag: "{{ rancher_agent_version }}"
+    push: yes
+    load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
 
 - name: Get the default project id
   action: uri

@@ -1,15 +1,19 @@
 ---
 
-# - name: Copy rancher/server images file to ~/home/user/temp directory
-#   copy:
-#     src: "{{ docker_image_file_folder }}/{{ rancher_server_image }}"
-#     dest: "{{ remote_temp_directory }}"
-#     force: no
-#
-# - name: Load rancher/server image from archive
-#   docker_image:
-#     name: rancher/server
-#     load_path: "{{ remote_temp_directory }}/{{ rancher_server_image }}"
+- name: Copy rancher/server images file to ~/home/user/temp directory
+  copy:
+    src: "{{ docker_image_file_folder }}/{{ rancher_server_image }}"
+    dest: "{{ remote_temp_directory }}"
+    force: no
+
+- name: Load image from archive and push to a private registry
+  docker_image:
+    name: "rancher/server"
+    repository: "{{ docker_registry_url }}/rancher/server"
+    tag: "{{ rancher_server_version }}"
+    push: yes
+    load_path: "{{ remote_temp_directory }}/{{ rancher_server_image }}"
+
 
 - name: Run the Rancher/server contianer
   docker_container:

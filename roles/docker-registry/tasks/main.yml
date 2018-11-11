@@ -11,7 +11,11 @@
     src: "{{ docker_image_file_folder }}/{{ docker_registry_image }}"
     dest: "{{ remote_temp_directory }}"
     force: no
-#
+
+- name: Pause 2 seconds to wait until copying image
+  pause:
+    seconds: 2
+
 - name: Load docker-registry image from archive
   docker_image:
     name: registry
@@ -48,7 +52,7 @@
   debug: msg="You can connect to docker-registry http://{{ docker_registry_url }}"
 
 
-- name: Copy docker-registry-web images file to ~/home/user/temp/docker directory
+- name: Copy docker-registry-web image file to ~/home/user/temp/docker directory
   copy:
     src: "{{ docker_image_file_folder }}/{{ docker_registry_web_image }}"
     dest: "{{ remote_temp_directory }}"
