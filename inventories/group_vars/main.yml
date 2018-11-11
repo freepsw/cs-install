@@ -1,5 +1,10 @@
 ---
 
+# Common
+remote_user: 'freepsw_02'
+remote_temp_directory: "/home/{{ remote_user }}/temp"
+
+# Rancher
 rancher_server_version: "v1.6.23"
 rancher_agent_version: "v1.2.11"
 rancher_name: "rancher_server"
@@ -11,19 +16,23 @@ rancher_server_image: "racher_server.tar.gz"
 rancher_agent_image: "racher_agent.tar.gz"
 
 
-remote_user: 'freepsw_02'
-remote_temp_directory: "/home/{{ remote_user }}/temp"
-
-rancher_data_folder: data/rancher/
-
-
-
 # docker-ce version
 docker_data_folder: data/docker/
+
+docker_image_file_folder: data/images/
 docker_repo_file: docker-ce.repo
 docker_rpm_file: docker-ce-17.12.1.ce-1.el7.centos.x86_64.rpm
 
 # docker registry
+docker_registry_name: registry-srv
+docker_registry_image: docker-registry.tar.gz
 docker_registry_data_directory: /home/{{ remote_user }}/docker-registry-images
 docker_registry_expose_port: 5000
 docker_registry_url: "{{ hostvars['server1'].ansible_ssh_host }}:{{ docker_registry_expose_port }}"
+
+# docker registry web
+docker_registry_web_name: registry-web
+docker_registry_web_image: docker-registry-web.tar.gz
+docker_registry_web_expose_port: 8081
+
+#docker_registry_url: "myb"

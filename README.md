@@ -1,7 +1,6 @@
 # cs-install-automation
 Automate the cs installing process using ansible scripts in a closed network
 
-
 ## Docker
 
 ### Get pip
@@ -15,13 +14,25 @@ Automate the cs installing process using ansible scripts in a closed network
 ```
 
 ## Docker Registry & Web UI
+
+### Get docker-registry image file
+```
+> docker pull registry:2
+> docker save registry:2 | gzip -c > docker-registry.tar.gz
+
+> docker pull hyper/docker-registry-web
+> docker save hyper/docker-registry-web | gzip -c > docker-registry-web.tar.gz.tar.gz
+```
+### Run doker-registry and docker-registry-webui
 - https://github.com/mkuchin/docker-registry-web
 ```
+# run docker-registry
 > docker run -d -p 5000:5000 --name registry-srv registry:2
 
+# run docker-registry-webui
 # --link : registry-server 실행시 입력한 컨테이너 네임
 # REGISTRY_URL : registry web ui에서 접속할 registry 서버의 IP. (gce에서 localhost로 지정하면 접속오류가 발생했음)
-> docker run -it -p 8081:8080 --name registry-web --link registry -e REGISTRY_URL=http://35.220.xxx.xx:5000/v2 -e REGISTRY_NAME=localhost:5000 hyper/docker-registry-web
+> docker run -it -p 8081:8080 --name registry-web --link registry-srv -e REGISTRY_URL=http://35.220.232.130:5000/v2 -e REGISTRY_NAME=localhost:5000 hyper/docker-registry-web
 ```
 
 ### 사용법
@@ -37,7 +48,7 @@ Automate the cs installing process using ansible scripts in a closed network
 
 # docker registry에 등록 (별도의 옵션없이 push)
 > docker push localhost:5000/hello-world
-> docker push localhost:5000/rancher/server:v1.6.23
+> docker push 35.220.xxx.xx:5000/rancher/server:v1.6.23
 > docker push 35.220.xxx.xx:5000/rancher/agent:v1.2.11
 
 # 내 registry에 등록되었는지 확인
@@ -60,12 +71,14 @@ Automate the cs installing process using ansible scripts in a closed network
 
 > sudo systemctl restart docker
 
-> docker tag rancher/server localhost:5000/rancher/server
+> docker tag rancher/server 35.220.xxx.xx:5000/rancher/server
 ```
 
 ### Docker Registry Web ui
 
 ## Rancher
+- 인터넷 접속이 되지 않는 환경에서 rancher cluster 설치
+- https://rancher.com/docs/rancher/v1.3/en/installing-rancher/installing-server/no-internet-access/
 ### Get rancher images(docker) files
 ```
 > docker pull rancher/server:v1.6.23

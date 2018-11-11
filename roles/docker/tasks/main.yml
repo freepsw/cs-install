@@ -44,6 +44,8 @@
      state: present
   become: true
 
+
+
 - name: Create a docker group
   group:
       name=docker
@@ -90,4 +92,16 @@
   shell: pip install --no-index --find-links=docker-py docker-py
   args:
     chdir: "{{ remote_temp_directory }}/docker"
+  become: true
+
+
+- name: Copy daemon.json to ~/etc/docker/directory to disble https for docker registry
+  template:
+    src: "templates/daemon.json.j2"
+    dest: /etc/docker/daemon.json
+    mode: 0644
+  become: true
+
+- name: make sure docker is running
+  service: name=docker state=restarted enabled=true
   become: true

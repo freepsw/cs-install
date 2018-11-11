@@ -8,7 +8,7 @@
 
 - name: Copy rancher/agent images file to ~/home/user/temp directory
   copy:
-    src: "{{ rancher_data_folder }}/{{ rancher_agent_image }}"
+    src: "{{ docker_image_file_folder }}/{{ rancher_agent_image }}"
     dest: "{{ remote_temp_directory }}"
     force: no
   when: agent_installed|failed

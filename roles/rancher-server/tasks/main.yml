@@ -2,7 +2,7 @@
 
 # - name: Copy rancher/server images file to ~/home/user/temp directory
 #   copy:
-#     src: "{{ rancher_data_folder }}/{{ rancher_server_image }}"
+#     src: "{{ docker_image_file_folder }}/{{ rancher_server_image }}"
 #     dest: "{{ remote_temp_directory }}"
 #     force: no
 #
