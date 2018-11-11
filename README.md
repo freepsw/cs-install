@@ -102,4 +102,8 @@ pipelining = True
 
 ## Rancher
 ### create host label when create rancher-agent
+sudo docker run -e CATTLE_HOST_LABELS='foo=bar' -d --privileged \
+-v /var/run/docker.sock:/var/run/docker.sock rancher/agent:v0.8.2 \
+http://<rancher-server-ip>:8080/v1/projects/1a5/scripts/<registrationToken>
+
 sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.11 http://35.220.211.63:8080/v1/scripts/D02ED42357B1CA64F19A:1514678400000:M0WH6CijjOICLYv3JG6dh1vwbI

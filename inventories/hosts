@@ -4,4 +4,7 @@ server1 ansible_ssh_port=22 ansible_ssh_host=35.220.232.130  ansible_user=freeps
 
 
 [Agents]
-agent1 ansible_ssh_port=22 ansible_ssh_host=35.220.145.199 ansible_user=freepsw_02 ansible_ssh_private_key_file=~/.ssh/id_rsa
+agent1 ansible_ssh_port=22 ansible_ssh_host=35.220.220.251  ansible_user=freepsw_02 ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+[DB]
+db ansible_ssh_port=22 ansible_ssh_host=35.220.220.251  ansible_user=freepsw_02 ansible_ssh_private_key_file=~/.ssh/id_rsa

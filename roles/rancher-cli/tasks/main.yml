@@ -1,0 +1,27 @@
+---
+
+# - name: Regisger rancher config
+#   expect:
+#     command: "/home/freepsw_02/temp/rancher-cli/rancher-v0.6.12/rancher config"
+#     responses:
+#       "URL []": "http://localhost:8080"
+#       "Access Key []": "A0B9A7F77402D7B253D1"
+#       "Secret Key []": "aJx6x9976D2qnBVaZrLBUqF8p7ZiNG6HbV9baV43"
+
+- name: Create temporary directory to save install file
+  file: path="/home/{{ remote_user }}/.rancher/" state=directory mode=0755
+
+- name: Copy daemon.json to ~/.rancher/cli.json to disble https for docker registry
+  template:
+    src: "templates/cli.json.j2"
+    dest: /home/{{ remote_user }}/.rancher/cli.json
+    mode: 0664
+  become: true
+
+
+- name: Copy rancher cli tool
+  copy:
+    src: data/rancher
+    dest: "{{ remote_temp_directory }}"
+    force: no
+    mode: 0755

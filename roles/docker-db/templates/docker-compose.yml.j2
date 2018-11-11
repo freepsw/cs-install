@@ -1,0 +1,17 @@
+version: '2'
+services:
+  mariadb:
+    image: mariadb:10.3
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: dpcore_search
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    stdin_open: true
+    volumes:
+    - {{ remote_temp_directory }}/db/{{ mariadb_dump_file }}:/docker-entrypoint-initdb.d/{{ mariadb_dump_file }}
+    tty: true
+    ports:
+    - {{ mariadb_port }}:3306/tcp
+    labels:
+      io.rancher.container.pull_image: always

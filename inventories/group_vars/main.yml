@@ -15,6 +15,9 @@ rancher_port: 8080
 rancher_server_image: "racher_server.tar.gz"
 rancher_agent_image: "racher_agent.tar.gz"
 
+rancher_access_key: A0B9A7F77402D7B253D1
+rancher_secret_key: aJx6x9976D2qnBVaZrLBUqF8p7ZiNG6HbV9baV43
+
 
 # docker-ce version
 docker_data_folder: data/docker/
@@ -35,3 +38,8 @@ docker_registry_web_image: docker-registry-web.tar.gz
 docker_registry_web_expose_port: 8081
 
 #docker_registry_url: "myb"
+
+# mariadb
+mariadb_port: 3306
+mariadb_dump_file: dpcore_search_dump.sql
+mariadb_data_folder: data/db

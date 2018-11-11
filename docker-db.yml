@@ -1,0 +1,9 @@
+---
+
+- name: Installing and configuring Mariadb container
+  hosts: DB
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-db, tags: ["docker-db"] }

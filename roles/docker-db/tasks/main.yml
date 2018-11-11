@@ -1,0 +1,31 @@
+---
+
+- name: Copy db dump file
+  copy:
+    src: "{{ mariadb_data_folder }}"
+    dest: "{{ remote_temp_directory }}"
+    force: no
+
+- name: Run ranche cli for mariadb container
+  shell: ~/temp/rancher/rancher-v0.6.12/rancher --env Default up -s stack1 -d
+  args:
+    chdir: /home/freepsw_02/temp/rancher/mariadb
+
+
+
+
+# - name: Run mariadb container
+#   docker:
+#     image: mariadb:10.3
+#     name: mariadb
+#     ports: "{{ mariadb_port }}:3306"
+#     volumes:
+#       - "{{ remote_temp_directory }}/db/{{ mariadb_dump_file }}:/docker-entrypoint-initdb.d/dpcore_search.sql"
+#     pull: missing
+#     restart_policy: unless-stopped
+#     state: started
+#     env:
+#       MYSQL_ROOT_PASSWORD: secret
+#       MYSQL_DATABASE: dpcore_search
+#       MYSQL_USER: user
+#       MYSQL_PASSWORD: password
