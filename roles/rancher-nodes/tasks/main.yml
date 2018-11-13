@@ -5,27 +5,27 @@
   register: agent_installed
   ignore_errors: true
   changed_when: false
+  become: true
 
-- name: Copy rancher/agent images file to ~/home/user/temp directory
-  copy:
-    src: "{{ docker_image_file_folder }}/{{ rancher_agent_image }}"
-    dest: "{{ remote_temp_directory }}"
-    force: no
-  when: agent_installed|failed
+# - name: Copy rancher/agent images file to ~/home/user/temp directory
+#   copy:
+#     src: "{{ docker_image_file_folder }}/{{ rancher_agent_image }}"
+#     dest: "{{ remote_temp_directory }}"
+#     force: no
+# #
+# # - name: Load rancher/agent image from archive
+# #   docker_image:
+# #     name: rancher/server
+# #     load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
+# #   when: agent_installed|failed
 #
-# - name: Load rancher/agent image from archive
+# - name: Load image from archive and push to a private registry
 #   docker_image:
-#     name: rancher/server
+#     name: "rancher/agent"
+#     repository: "{{ docker_registry_url }}/rancher/agent"
+#     tag: "{{ rancher_agent_version }}"
+#     push: yes
 #     load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
-#   when: agent_installed|failed
-
-- name: Load image from archive and push to a private registry
-  docker_image:
-    name: "rancher/agent"
-    repository: "{{ docker_registry_url }}/rancher/agent"
-    tag: "{{ rancher_agent_version }}"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
 
 - name: Get the default project id
   action: uri
@@ -48,8 +48,9 @@
   register: rancher_token
 
 - name: Check if the rancher-agent is running
-  command: docker ps -a
+  command: "docker ps -a"
   register: containers
+  become: true
 
 
 - name: print ip
@@ -67,3 +68,4 @@
       command: "{{ rancher_token.json['registrationUrl'] }}"
       state: started
   when: "{{ 'rancher-agent' not in containers.stdout }}"
+  become: true

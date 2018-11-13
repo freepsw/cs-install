@@ -1,15 +1,29 @@
 ---
 
+- name: Create temporary directory to save rancher compose file
+  file: path="{{ remote_temp_directory }}/mariadb" state=directory mode=0755
+
 - name: Copy db dump file
   copy:
     src: "{{ mariadb_data_folder }}"
     dest: "{{ remote_temp_directory }}"
     force: no
 
+- name: Copy docker/rancher-compose file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - {src: 'templates/docker-compose.yml.j2',  dest: '{{ remote_temp_directory }}/mariadb/docker-compose.yml'}
+    - {src: 'templates/rancher-compose.yml.j2', dest: '{{ remote_temp_directory }}/mariadb/rancher-compose.yml'}
+
+
+#
 - name: Run ranche cli for mariadb container
-  shell: ~/temp/rancher/rancher-v0.6.12/rancher --env Default up -s stack1 -d
+  shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s meta-db -d"
   args:
-    chdir: /home/freepsw_02/temp/rancher/mariadb
+    chdir: "{{ remote_temp_directory }}/mariadb"
 
 
 

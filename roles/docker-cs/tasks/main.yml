@@ -1,0 +1,75 @@
+---
+
+# - name: Copy dpcore maven project file to ~/home/user/temp directory
+#   copy:
+#     src: "{{ docker_image_file_folder }}/{{ dpcore_image }}"
+#     dest: "{{ remote_temp_directory }}"
+#     force: no
+#
+# - name: Extract .tgz
+#   unarchive:
+#     src: "{{ remote_temp_directory }}/{{ dpcore_maven_file }}"
+#     dest: "{{ remote_temp_directory }}"
+#     remote_src: yes
+#
+# - name: Copy maven profile file
+#   template:
+#     src: templates/config/config-cloudsearch.properties.j2
+#     dest: "{{ remote_temp_directory }}/dpbds-cloudsearch/core-module-cloudsearch/src/main/resources/profiles/docker/config-cloudsearch.properties"
+#     mode: 0644
+#
+# - name: Build maven project
+#   shell: "mvn clean package -DskipTests=true -P docker -pl core-module-cloudsearch -am"
+#   args:
+#     chdir: "{{ remote_temp_directory }}/dpbds-cloudsearch"
+#
+#
+# - name: Build an image and push it to a private repo
+#   docker_image:
+#     path: "{{ remote_temp_directory }}/dpbds-cloudsearch/core-module-cloudsearch"
+#     name: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch"
+#     push: yes
+#   become: true
+
+
+- name: Create dpcore-module cloudsearch log directory
+  file: path="{{ dpcore_log_folder }}/core-module-cloudsearch" state=directory mode=0755
+  become: true
+
+- name: Create temporary directory to save rancher compose file
+  file: path="{{ remote_temp_directory }}/dpcore-cs/core-module" state=directory mode=0755
+
+- name: Copy docker-cs/rancher-compose file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - {src: 'templates/rancher/docker-compose.yml.j2',  dest: '{{ remote_temp_directory }}/dpcore-cs/core-module/docker-compose.yml'}
+    - {src: 'templates/rancher/rancher-compose.yml.j2', dest: '{{ remote_temp_directory }}/dpcore-cs/core-module/rancher-compose.yml'}
+
+
+#
+- name: Run ranche cli for dpcore-module-cloudsearch container
+  shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s dpcore -d"
+  args:
+    chdir: "{{ remote_temp_directory }}/dpcore-cs/core-module/"
+
+
+
+
+# - name: Run mariadb container
+#   docker:
+#     image: mariadb:10.3
+#     name: mariadb
+#     ports: "{{ mariadb_port }}:3306"
+#     volumes:
+#       - "{{ remote_temp_directory }}/db/{{ mariadb_dump_file }}:/docker-entrypoint-initdb.d/dpcore_search.sql"
+#     pull: missing
+#     restart_policy: unless-stopped
+#     state: started
+#     env:
+#       MYSQL_ROOT_PASSWORD: secret
+#       MYSQL_DATABASE: dpcore_search
+#       MYSQL_USER: user
+#       MYSQL_PASSWORD: password

@@ -1,7 +1,7 @@
 ---
 
 - name: Installing and configuring Docker
-  hosts: "Agents"
+  hosts: DB
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml

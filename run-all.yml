@@ -1,0 +1,60 @@
+---
+
+- name: Installing and configuring Docker
+  hosts: Server:Agents
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker, tags: ["docker"] }
+
+
+- name: Install Docker-registry and registry-web
+  hosts: "Server"
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-registry, tags: ["docker-registry"] }
+
+- name: Install Rancher server and push docker images to docker-registry
+  hosts: "Server"
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: rancher-server, tags: ["rancher-server"] }
+
+
+- name: Install Rancher Agents
+  hosts: "Agents"
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: rancher-nodes, tags: ["rancher-node"] }
+
+- name: Install Rancher CLI
+  hosts: DB
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: rancher-cli, tags: ["rancher-cli"] }
+
+
+- name: Deploy mariadb conainer using rancher cli
+  hosts: DB
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-db, tags: ["docker-db"] }
+
+- name: Deploy dpcore-module-cloudsearch conainer using rancher cli
+  hosts: DPCORE
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-cs, tags: ["docker-cs"] }

@@ -1,18 +1,37 @@
 ---
 
-- name: Copy rancher/server images file to ~/home/user/temp directory
-  copy:
-    src: "{{ docker_image_file_folder }}/{{ rancher_server_image }}"
-    dest: "{{ remote_temp_directory }}"
-    force: no
+- name: Push docker images to docker registry
+  include: push-docker-images.yml
 
-- name: Load image from archive and push to a private registry
-  docker_image:
-    name: "rancher/server"
-    repository: "{{ docker_registry_url }}/rancher/server"
-    tag: "{{ rancher_server_version }}"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/{{ rancher_server_image }}"
+# - name: Copy rancher/agent images file to ~/home/user/temp directory
+#   copy:
+#     src: "{{ docker_image_file_folder }}/{{ rancher_agent_image }}"
+#     dest: "{{ remote_temp_directory }}"
+#     force: no
+#
+#
+# - name: Load image from archive and push to a private registry
+#   docker_image:
+#     name: "rancher/agent"
+#     repository: "{{ docker_registry_url }}/rancher/agent"
+#     tag: "{{ rancher_agent_version }}"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
+#
+#
+# - name: Copy rancher/server images file to ~/home/user/temp directory
+#   copy:
+#     src: "{{ docker_image_file_folder }}/{{ rancher_server_image }}"
+#     dest: "{{ remote_temp_directory }}"
+#     force: no
+#
+# - name: Load image from archive and push to a private registry
+#   docker_image:
+#     name: "rancher/server"
+#     repository: "{{ docker_registry_url }}/rancher/server"
+#     tag: "{{ rancher_server_version }}"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/{{ rancher_server_image }}"
 
 
 - name: Run the Rancher/server contianer
@@ -22,6 +41,7 @@
       restart_policy: always
       ports:
         - "{{ rancher_port }}:8080"
+  become: true
 
 - name: Wait for the Rancher server to start
   action: command docker logs {{ rancher_name }}
@@ -29,6 +49,7 @@
   until: rancher_logs.stdout.find("Listening on") != -1
   retries: 300
   delay: 5
+  become: true
 
 - name: Print Rancher's URL
   debug: msg="You can connect to rancher server http://{{ rancher_ip }}:{{ rancher_port }}"

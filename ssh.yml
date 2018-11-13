@@ -12,6 +12,11 @@
       chdir: /home/freepsw_02/
     register: output_msg
 
+  - name: Kill own ssh connections
+    ssh-reconnect: all=True
+
+    # ssh-reconnect: all=True
+
   - name: Print results
     debug: msg="{{ output_msg }}"
 

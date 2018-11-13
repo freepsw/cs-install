@@ -102,6 +102,6 @@
     mode: 0644
   become: true
 
-- name: Restart docker 
+- name: Restart docker
   service: name=docker state=restarted enabled=true
   become: true

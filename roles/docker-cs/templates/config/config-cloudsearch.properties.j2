@@ -1,0 +1,37 @@
+#--------------------------------------------------------------------------------------------------#
+# Common configurations                                                                            #
+#--------------------------------------------------------------------------------------------------#
+http.host=core-module-cloudsearch
+http.port=7081
+
+
+#--------------------------------------------------------------------------------------------------#
+# cloudsearch jdbc configurations   # DEV02                                                   #
+#--------------------------------------------------------------------------------------------------#
+cloudsearch.jdbc.url=jdbc:mysql://mairadb:{{ mariadb_port }}/dpcore_search
+cloudsearch.jdbc.driver.class=org.mariadb.jdbc.Driver
+cloudsearch.jdbc.user={{ mariadb_user }}
+cloudsearch.jdbc.password={{ mariadb_password }}
+
+
+#--------------------------------------------------------------------------------------------------#
+# cloudsearch Ansible configurations  # DEV02                                                #
+#--------------------------------------------------------------------------------------------------#
+cloudsearch.ansible.server.host=10.178.50.83
+cloudsearch.ansible.server.ssh.port=2202
+cloudsearch.ansible.server.ssh.id=dpcore
+cloudsearch.ansible.server.ssh.password=1234qwer
+cloudsearch.ansible.server.ssh.path=/home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script
+
+
+#--------------------------------------------------------------------------------------------------#
+# Rancher configurations    # DEV01
+#--------------------------------------------------------------------------------------------------#
+
+cloudsearch.rancher.server.host={{ rancher_ip }}
+cloudsearch.rancher.server.ssh.port={{ rancher_port }}
+
+#--------------------------------------------------------------------------------------------------#
+# STATUS Pooler configurations
+#--------------------------------------------------------------------------------------------------#
+use.cloudsearch.status.poller=true

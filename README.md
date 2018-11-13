@@ -21,7 +21,7 @@ Automate the cs installing process using ansible scripts in a closed network
 > docker save registry:2 | gzip -c > docker-registry.tar.gz
 
 > docker pull hyper/docker-registry-web
-> docker save hyper/docker-registry-web | gzip -c > docker-registry-web.tar.gz.tar.gz
+> docker save hyper/docker-registry-web | gzip -c > docker-registry-web.tar.gz
 ```
 ### Run doker-registry and docker-registry-webui
 - https://github.com/mkuchin/docker-registry-web
@@ -101,9 +101,104 @@ pipelining = True
 
 
 ## Rancher
+
+### Rancher CLI
+```
+> wget https://releases.rancher.com/cli/v0.6.12/rancher-linux-amd64-v0.6.12.tar.gz
+> tar xvf rancher-linux-amd64-v0.6.12.tar.gz
+
+access-key: A0B9A7F77402D7B253D1
+secret-key: aJx6x9976D2qnBVaZrLBUqF8p7ZiNG6HbV9baV43
+```
+
 ### create host label when create rancher-agent
 sudo docker run -e CATTLE_HOST_LABELS='foo=bar' -d --privileged \
 -v /var/run/docker.sock:/var/run/docker.sock rancher/agent:v0.8.2 \
 http://<rancher-server-ip>:8080/v1/projects/1a5/scripts/<registrationToken>
 
 sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.11 http://35.220.211.63:8080/v1/scripts/D02ED42357B1CA64F19A:1514678400000:M0WH6CijjOICLYv3JG6dh1vwbI
+
+
+## DB mairadb
+```
+> docker save mariadb:10.3 | gzip -c > docker-mariadb.tar.gz
+```
+
+## dpcore_cs
+### core-module 변경시 compile -> docker image build 재실행
+- jar 파일 변경에 따라서, 아래 과정 자동화 필요
+
+```
+> vi /home/freepsw_02/dpbds-cloudsearch/core-module-cloudsearch/src/main/resources/profiles/docker/config-cloudsearch.properties
+> mvn clean package -DskipTests=true -P docker -pl core-module-cloudsearch -am
+> docker build . -t docker_repo:5000/dpcore/core-module-cloudsearch
+> docker tag dpcore/core-module-cloudsearch docker_repo:5000/dpcore/core-module-cloudsearch
+> docker push 35.243.72.220:5000/dpcore/core-module-cloudsearch
+```
+
+
+
+```
+mariadb:
+  image: mariadb:10.3
+  environment:
+    MYSQL_ROOT_PASSWORD: secret
+    MYSQL_DATABASE: dpcore_search
+    MYSQL_USER: user
+    MYSQL_PASSWORD: password
+  stdin_open: true
+  volumes:
+  - /home/freepsw_02/temp/db/dpcore_search_dump.sql:/docker-entrypoint-initdb.d/dpcore_search_dump.sql
+  tty: true
+  ports:
+  - 3307:3306/tcp
+  labels:
+    io.rancher.container.pull_image: always
+
+
+    docker-compose.yml
+version: '2'
+services:
+  tees:
+    image: ubuntu:14.04.3
+    stdin_open: true
+    external_links:
+    - stack1/mariadb:mariadb
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+
+      version: '2'
+      services:
+        core-module-cloudsearch:
+          image: 35.243.72.220:5000/dpcore/core-module-cloudsearch:latest
+          hostname: core-module-cloudsearch
+          stdin_open: true
+          external_links:
+          - stack1/mariadb-cs:mariadb
+          tty: true
+          ports:
+          - 7081:7081/tcp
+          cpu_shares: 1024
+          labels:
+            io.rancher.container.pull_image: always
+
+version: '2'
+services:
+  core-module-cloudsearch:
+    scale: 1
+    start_on_create: true
+
+    external_links:
+    - stack1/mariadb-cs:mariadb
+```
+
+###
+```
+sudo ansible-galaxy install udondan.ssh-reconnect
+Password:
+- downloading role 'ssh-reconnect', owned by udondan
+- downloading role from https://github.com/udondan/ansible-role-ssh-reconnect/archive/master.tar.gz
+- extracting udondan.ssh-reconnect to /etc/ansible/roles/udondan.ssh-reconnect
+- udondan.ssh-reconnect (master) was installed successfully
+```

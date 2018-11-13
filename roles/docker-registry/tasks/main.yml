@@ -12,15 +12,16 @@
     dest: "{{ remote_temp_directory }}"
     force: no
 
-- name: Pause 2 seconds to wait until copying image
-  pause:
-    seconds: 2
+# - name: Pause 5 seconds to wait until copying image
+#   pause:
+#     seconds: 5
 
 - name: Load docker-registry image from archive
   docker_image:
     name: registry
     tag: 2
     load_path: "{{ remote_temp_directory }}/{{ docker_registry_image }}"
+  become: true
 
 - name: Run docker registry container
   docker:
@@ -36,6 +37,7 @@
     state: started
     # env:
     #   REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "{{ docker_registry_data_directory }}"
+  become: true
 
 - name: Wait for Docker Registry to start
   uri:
@@ -63,6 +65,7 @@
     name: hyper/docker-registry-web
     tag: 2
     load_path: "{{ remote_temp_directory }}/{{ docker_registry_web_image }}"
+  become: true
 
 - name: Run docker registry web container
   docker:
@@ -79,3 +82,4 @@
     env:
       REGISTRY_URL: "http://registry-srv:5000/v2"
       REGISTRY_NAME: private-dockerhub
+  become: true
