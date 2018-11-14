@@ -20,6 +20,7 @@ target/
 *.ear
 *.db
 *.tar.gz
+*.tgz
 *.rpm
 
 ######################

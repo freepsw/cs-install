@@ -1,5 +1,7 @@
 ---
 
+
+
 - name: determine if we're already running an agent
   shell: "docker ps | fgrep -q rancher/agent"
   register: agent_installed
@@ -27,12 +29,24 @@
 #     push: yes
 #     load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
 
+- name: Check wheather rancher-server is running
+  action: uri
+      method=GET
+      status_code=200
+      url="http://{{ rancher_ip }}:{{ rancher_port }}" return_content=yes
+  register: output_msg
+  until: output_msg.status == 200
+  retries: 100
+  delay: 2
+
 - name: Get the default project id
   action: uri
       method=GET
       status_code=200
       url="http://{{ rancher_ip }}:{{ rancher_port }}/v1/projects" return_content=yes
   register: project_id
+
+
 
 - name: Return the registration token URL of Rancher server
   action: uri

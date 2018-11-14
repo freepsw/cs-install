@@ -137,63 +137,141 @@ sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/ru
 ```
 
 
+## Ansible docker
 
+### Install ansible in offline on centos
+- https://www.linuxschoolonline.com/how-to-install-ansible-offline-on-centos-or-redhat/
+- https://github.com/pingcap/docs/blob/master/op-guide/offline-ansible-deployment.md
 ```
-mariadb:
-  image: mariadb:10.3
-  environment:
-    MYSQL_ROOT_PASSWORD: secret
-    MYSQL_DATABASE: dpcore_search
-    MYSQL_USER: user
-    MYSQL_PASSWORD: password
-  stdin_open: true
-  volumes:
-  - /home/freepsw_02/temp/db/dpcore_search_dump.sql:/docker-entrypoint-initdb.d/dpcore_search_dump.sql
-  tty: true
-  ports:
-  - 3307:3306/tcp
-  labels:
-    io.rancher.container.pull_image: always
-
-
-    docker-compose.yml
-version: '2'
-services:
-  tees:
-    image: ubuntu:14.04.3
-    stdin_open: true
-    external_links:
-    - stack1/mariadb:mariadb
-    tty: true
-    labels:
-      io.rancher.container.pull_image: always
-
-      version: '2'
-      services:
-        core-module-cloudsearch:
-          image: 35.243.72.220:5000/dpcore/core-module-cloudsearch:latest
-          hostname: core-module-cloudsearch
-          stdin_open: true
-          external_links:
-          - stack1/mariadb-cs:mariadb
-          tty: true
-          ports:
-          - 7081:7081/tcp
-          cpu_shares: 1024
-          labels:
-            io.rancher.container.pull_image: always
-
-version: '2'
-services:
-  core-module-cloudsearch:
-    scale: 1
-    start_on_create: true
-
-    external_links:
-    - stack1/mariadb-cs:mariadb
+wget https://download.pingcap.org/ansible-2.5.0-pip.tar.gz
+tar -xzvf ansible-2.5.0-pip.tar.gz
+cd ansible-2.5.0-pip/
+chmod u+x install_ansible.sh
+./install_ansible.sh
 ```
 
-###
+
+
+### ssh server + ansible dockerfile
+- https://docs.docker.com/engine/examples/running_ssh_service/#run-a-test_sshd-container
+- https://github.com/ansible/ansible-docker-base
+- 외부에서 ansible이 설치된 서버에 ssh로 접속하여, ansible script를 실행하는 용
+```
+FROM ubuntu:16.04
+
+# STEP 1. Install ansible
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y software-properties-common && \
+    apt-add-repository ppa:ansible/ansible && \
+    apt-get update && \
+    apt-get install -y ansible
+
+RUN echo '[local]\nlocalhost\n' > /etc/ansible/hosts
+
+# STEP 2. Install ssh-server
+RUN apt-get update && apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN echo 'root:screencast' | chpasswd
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+```
+
+
+
+
+
+
+
+### Ansible docker
+- ansible 환경을 docker로 구성
+- http://ruleoftech.com/2017/dockerizing-all-the-things-running-ansible-inside-docker-container 참고
+### Dockerfile
+```
+FROM alpine:3.7
+
+ENV ANSIBLE_VERSION 2.5.0
+
+ENV BUILD_PACKAGES \
+  bash \
+  curl \
+  tar \
+  openssh-client \
+  sshpass \
+  git \
+  python \
+  py-boto \
+  py-dateutil \
+  py-httplib2 \
+  py-jinja2 \
+  py-paramiko \
+  py-pip \
+  py-yaml \
+  ca-certificates
+
+# If installing ansible@testing
+#RUN \
+#	echo "@testing http://nl.alpinelinux.org/alpine/edge/testing" >> #/etc/apk/repositories
+
+RUN set -x && \
+    \
+    echo "==> Adding build-dependencies..."  && \
+    apk --update add --virtual build-dependencies \
+      gcc \
+      musl-dev \
+      libffi-dev \
+      openssl-dev \
+      python-dev && \
+    \
+    echo "==> Upgrading apk and system..."  && \
+    apk update && apk upgrade && \
+    \
+    echo "==> Adding Python runtime..."  && \
+    apk add --no-cache ${BUILD_PACKAGES} && \
+    pip install --upgrade pip && \
+    pip install python-keyczar docker-py && \
+    \
+    echo "==> Installing Ansible..."  && \
+    pip install ansible==${ANSIBLE_VERSION} && \
+    \
+    echo "==> Cleaning up..."  && \
+    apk del build-dependencies && \
+    rm -rf /var/cache/apk/* && \
+    \
+    echo "==> Adding hosts for convenience..."  && \
+    mkdir -p /etc/ansible /ansible && \
+    echo "[local]" >> /etc/ansible/hosts && \
+    echo "localhost" >> /etc/ansible/hosts
+
+ENV ANSIBLE_GATHERING smart
+ENV ANSIBLE_HOST_KEY_CHECKING false
+ENV ANSIBLE_RETRY_FILES_ENABLED false
+ENV ANSIBLE_ROLES_PATH /ansible/playbooks/roles
+ENV ANSIBLE_SSH_PIPELINING True
+ENV PYTHONPATH /ansible/lib
+ENV PATH /ansible/bin:$PATH
+ENV ANSIBLE_LIBRARY /ansible/library
+
+WORKDIR /ansible/playbooks
+
+ENTRYPOINT ["ansible-playbook"]
+```
+
+### docker build and run
+```
+> docker build . -t dpcore/core-module-cloudsearch-ansible
+> docker save dpcore/core-module-cloudsearch-ansible | gzip -c > core-module-cloudsearch-ansible.tar.gz
+> docker run --rm -it -v $(pwd):/ansible/playbooks dpcore/core-module-cloudsearch-ansible --version
+```
+
+### ETC
 ```
 sudo ansible-galaxy install udondan.ssh-reconnect
 Password:

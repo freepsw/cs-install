@@ -6,19 +6,23 @@
   vars_files:
     - inventories/group_vars/main.yml
   tasks:
-  - name: Test connections
-    shell: ls -al
-    args:
-      chdir: /home/freepsw_02/
-    register: output_msg
 
-  - name: Kill own ssh connections
-    ssh-reconnect: all=True
+  - name: Set some kernel parameters
+    lineinfile:
+      dest: /etc/hosts
+      line: "{{ item }}"
+      # regexp:  "{{ item }}"
+      # backrefs: yes
+    with_items: "{{ hosts_items }}"
+    become: true
 
-    # ssh-reconnect: all=True
-
-  - name: Print results
-    debug: msg="{{ output_msg }}"
+  # - name: Test connections
+  #   shell: ls -al
+  #   register: output_msg
+  #
+  #
+  # - name: Print results
+  #   debug: msg="{{ output_msg }}"
 
 # - name: copy server's public key to agent server
 #   hosts: all

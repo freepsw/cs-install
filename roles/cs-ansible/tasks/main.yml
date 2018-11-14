@@ -1,0 +1,139 @@
+---
+
+- name: Add user(s) to docker group
+  user:
+      name: "{{ dpcore_user }}"
+      password: "{{ dpcore_password }}"
+      groups: docker
+      state: present
+  when: dpcore_user is defined
+  become: true
+
+
+- name: change user
+  shell: su - dpcore
+  become: true
+
+
+- name: Create temporary directory for ansible scripts
+  file:
+    path: "{{ dpcore_cloudsearch_ansible_folder }}"
+    state: directory
+    mode: 0755
+    owner: "{{ dpcore_user }}"
+    group: docker
+  become: true
+
+
+- name: Copy dpcore-cloudsearch-scripts to ~/home/user/temp directory
+  copy:
+    src: "data/ansible/{{ dpcore_cloudsearch_ansible_file }}"
+    dest: "{{ dpcore_cloudsearch_ansible_folder }}"
+    force: no
+    mode: 0755
+    owner: "{{ dpcore_user }}"
+    group: docker
+  become: true
+
+- name: Extract .tgz
+  unarchive:
+    src: "{{ dpcore_cloudsearch_ansible_folder }}{{ dpcore_cloudsearch_ansible_file }}"
+    dest: "{{ dpcore_cloudsearch_ansible_folder }}"
+    remote_src: yes
+    mode: 0755
+    owner: "{{ dpcore_user }}"
+    group: docker
+  become: true
+#
+#
+# - name: determine if docker is installed
+#   command: which docker
+#   register: docker_installed
+#   ignore_errors: true
+#   changed_when: false
+#
+# - name: get docker version
+#   shell: docker --version | awk '{ print $3 }'
+#   register: docker_installed_version
+#   when: docker_installed|success
+#   changed_when: false
+#
+#
+# #
+#
+# - name: Create temporary directory to save install file
+#   file: path="{{ remote_temp_directory }}" state=directory mode=0755
+#
+# - name: Copy docker install files to ~/home/user/temp directory
+#   copy:
+#     src: "{{ docker_data_folder }}"
+#     dest: "{{ remote_temp_directory }}/docker"
+#     force: no
+#
+# - name: Install docker package.
+#   yum:
+#      name: "{{ remote_temp_directory }}/docker/{{ docker_rpm_file }}"
+#      state: present
+#   become: true
+#
+#
+#
+# - name: Create a docker group
+#   group:
+#       name=docker
+#       state=present
+#
+# - name: Add user(s) to docker group
+#   user:
+#       name={{ item }}
+#       groups=docker
+#       state=present
+#       append=yes
+#   with_items: "{{ remote_user }}"
+#   when: remote_user is defined
+#   become: true
+#
+# - name : start docker
+#   service:
+#     name: docker
+#     enabled: yes
+#     state: started
+#   become: true
+#
+# - name: make sure docker is running
+#   service: name=docker state=started enabled=true
+#
+#
+# # - name: Install pip
+# #   easy_install:
+# #       name=pip
+#
+# - name: Install pip using pip wheel
+#   shell: "python pip-18.1-py2.py3-none-any.whl/pip install --no-index pip-18.1-py2.py3-none-any.whl"
+#   args:
+#     chdir: "{{ remote_temp_directory }}/docker"
+#   become: true
+#
+#
+# # - name: Install docker-py
+# #   pip:
+# #     name=docker-py
+# #     state=present
+#
+# - name: Install docker-py package
+#   shell: pip install --no-index --find-links=docker-py docker-py
+#   args:
+#     chdir: "{{ remote_temp_directory }}/docker"
+#   become: true
+#
+#
+# - name: Copy daemon.json to ~/etc/docker/directory to disble https for docker registry
+#   template:
+#     src: "templates/daemon.json.j2"
+#     dest: /etc/docker/daemon.json
+#     mode: 0644
+#   become: true
+#
+# - name: Restart docker
+#   service: name=docker state=restarted enabled=true
+#   become: true

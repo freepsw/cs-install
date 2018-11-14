@@ -6,7 +6,7 @@ services:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: dpcore_search
       MYSQL_USER: {{ mariadb_user }}
-      MYSQL_PASSWORD: {{ mariadb_password }}
+      MYSQL_PASSWORD: '{{ mariadb_password }}'
     stdin_open: true
     volumes:
     - {{ remote_temp_directory }}/db/{{ mariadb_dump_file }}:/docker-entrypoint-initdb.d/{{ mariadb_dump_file }}

@@ -2,7 +2,7 @@
 
 # - name: Copy dpcore maven project file to ~/home/user/temp directory
 #   copy:
-#     src: "{{ docker_image_file_folder }}/{{ dpcore_image }}"
+#     src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_image }}"
 #     dest: "{{ remote_temp_directory }}"
 #     force: no
 #

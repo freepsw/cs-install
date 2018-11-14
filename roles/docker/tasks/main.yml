@@ -105,3 +105,7 @@
 - name: Restart docker
   service: name=docker state=restarted enabled=true
   become: true
+
+
+- name: Install other config for rancher and etc
+  include: install_system_conf.yml

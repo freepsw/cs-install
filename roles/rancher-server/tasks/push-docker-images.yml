@@ -1,26 +1,32 @@
 ---
 
+- name: Create temporary directory to save docker image
+  file: path="{{ remote_temp_directory }}/images" state=directory mode=0755
+
+
 - name: Copy rancher/agent image file to ~/home/user/temp directory
   copy:
     src: "{{ docker_image_file_folder }}/{{ rancher_agent_image }}"
-    dest: "{{ remote_temp_directory }}"
+    dest: "{{ remote_temp_directory }}/images/"
     force: no
 
+# - name: print docker_registry_url
+#   debug
 
-- name: Load image from archive and push to a private registry
+- name: Load rancher/agent image from archive and push to a private registry
   docker_image:
     name: "rancher/agent"
-    repository: "{{ docker_registry_url }}/rancher/agent"
+    repository: docker.registry.server:5000/rancher/agent
     tag: "{{ rancher_agent_version }}"
     push: yes
-    load_path: "{{ remote_temp_directory }}/{{ rancher_agent_image }}"
+    load_path: "{{ remote_temp_directory }}/images/{{ rancher_agent_image }}"
   become: true
 
 
 - name: Copy rancher/server image file to ~/home/user/temp directory
   copy:
     src: "{{ docker_image_file_folder }}/{{ rancher_server_image }}"
-    dest: "{{ remote_temp_directory }}"
+    dest: "{{ remote_temp_directory }}/images/"
     force: no
 
 - name: Load rancher/server image from archive and push to a private registry
@@ -29,13 +35,13 @@
     repository: "{{ docker_registry_url }}/rancher/server"
     tag: "{{ rancher_server_version }}"
     push: yes
-    load_path: "{{ remote_temp_directory }}/{{ rancher_server_image }}"
+    load_path: "{{ remote_temp_directory }}/images/{{ rancher_server_image }}"
   become: true
 
 - name: Copy mariadb image file to ~/home/user/temp directory
   copy:
     src: "{{ docker_image_file_folder }}/{{ mairadb_image }}"
-    dest: "{{ remote_temp_directory }}"
+    dest: "{{ remote_temp_directory }}/images/"
     force: no
 
 - name: Load mariadb image from archive and push to a private registry
@@ -44,20 +50,35 @@
     repository: "{{ docker_registry_url }}/mariadb:10.3"
     tag: "10.3"
     push: yes
-    load_path: "{{ remote_temp_directory }}/{{ mairadb_image }}"
+    load_path: "{{ remote_temp_directory }}/images/{{ mairadb_image }}"
   become: true
 
 
 - name: Copy dpcore-module-cloudsearch image file to ~/home/user/temp directory
   copy:
-    src: "{{ docker_image_file_folder }}/{{ dpcore_image }}"
-    dest: "{{ remote_temp_directory }}"
+    src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_image }}"
+    dest: "{{ remote_temp_directory }}/images/"
     force: no
 
 - name: Load dpcore-module-cloudsearch image from archive and push to a private registry
   docker_image:
-    name: "docker-repo:5000/dpcore/core-module-cloudsearch"
+    name: "dpcore/core-module-cloudsearch"
     repository: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch"
     push: yes
-    load_path: "{{ remote_temp_directory }}/{{ dpcore_image }}"
+    load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_image }}"
+  become: true
+
+
+- name: Copy dpcore-module-cloudsearch-ansible image file to ~/home/user/temp directory
+  copy:
+    src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_ansible_image }}"
+    dest: "{{ remote_temp_directory }}/images/"
+    force: no
+
+- name: Load dpcore-module-cloudsearch-ansible image from archive and push to a private registry
+  docker_image:
+    name: "dpcore/core-module-cloudsearch-ansible"
+    repository: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch-ansible"
+    push: yes
+    load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_ansible_image }}"
   become: true
