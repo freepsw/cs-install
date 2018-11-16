@@ -16,13 +16,13 @@
     with_items: "{{ hosts_items }}"
     become: true
 
-  # - name: Test connections
-  #   shell: ls -al
-  #   register: output_msg
-  #
-  #
-  # - name: Print results
-  #   debug: msg="{{ output_msg }}"
+  - name: Test connections
+    shell: ls -al
+    register: output_msg
+
+
+  - name: Print results
+    debug: msg="{{ output_msg }}"
 
 # - name: copy server's public key to agent server
 #   hosts: all

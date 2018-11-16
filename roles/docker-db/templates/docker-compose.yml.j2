@@ -3,7 +3,7 @@ services:
   mariadb-cs:
     image: {{ docker_registry_url }}/mariadb:10.3
     environment:
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secrer
       MYSQL_DATABASE: dpcore_search
       MYSQL_USER: {{ mariadb_user }}
       MYSQL_PASSWORD: '{{ mariadb_password }}'
