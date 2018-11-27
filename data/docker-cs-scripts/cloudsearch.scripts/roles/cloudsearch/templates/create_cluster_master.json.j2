@@ -1,0 +1,75 @@
+{
+"name": "{{ stack_name }}",
+"system": false,
+"dockerCompose": "{\
+  \"version\": \"2\",\
+  \"services\": {\
+      \"MasterNode\": {\
+          \"mem_limit\": {{ es_mem }},\
+          \"image\": \"docker.elastic.co/elasticsearch/elasticsearch:6.2.2\",\
+          \"environment\": {\
+              \"network.host\": \"0.0.0.0\",\
+              \"cluster.name\": \"{{ es_cluster_name }}\", \
+              \"ELASTIC_PASSWORD\": \"changeme\", \
+              \"discovery.zen.join_timeout\": \"100s\", \
+              \"discovery.zen.ping_timeout\": \"100s\" \
+          },\
+          \"stdin_open\": true,\
+          \"tty\": true,\
+          \"ports\": [ \"{{ es_port }}:9200/tcp\"  ],\
+          \"labels\": { \"io.rancher.container.pull_image\": \"always\"  } \
+      },\
+      \"DataNode\": {\
+          \"mem_limit\": {{ es_mem }},\
+          \"image\": \"docker.elastic.co/elasticsearch/elasticsearch:6.2.2\",\
+          \"environment\": {\
+              \"network.host\": \"0.0.0.0\",\
+              \"cluster.name\": \"{{ es_cluster_name }}\", \
+              \"node.master\": \"true\", \
+              \"node.data\": \"true\", \
+              \"discovery.zen.ping.unicast.hosts\": \"elasticsearch\", \
+              \"discovery.zen.join_timeout\": \"100s\", \
+              \"discovery.zen.ping_timeout\": \"100s\" \
+          },\
+          \"links\": [ \"MasterNode:elasticsearch\" ], \
+          \"stdin_open\": true,\
+          \"tty\": true,\
+          \"labels\": { \"io.rancher.container.pull_image\": \"always\"  } \
+      },\
+      \"Kibana\": {\
+          \"mem_limit\": 4294967296,\
+          \"image\": \"docker.elastic.co/kibana/kibana:6.2.2\",\
+          \"environment\": {\
+              \"elasticsearch.url\": \"http://elasticsearch:{{ es_port }}\" \
+          },\
+          \"links\": [ \"MasterNode:elasticsearch\" ], \
+          \"stdin_open\": true,\
+          \"tty\": true,\
+          \"ports\": [ \"{{ kibana_port }}:5601/tcp\"  ],\
+          \"labels\": { \"io.rancher.container.pull_image\": \"always\"  } \
+      }\
+  }\
+}",
+"rancherCompose": "{\
+    \"version\": \"2\",\
+    \"services\": {\
+        \"MasterNode\": {\
+            \"milli_cpu_reservation\": 1000,\
+            \"scale\": 1,\
+            \"start_on_create\": true \
+        },\
+        \"DataNode\": {\
+            \"milli_cpu_reservation\": 1000,\
+            \"scale\": 2,\
+            \"start_on_create\": true \
+        },\
+        \"Kibana\": {\
+            \"milli_cpu_reservation\": 1000,\
+            \"scale\": 1,\
+            \"start_on_create\": true \
+        }\
+    }\
+}",
+"startOnCreate": true,
+"binding": null
+}

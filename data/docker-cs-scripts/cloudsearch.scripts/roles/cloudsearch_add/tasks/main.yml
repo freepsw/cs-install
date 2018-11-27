@@ -1,0 +1,7 @@
+---
+# Run cloudsearch cluster creation script
+
+
+- name: "RedHat : Install System monitoring module (metricbeat)"
+  include: redhat/add_data_node.yml
+#  when: ansible_os_family == 'RedHat'

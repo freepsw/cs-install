@@ -1,0 +1,53 @@
+---
+
+
+- block:
+  - name: 5-1-1. Get running processes
+    shell: "ps -ef | grep -v grep | grep -w {{ process_name }} | awk '{print $2}'"
+    register: output_msg
+
+  # - debug: msg="{{ output_msg }}"
+
+  - name: 5-1-2. Set current beat pid
+    set_fact:
+      pid: "{{ item.pid }}"
+    with_items: "{{ pids }}"
+    when:
+      - item.ip == ansible_host
+      - item.pid in output_msg.stdout_lines
+
+
+  - name: 5-2-1. Kill running processes
+    shell: "kill {{ pid }}"
+    when: pid is defined
+
+  - name: 5-3-1. Wait for killing process
+    wait_for:
+      path: "/proc/{{ item }}/status"
+      state: absent
+    with_items: "{{ pid }}"
+    ignore_errors: yes
+    register: output_msg
+    when: pid is defined
+
+  - debug: msg="{{ output_msg }}"
+
+  - name: 5-4-1. Force kill stuck processes
+    shell: "kill -9 {{ pid }}"
+    with_items: "{{ output_msg.results | select('failed') | map(attribute='item') | list }}"
+    register: output_msg
+    when: pid is defined
+
+
+  - debug: msg="{{ current_path.stdout }}/{{ beats_type }}/{{ module_name }}"
+
+  - name: 5-5-1. Removing existing folder
+    file:
+      path: "{{ current_path.stdout }}/{{ beats_type }}/{{ module_name }}"
+      state: absent
+    register: output_msg
+
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=3101, error_msg={{ output_msg.msg }}

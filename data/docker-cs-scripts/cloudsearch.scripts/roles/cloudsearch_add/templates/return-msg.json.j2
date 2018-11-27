@@ -1,0 +1,11 @@
+{
+  "result_code": "{{ result_code }}",
+  "error_msg": "{{ error_msg | default("") }}",
+  "node_info": {
+      "name": "{{ node_info['name']  | default("") }}",
+      "service_id": "{{ node_info['id']  | default("") }}",
+      "instance_id": "{{ node_info['instance_id']  | default("") }}",
+      "ip": "{{ node_info['ip']  | default("") }}",
+      "port": "{{ node_info['port']  | default("") }}"
+  }
+}

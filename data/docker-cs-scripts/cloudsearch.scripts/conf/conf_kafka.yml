@@ -1,0 +1,4 @@
+- module: kafka
+  metricsets: ["partition"]
+  period: 10s
+  hosts: ["10.178.50.88:9093","10.178.50.88:9094","10.178.50.88:9095"]

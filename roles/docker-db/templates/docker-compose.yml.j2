@@ -7,12 +7,16 @@ services:
       MYSQL_DATABASE: dpcore_search
       MYSQL_USER: {{ mariadb_user }}
       MYSQL_PASSWORD: '{{ mariadb_password }}'
+      TZ: Asia/Seoul
     stdin_open: true
     volumes:
-    - {{ remote_temp_directory }}/db/{{ mariadb_dump_file }}:/docker-entrypoint-initdb.d/{{ mariadb_dump_file }}
+    - {{ remote_temp_directory }}/docker-db/{{ mariadb_dump_file }}:/docker-entrypoint-initdb.d/{{ mariadb_dump_file }}
     tty: true
     ports:
     - {{ mariadb_port }}:3306/tcp
+    command:
+    - --character-set-server=utf8
+    - --collation-server=utf8_general_ci
     labels:
       io.rancher.scheduler.affinity:host_label: {{ mairadb_rancher_label }}
       io.rancher.container.pull_image: always

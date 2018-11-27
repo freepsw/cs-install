@@ -1,0 +1,427 @@
+{
+  "actions": {},
+  "createDefaults": {
+      "stackId": "1st357"
+  },
+  "createTypes": {
+      "dnsService": "http://169.56.124.19:8080/v2-beta/projects/1a5/dnsservices",
+      "externalService": "http://169.56.124.19:8080/v2-beta/projects/1a5/externalservices",
+      "loadBalancerService": "http://169.56.124.19:8080/v2-beta/projects/1a5/loadbalancerservices",
+      "networkDriverService": "http://169.56.124.19:8080/v2-beta/projects/1a5/networkdriverservices",
+      "service": "http://169.56.124.19:8080/v2-beta/projects/1a5/services",
+      "storageDriverService": "http://169.56.124.19:8080/v2-beta/projects/1a5/storagedriverservices"
+  },
+  "data": [
+      {
+          "accountId": "1a5",
+          "actions": {
+              "addservicelink": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/?action=addservicelink",
+              "deactivate": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/?action=deactivate",
+              "remove": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/?action=remove",
+              "removeservicelink": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/?action=removeservicelink",
+              "restart": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/?action=restart",
+              "setservicelinks": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/?action=setservicelinks",
+              "update": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/?action=update",
+              "upgrade": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/?action=upgrade"
+          },
+          "assignServiceIpAddress": false,
+          "baseType": "service",
+          "createIndex": 1,
+          "created": "2018-04-24T05:15:58Z",
+          "createdTS": 1524546958000,
+          "currentScale": 1,
+          "description": null,
+          "externalId": null,
+          "fqdn": null,
+          "healthState": "healthy",
+          "id": "1s1078",
+          "instanceIds": [
+              "1i1547"
+          ],
+          "kind": "service",
+          "launchConfig": {
+              "drainTimeoutMs": 0,
+              "environment": {
+                  "ELASTIC_PASSWORD": "changeme",
+                  "ES_JAVA_OPTS": "-Xms2g -Xmx2g",
+                  "cluster.name": "mycluster12",
+                  "discovery.zen.join_timeout": "100s",
+                  "discovery.zen.ping_timeout": "100s",
+                  "network.host": "0.0.0.0"
+              },
+              "imageUuid": "docker:es-gotty:6.2.4",
+              "instanceTriggeredStop": "stop",
+              "kind": "container",
+              "labels": {
+                  "io.rancher.service.hash": "43096221e0dde915c4382b134d200339003cf475"
+              },
+              "logConfig": {
+                  "type": "logConfig"
+              },
+              "memory": 4294967296,
+              "milliCpuReservation": 1500,
+              "networkMode": "managed",
+              "ports": [
+                  "9510:9200/tcp",
+                  "61575:8088/tcp"
+              ],
+              "privileged": true,
+              "publishAllPorts": false,
+              "readOnly": false,
+              "runInit": false,
+              "startOnCreate": true,
+              "stdinOpen": true,
+              "system": false,
+              "tty": true,
+              "type": "launchConfig",
+              "vcpu": 1,
+              "version": "0"
+          },
+          "lbConfig": null,
+          "linkedServices": null,
+          "links": {
+              "account": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/account",
+              "consumedbyservices": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/consumedbyservices",
+              "consumedservices": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/consumedservices",
+              "containerStats": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/containerstats",
+              "instances": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/instances",
+              "networkDrivers": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/networkdrivers",
+              "self": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078",
+              "serviceExposeMaps": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/serviceexposemaps",
+              "serviceLogs": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/servicelogs",
+              "stack": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/stack",
+              "storageDrivers": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1078/storagedrivers"
+          },
+          "metadata": {
+              "io.rancher.service.hash": "5a28a821d21933041f3ac26f544c206996b3e42d"
+          },
+          "name": "MasterNode",
+          "publicEndpoints": [
+              {
+                  "hostId": "1h1",
+                  "instanceId": "1i1547",
+                  "ipAddress": "169.56.72.226",
+                  "port": 9510,
+                  "serviceId": "1s1078",
+                  "type": "publicEndpoint"
+              },
+              {
+                  "hostId": "1h1",
+                  "instanceId": "1i1547",
+                  "ipAddress": "169.56.72.226",
+                  "port": 61575,
+                  "serviceId": "1s1078",
+                  "type": "publicEndpoint"
+              }
+          ],
+          "removed": null,
+          "retainIp": null,
+          "scale": 1,
+          "scalePolicy": null,
+          "secondaryLaunchConfigs": [],
+          "selectorContainer": null,
+          "selectorLink": null,
+          "stackId": "1st357",
+          "startOnCreate": false,
+          "state": "active",
+          "system": false,
+          "transitioning": "no",
+          "transitioningMessage": null,
+          "transitioningProgress": null,
+          "type": "service",
+          "upgrade": null,
+          "uuid": "642cc697-65f7-4f11-af45-cafec68932b0",
+          "vip": null
+      },
+      {
+          "accountId": "1a5",
+          "actions": {
+              "addservicelink": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/?action=addservicelink",
+              "deactivate": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/?action=deactivate",
+              "remove": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/?action=remove",
+              "removeservicelink": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/?action=removeservicelink",
+              "restart": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/?action=restart",
+              "setservicelinks": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/?action=setservicelinks",
+              "update": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/?action=update",
+              "upgrade": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/?action=upgrade"
+          },
+          "assignServiceIpAddress": false,
+          "baseType": "service",
+          "createIndex": 1,
+          "created": "2018-04-24T05:15:58Z",
+          "createdTS": 1524546958000,
+          "currentScale": 1,
+          "description": null,
+          "externalId": null,
+          "fqdn": null,
+          "healthState": "healthy",
+          "id": "1s1079",
+          "instanceIds": [
+              "1i1548"
+          ],
+          "kind": "service",
+          "launchConfig": {
+              "drainTimeoutMs": 0,
+              "environment": {
+                  "elasticsearch.url": "http://elasticsearch:9510"
+              },
+              "imageUuid": "docker:kibana-gotty:0.1.0",
+              "instanceTriggeredStop": "stop",
+              "kind": "container",
+              "labels": {
+                  "io.rancher.service.hash": "416fd5fcba84a011069e478ea615f11bf756dea1"
+              },
+              "logConfig": {
+                  "type": "logConfig"
+              },
+              "memory": 4294967296,
+              "milliCpuReservation": 2000,
+              "networkMode": "managed",
+              "ports": [
+                  "5811:5601/tcp",
+                  "58691:8088/tcp"
+              ],
+              "privileged": false,
+              "publishAllPorts": false,
+              "readOnly": false,
+              "runInit": false,
+              "startOnCreate": true,
+              "stdinOpen": true,
+              "system": false,
+              "tty": true,
+              "type": "launchConfig",
+              "vcpu": 1,
+              "version": "0"
+          },
+          "lbConfig": null,
+          "linkedServices": {
+              "elasticsearch": "1s1078"
+          },
+          "links": {
+              "account": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/account",
+              "consumedbyservices": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/consumedbyservices",
+              "consumedservices": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/consumedservices",
+              "containerStats": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/containerstats",
+              "instances": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/instances",
+              "networkDrivers": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/networkdrivers",
+              "self": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079",
+              "serviceExposeMaps": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/serviceexposemaps",
+              "serviceLogs": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/servicelogs",
+              "stack": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/stack",
+              "storageDrivers": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1079/storagedrivers"
+          },
+          "metadata": {
+              "io.rancher.service.hash": "884992935af3ee6bf953aab135419df28c77850b"
+          },
+          "name": "Kibana",
+          "publicEndpoints": [
+              {
+                  "hostId": "1h1",
+                  "instanceId": "1i1548",
+                  "ipAddress": "169.56.72.226",
+                  "port": 5811,
+                  "serviceId": "1s1079",
+                  "type": "publicEndpoint"
+              },
+              {
+                  "hostId": "1h1",
+                  "instanceId": "1i1548",
+                  "ipAddress": "169.56.72.226",
+                  "port": 58691,
+                  "serviceId": "1s1079",
+                  "type": "publicEndpoint"
+              }
+          ],
+          "removed": null,
+          "retainIp": null,
+          "scale": 1,
+          "scalePolicy": null,
+          "secondaryLaunchConfigs": [],
+          "selectorContainer": null,
+          "selectorLink": null,
+          "stackId": "1st357",
+          "startOnCreate": false,
+          "state": "active",
+          "system": false,
+          "transitioning": "no",
+          "transitioningMessage": null,
+          "transitioningProgress": null,
+          "type": "service",
+          "upgrade": null,
+          "uuid": "dab91ab4-ea84-4e21-aef9-ef48c48239d1",
+          "vip": null
+      },
+      {
+          "accountId": "1a5",
+          "actions": {
+              "addservicelink": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/?action=addservicelink",
+              "deactivate": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/?action=deactivate",
+              "remove": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/?action=remove",
+              "removeservicelink": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/?action=removeservicelink",
+              "restart": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/?action=restart",
+              "setservicelinks": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/?action=setservicelinks",
+              "update": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/?action=update",
+              "upgrade": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/?action=upgrade"
+          },
+          "assignServiceIpAddress": false,
+          "baseType": "service",
+          "createIndex": 1,
+          "created": "2018-04-24T05:15:58Z",
+          "createdTS": 1524546958000,
+          "currentScale": 1,
+          "description": null,
+          "externalId": null,
+          "fqdn": null,
+          "healthState": "healthy",
+          "id": "1s1080",
+          "instanceIds": [
+              "1i1549"
+          ],
+          "kind": "service",
+          "launchConfig": {
+              "drainTimeoutMs": 0,
+              "environment": {
+                  "ES_JAVA_OPTS": "-Xms2g -Xmx2g",
+                  "cluster.name": "mycluster12",
+                  "discovery.zen.join_timeout": "100s",
+                  "discovery.zen.ping.unicast.hosts": "elasticsearch",
+                  "discovery.zen.ping_timeout": "100s",
+                  "network.host": "0.0.0.0",
+                  "node.data": "true",
+                  "node.master": "false"
+              },
+              "imageUuid": "docker:es-gotty:6.2.4",
+              "instanceTriggeredStop": "stop",
+              "kind": "container",
+              "labels": {
+                  "io.rancher.service.hash": "4a655e48b0faabc10fd4d44a2562f702b79127ff"
+              },
+              "logConfig": {
+                  "type": "logConfig"
+              },
+              "memory": 4294967296,
+              "milliCpuReservation": 1500,
+              "networkMode": "managed",
+              "ports": [
+                  "55107:8088/tcp"
+              ],
+              "privileged": false,
+              "publishAllPorts": false,
+              "readOnly": false,
+              "runInit": false,
+              "startOnCreate": true,
+              "stdinOpen": true,
+              "system": false,
+              "tty": true,
+              "type": "launchConfig",
+              "vcpu": 1,
+              "version": "0"
+          },
+          "lbConfig": null,
+          "linkedServices": {
+              "elasticsearch": "1s1078"
+          },
+          "links": {
+              "account": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/account",
+              "consumedbyservices": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/consumedbyservices",
+              "consumedservices": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/consumedservices",
+              "containerStats": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/containerstats",
+              "instances": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/instances",
+              "networkDrivers": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/networkdrivers",
+              "self": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080",
+              "serviceExposeMaps": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/serviceexposemaps",
+              "serviceLogs": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/servicelogs",
+              "stack": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/stack",
+              "storageDrivers": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s1080/storagedrivers"
+          },
+          "metadata": {
+              "io.rancher.service.hash": "c25b2067742725c2d9d196a89d4a8d58b93c35bd"
+          },
+          "name": "DataNode1",
+          "publicEndpoints": [
+              {
+                  "hostId": "1h1",
+                  "instanceId": "1i1549",
+                  "ipAddress": "169.56.72.226",
+                  "port": 55107,
+                  "serviceId": "1s1080",
+                  "type": "publicEndpoint"
+              }
+          ],
+          "removed": null,
+          "retainIp": null,
+          "scale": 1,
+          "scalePolicy": null,
+          "secondaryLaunchConfigs": [],
+          "selectorContainer": null,
+          "selectorLink": null,
+          "stackId": "1st357",
+          "startOnCreate": false,
+          "state": "active",
+          "system": false,
+          "transitioning": "no",
+          "transitioningMessage": null,
+          "transitioningProgress": null,
+          "type": "service",
+          "upgrade": null,
+          "uuid": "4f378c11-7d5b-4ea8-93d8-7ce52f8c8398",
+          "vip": null
+      }
+  ],
+  "filters": {
+      "accountId": null,
+      "createIndex": null,
+      "created": null,
+      "description": null,
+      "externalId": null,
+      "healthState": null,
+      "id": null,
+      "kind": null,
+      "name": null,
+      "removeTime": null,
+      "removed": null,
+      "selectorContainer": null,
+      "selectorLink": null,
+      "skip": null,
+      "stackId": null,
+      "state": null,
+      "system": null,
+      "uuid": null,
+      "vip": null
+  },
+  "links": {
+      "self": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services"
+  },
+  "pagination": {
+      "first": null,
+      "limit": 100,
+      "next": null,
+      "partial": false,
+      "previous": null,
+      "total": null
+  },
+  "resourceType": "service",
+  "sort": null,
+  "sortLinks": {
+      "accountId": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=accountId",
+      "createIndex": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=createIndex",
+      "created": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=created",
+      "description": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=description",
+      "externalId": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=externalId",
+      "healthState": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=healthState",
+      "id": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=id",
+      "kind": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=kind",
+      "name": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=name",
+      "removeTime": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=removeTime",
+      "removed": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=removed",
+      "selectorContainer": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=selectorContainer",
+      "selectorLink": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=selectorLink",
+      "skip": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=skip",
+      "stackId": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=stackId",
+      "state": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=state",
+      "system": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=system",
+      "uuid": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=uuid",
+      "vip": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st357/services?sort=vip"
+  },
+  "type": "collection"
+}

@@ -1,5 +1,6 @@
 ---
 
+# Rancher/Agent
 - name: Create temporary directory to save docker image
   file: path="{{ remote_temp_directory }}/images" state=directory mode=0755
 
@@ -10,9 +11,6 @@
     dest: "{{ remote_temp_directory }}/images/"
     force: no
 
-# - name: print docker_registry_url
-#   debug
-
 - name: Load rancher/agent image from archive and push to a private registry
   docker_image:
     name: "rancher/agent"
@@ -22,7 +20,7 @@
     load_path: "{{ remote_temp_directory }}/images/{{ rancher_agent_image }}"
   become: true
 
-
+# Rancher/Server
 - name: Copy rancher/server image file to ~/home/user/temp directory
   copy:
     src: "{{ docker_image_file_folder }}/{{ rancher_server_image }}"
@@ -38,6 +36,8 @@
     load_path: "{{ remote_temp_directory }}/images/{{ rancher_server_image }}"
   become: true
 
+
+# MariaDB
 - name: Copy mariadb image file to ~/home/user/temp directory
   copy:
     src: "{{ docker_image_file_folder }}/{{ mairadb_image }}"
@@ -54,6 +54,7 @@
   become: true
 
 
+# Dpcore-core-cloudsearch
 - name: Copy dpcore-module-cloudsearch image file to ~/home/user/temp directory
   copy:
     src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_image }}"
@@ -66,19 +67,22 @@
     repository: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch"
     push: yes
     load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_image }}"
+    force: yes
   become: true
 
-
-- name: Copy dpcore-module-cloudsearch-ansible image file to ~/home/user/temp directory
+# Dpcpre-core-cloudsearch-scripts
+- name: Copy dpcore-module-cloudsearch-scripts image file to ~/home/user/temp directory
   copy:
-    src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_ansible_image }}"
+    src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_scripts_image }}"
     dest: "{{ remote_temp_directory }}/images/"
     force: no
 
-- name: Load dpcore-module-cloudsearch-ansible image from archive and push to a private registry
+- name: Load dpcore-module-cloudsearch-scripts image from archive and push to a private registry
   docker_image:
-    name: "dpcore/core-module-cloudsearch-ansible"
-    repository: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch-ansible"
+    name: "{{ docker_registry_url }}/{{ dpcore_cloudsearch_scripts_image_name }}"
+    repository: "{{ docker_registry_url }}/{{ dpcore_cloudsearch_scripts_image_name }}"
+    tag: "v1.0.0"
     push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_ansible_image }}"
+    load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_scripts_image }}"
+    force: yes
   become: true

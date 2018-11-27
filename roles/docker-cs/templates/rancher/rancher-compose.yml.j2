@@ -1,5 +1,8 @@
 version: '2'
 services:
+  core-module-cloudsearch-scripts:
+    scale: 1
+    start_on_create: true
   core-module-cloudsearch:
     scale: 1
     start_on_create: true

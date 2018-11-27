@@ -1,0 +1,137 @@
+---
+
+
+- block:
+    - name: 0-0. Set facts for beats
+      include: redhat/00.set_facts.yml
+
+    - name: 1-2. Install beats
+      include: redhat/02.install_beats.yml
+      when: not is_running | default(false) | bool
+
+    - name: 1-3. Delete unnecessary kibana dashboard
+      include: redhat/03.delete_dashboard.yml
+      when: not is_running | default(false) | bool
+
+    - name: 1-4. Copy configuration file for module
+      include: redhat/04.copy_conf.yml
+      when: not is_running | default(false) | bool
+
+    - name: 1-9. Run beats module
+      include: redhat/09.run_beat.yml
+      when: not is_running | default(false) | bool
+
+    - name: 2-1. Copy configuration file for module
+      include: redhat/04.copy_conf.yml
+      when: is_running | default(false) | bool
+  rescue:
+    - name: print error message
+      include: redhat/return_msg.yml
+
+  when: mode == "INSTALL"
+
+
+- block:
+    - name: 0-0. Set facts for beats
+      include: redhat/00.set_facts.yml
+
+    - name: 2-1. Copy configuration file for module
+      include: redhat/04.copy_conf.yml
+      when: not is_running | default(false) | bool
+  rescue:
+    - name: print error message
+      include: redhat/return_msg.yml
+  when: mode == "UPDATE"
+
+
+- block:
+  - name: 0-0. Set facts for beats
+    include: redhat/00.set_facts.yml
+  # - name: 5-1-1. Get running processes
+  #   shell: "ps -ef | grep -v grep | grep -w {{ process_name }} | awk '{print $2}'"
+  #   register: output_msg
+  #
+  # - debug:
+  #     msg: "{{ output_msg }}"
+  #
+  # - name: 2. Print pids
+  #   debug:
+  #     msg: "{{ item }}"
+  #   with_items: "{{ pids }}"
+  #   when:
+  #     - item.ip == ansible_default_ipv4.address
+  #     - item.pid in output_msg.stdout_lines
+  - name: 1-1. Kill running process(beats module)
+    include: redhat/05.delete_beats.yml
+  - set_fact:
+      kibana_dashboard: ""
+  rescue:
+    - name: print error message
+      include: redhat/return_msg.yml
+  when: mode == "DELETE"
+
+- block:
+  - name: 9-1. Return message
+    include: redhat/return_msg.yml
+  rescue:
+    - name: print error message
+      include: redhat/return_msg.yml
+
+
+
+# - name: test
+#   copy: content="{{ text }}" dest="~/foo.conf"
+
+
+# - name: "STEP 0-1. Check OS type"
+#   include: check_metricbeat_redhat.yml
+#   when: ansible_os_family == 'RedHat'
+
+
+# - name: "RedHat : Install System monitoring module (metricbeat)"
+#   include: redhat/metricbeat-system/install_metricbeat_system.yml
+#   when: ansible_os_family == 'RedHat' and type == 'I'
+
+# 최초 yml에서 필요한 변수값을 설정
+# module name, config file text, kibana dashboard,
+# - shell: date
+#   register: date_res
+#   changed_when: false
+#
+# - set_fact:
+#     pid: "{{ ansible_default_ipv4.address }} : 1243"
+#
+# - name: print host info
+#   debug:
+#     msg: "{{ ansible_play_hosts | map('extract', hostvars, 'pid') | list}}"
+#   run_once: yes
+#
+# - name: All in one
+#   debug:
+#     msg: "{{ ansible_play_hosts | map('extract', hostvars, 'date_res') | map(attribute='stdout') | list }} - {{ ansible_default_ipv4.address }}"
+#   run_once: yes
+
+# - name : copy ssh public key to remote server
+#   authorized_key: user=rts key="{{ lookup('file', '/home/rts/.ssh/id_rsa.pub') }}"
+#
+# - name: For each host, scan for its ssh public key
+#   shell: "ssh-keyscan -p {{ item.port }} {{ item.ip }} "
+#   with_items: "{{ domains }}"
+#   register: ssh_known_host_results
+#   ignore_errors: yes
+#
+# - name: print ip for debugging
+#   debug:
+#     msg: "IP is  {{ item }}"
+#   with_items: "{{ ssh_known_host_results.results }}"
+#
+# - name: print ip for debugging
+#   debug:
+#     msg: "IP is  {{ item.item.ip }}"
+#   with_items: "{{ ssh_known_host_results.results }}"
+# #
+# - name: Add/update the public key in the '{{ ssh_known_hosts_file }}'
+#   known_hosts:
+#     name: "{{ item.item.ip }}"
+#     key: "{{ item.stdout }}"
+#   with_items: "{{ ssh_known_host_results.results }}"

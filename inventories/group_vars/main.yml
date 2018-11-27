@@ -3,7 +3,7 @@
 # Common
 dpcore_user: dpcore
 dpcore_password: 1234qwer
-remote_user: 'freepsw_02'
+remote_user: 'freepsw_03'
 remote_temp_directory: "/home/{{ remote_user }}/temp"
 rancher_server_host_name: rancher.server
 docker_registry_host_name: docker.registry.server
@@ -52,19 +52,19 @@ docker_registry_web_expose_port: 8081
 mariadb_ip: "{{ hostvars['agent1'].ansible_ssh_host }}"
 mariadb_port: 3308
 mariadb_dump_file: dpcore_search_dump.sql
-mariadb_data_folder: data/db
+mariadb_data_folder: data/docker-db
 mairadb_image: docker-mariadb-10-3.tar.gz
 mairadb_rancher_label: io.rancher.host.os=linux
 mariadb_user: cloudsearch
 mariadb_password: '!cloudsearch00'
 
 # dpcore-cloudsearch
-dpcore_log_folder: /data/log_data/
+dpcore_log_folder: /data/log_data
 dpcore_rancher_label: io.rancher.host.os=linux
 dpcore_cloudsearch_image: core-module-cloudsearch.tar.gz
 ## dpcore-cloudsearh
 
-# dpcore-cloudsearch-ansible
-dpcore_cloudsearch_ansible_image: core-module-cloudsearch-ansible.tar.gz
-dpcore_cloudsearch_ansible_file: cloudsearch.scripts.tgz
-dpcore_cloudsearch_ansible_folder: /home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script
+# dpcore-cloudsearch-scripts
+dpcore_cloudsearch_scripts_ip: "{{ hostvars['server1'].ansible_ssh_host }}"
+dpcore_cloudsearch_scripts_image: core-module-cloudsearch-scripts.tar.gz
+dpcore_cloudsearch_scripts_image_name: dpcore/core-module-cloudsearch-scripts

@@ -1,0 +1,33 @@
+heartbeat.monitors:
+- type: http
+  urls:
+    - "http://169.56.124.28:7072/batch/workflow/job"
+    - "http://169.56.124.28:7073/collector/hosts"
+    - "http://169.56.124.28:7070/api/v1/util/notebook/contents/"
+    - "http://169.56.124.28:7077/queue/kafka/topics"
+    - "http://169.56.124.28:7078/streaming/workflow"
+    - "http://169.56.124.28:7080/admin/"
+    - "http://169.56.124.28:7081/cloudsearch/clusters"
+    - "http://169.56.124.28:8888/dhp/stack/serviceMeta/"
+  check.request.method: GET
+  check.request.headers:
+    SKCC-Client-ID: 'bigdata_poc03'
+    Authorization: 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJjb3JlOmFsbCJdLCJleHAiOjE1Mjg0NDU4MTksImF1dGhvcml0aWVzIjpbIlJPTEVfTVlfQ0xJRU5UIl0sImp0aSI6ImQxYzhmYTgxLTVkNTgtNDQ0OS1hYmY4LTk4MGMwN2MzZGFlNCIsImNsaWVudF9pZCI6ImJpZ2RhdGFfcG9jIn0.ebCBIDVtdkzBBzJGTwKesmRJGzOimpDlJqHnio4fMvTARXs1bF9DK2dMAz71CH06Hv4PWps5RnOrg9cir04D607rACPlm10nCWeB0lMjKgTq-5EXWMWAHPCWgwWcG2wN2fL4rThpASGv6g3K52pwHEbaP0OgDFMglnA3yViAc2kL3OlbOtkwbsZWdVJkBqjcU1FxyKPhnA5K2QECSADwQ_cIXI8O6I1aEm9MrmwfEhaRKKEAAhc2Vh2anTv5jwny08MYIVSJBj-sAG-J_AIj8vPTzePI-3C0LmfGER8QRJkwjCXpIJe0AKeEInN6342KCIkTGQYv9lijeJasGCh-cA'
+  schedule: '@every 5s'
+
+- type: http
+  urls:
+    - "http://169.56.124.28:7075/globalworkflow/workflow/batch"
+  schedule: '@every 5s'
+
+setup.template.settings:
+  index.number_of_shards: 1
+  index.codec: best_compression
+
+setup.dashboards.enabled: true
+
+setup.kibana:
+  host: "169.56.72.226:5801"
+
+output.elasticsearch:
+  hosts: ["169.56.72.226:9500"]

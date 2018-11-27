@@ -1,0 +1,17 @@
+---
+
+- hosts: localhost
+
+  tasks:
+    - name: set current data_test
+      set_fact:
+        cur_date: "{{ ansible_date_time.date  }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}"
+    - name: Get currnet date
+      set_fact:
+        output_msg: "{{ lookup('file', 'data_test/test_jinja2.j2') }}"
+
+    - name: print error message
+      debug: msg="{{ output_msg }}"
+
+    # - debug: var=ansible_date_time
+    # - debug: msg="the current date is {{ ansible_date_time.date }}"

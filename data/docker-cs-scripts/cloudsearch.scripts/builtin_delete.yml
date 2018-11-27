@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+  # - name: test extravars
+  #   debug: msg="version - {{ item }}"
+  #   with_items: "{{ domains }}"
+
+  - name: add host
+    add_host:
+      name: "{{ item.ip }}"
+      groups: metric_nodes
+      ansible_host: "{{ item.ip }}"
+      ansible_port: "{{ item.port }}"
+      ansible_user: "{{ item.user }}"
+      ansible_ssh_pass: "{{ item.pass }}"
+    with_items : "{{ domains }}"
+
+- name: Delete built-in service modules
+  hosts: "metric_nodes"
+  gather_facts: no
+  # pre_tasks:
+  #  - setup:
+  #     filter: ansible_default_ipv4.address
+  vars_files:
+    - inventories/group_vars/main.yml
+  vars:
+    - mode: "DELETE"
+  roles:
+   - { role: built-in, tags: ["built-in-delete"] }

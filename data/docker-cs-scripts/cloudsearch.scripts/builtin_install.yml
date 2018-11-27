@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+  # - name: test extravars
+  #   debug:
+  #     msg : "version - {{ es_endpoint }}"
+  #
+  # - name: test extravars
+  #   debug: msg="version - {{ item }}"
+  #   with_items: "{{ domains }}"
+
+  - name: add host
+    add_host:
+      name: "{{ item.ip }}"
+      groups: metric_nodes
+      ansible_host: "{{ item.ip }}"
+      ansible_port: "{{ item.port }}"
+      ansible_user: "{{ item.user }}"
+      ansible_ssh_pass: "{{ item.pass }}"
+      ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    with_items : "{{ domains }}"
+
+
+- name: Create built-in service
+  hosts: "metric_nodes"
+  gather_facts: no
+  vars_files:
+    - inventories/group_vars/main.yml
+  vars:
+    - mode: "INSTALL"
+  roles:
+   - { role: built-in, tags: ["built-in-install"] }

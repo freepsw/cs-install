@@ -1,0 +1,24 @@
+---
+
+- name: Comment out existing rancher.server ip
+  replace:
+    path: /etc/hosts
+    regexp: '(.*rancher\.server)'
+    replace: '#\1'
+    backup: yes
+  become: true
+
+- name:  Comment out existing docker.registry.server ip
+  replace:
+    path: /etc/hosts
+    regexp: '(.*docker\.registry\.server)'
+    replace: '#\1'
+    backup: yes
+  become: true
+
+- name: Add host name and ip to /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ item }}"
+  with_items: "{{ hosts_items }}"
+  become: true

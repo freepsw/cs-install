@@ -1,0 +1,127 @@
+---
+
+- name: STEP 0-0-0. Set currnet path
+  shell: pwd
+  register: current_path
+
+- block:
+    - name: STEP 0-0-1. Set facts for metricbeat system module
+      set_fact:
+        module_name: "system"
+        beats_type: "metricbeat"
+        tar_file: "{{ metric_tar_file }}"
+        unzip_directory: "{{ metricbeat_directory }}"
+        module_conf_file: "system.yml"
+        beats_conf_src_file: "metricbeat.yml.j2"
+        beats_conf_des_file: "metricbeat.yml"
+        kibana_delete_dashboard: "{{ delete_system_kibana_dashboards }}"
+        kibana_dashboard: "{{ dashboard_metric_system }}"
+        process_name: "./metricbeat"
+        run_command: "nohup ./metricbeat -d 'publish' </dev/null >/dev/null 2>&1 & echo $!"
+        pids: []
+  when: module_type == "001"
+
+
+- block:
+    - name: STEP 0-0-2. Set facts for metricbeat mysql module
+      set_fact:
+        module_name: "mysql"
+        beats_type: "metricbeat"
+        tar_file: "{{ metric_tar_file }}"
+        unzip_directory: "{{ metricbeat_directory }}"
+        module_conf_file: "mysql.yml"
+        beats_conf_src_file: "metricbeat.yml.j2"
+        beats_conf_des_file: "metricbeat.yml"
+        kibana_delete_dashboard: "{{ delete_mysql_kibana_dashboards }}"
+        kibana_dashboard: "{{ dashboard_metric_mysql }}"
+        process_name: "./metricbeat"
+        run_command: "nohup ./metricbeat -d 'publish' </dev/null >/dev/null 2>&1 & echo $!"
+        pids: []
+  when: module_type == "002"
+
+- block:
+    - name: STEP 0-0-3. Set facts for metricbeat kafka module
+      set_fact:
+        module_name: "kafka"
+        beats_type: "metricbeat"
+        tar_file: "{{ metric_tar_file }}"
+        unzip_directory: "{{ metricbeat_directory }}"
+        module_conf_file: "kafka.yml"
+        beats_conf_src_file: "metricbeat.yml.j2"
+        beats_conf_des_file: "metricbeat.yml"
+        kibana_delete_dashboard: "{{ delete_kafka_kibana_dashboards }}"
+        kibana_dashboard: "{{ dashboard_metric_kafka }}"
+        process_name: "./metricbeat"
+        run_command: "nohup ./metricbeat -d 'publish' </dev/null >/dev/null 2>&1 & echo $!"
+        pids: []
+  when: module_type == "004"
+
+
+- block:
+    - name: STEP 0-0-3. Set facts for filebeat apache module
+      set_fact:
+        module_name: "apache2"
+        beats_type: "filebeat"
+        tar_file: "{{ filebeat_tar_file }}"
+        unzip_directory: "{{ filebeat_directory }}"
+        module_conf_file: "apache2.yml"
+        beats_conf_src_file: "filebeat.yml.j2"
+        beats_conf_des_file: "filebeat.yml"
+        kibana_delete_dashboard: "{{ delete_apache2_kibana_dashboards }}"
+        kibana_dashboard: "{{ dashboard_filebeat_apache2 }}"
+        process_name: "./filebeat"
+        run_command: "nohup ./filebeat -d 'publish' </dev/null >/dev/null 2>&1 & echo $!"
+        pids: []
+  when: module_type == "003"
+
+
+- block:
+    - name: STEP 0-0-3. Set facts for logstash
+      set_fact:
+        module_name: "logstash"
+        beats_type: "logstash"
+        tar_file: "{{ logstash_tar_file }}"
+        unzip_directory: "{{ logstash_directory }}"
+        beats_conf_des_file: "logstash_collect.conf"
+        kibana_delete_dashboard: ""
+        kibana_dashboard: ""
+        process_name: "./logstash"
+        run_command: "nohup ./bin/logstash -f logstash_collect.conf --config.reload.automatic </dev/null >/dev/null 2>&1 & echo $!"
+        pids: []
+  when: module_type == "005"
+
+
+- block:
+    - name: STEP 0-0-3. Set facts for heartbeat
+      set_fact:
+        module_name: "heartbeat"
+        beats_type: "heartbeat"
+        tar_file: "{{ heartbeat_tar_file }}"
+        unzip_directory: "{{ heartbeat_directory }}"
+        beats_conf_des_file: "heartbeat.yml"
+        kibana_delete_dashboard: ""
+        kibana_dashboard: ""
+        process_name: "./heartbeat"
+        run_command: "nohup ./heartbeat -c heartbeat.yml -d 'publish' </dev/null >/dev/null 2>&1 & echo $!"
+        pids: []
+  when: module_type == "020"
+
+# - name: print beats_path-1
+#   debug:
+#     msg: "{{ current_path.stdout }}/{{ beats_type }}/{{ module_name}}"
+
+- block:
+  - name: STEP 0-1-0. Create directory for beats modules
+    file:
+      path: "{{ current_path.stdout }}/{{ beats_type }}/{{ module_name}}"
+      state: directory
+    register: beats_path
+  rescue:
+    - name: print error message
+      debug: msg="{{ beats_path.msg }}"
+    - set_fact: is_success=False, result_code=3010, error_msg={{ beats_path.msg }}
+
+
+- name: print beats_path -2
+  debug:
+    msg: "{{ beats_path }}"

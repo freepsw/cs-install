@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  tasks:
+  # - name: Add host
+  #   add_host:
+  #     hostname: "dev03"
+  #     ansible_host: "dev03"
+  #     ansible_port: "22"
+  - name: add host
+    add_host:
+      name: 172.16.118.133
+      groups: created_nodes
+      ansible_user: rts
+      ansible_ssh_pass: "!rts!"
+      ansible_host: 172.16.118.133
+      ansible_port: 22
+
+
+- hosts: all
+  tasks:
+  - name : ping test
+    ping:
+
+
+  - name: register all host ip of inventory file
+    debug: msg="{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']  }} {{ hostvars[inventory_hostname]['ansible_hostname']  }}"
+    register: host_ip
+    with_items: groups['all']
+
+  # - name: show all the hosts matching the pattern, ie all but the group www
+  #   debug:
+  #     msg: "TEST = {{ hostvars[item]['ansible_eth1']['ipv4']['address'] }} {{ hostvars[item]['ansible_eth1']['ipv4']['ansible_hostname'] }} "
+  #   with_items: groups['all']

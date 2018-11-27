@@ -1,0 +1,29 @@
+filebeat.prospectors:
+- type: log
+  enabled: false
+  paths:
+    - /var/log/*.log
+
+#============================= Filebeat modules ===============================
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: true
+  reload.period: 5s
+
+#==================== Elasticsearch template setting ==========================
+setup.template.settings:
+  index.number_of_shards: 3
+  index.codec: best_compression
+
+
+#============================== Dashboards =====================================
+setup.dashboards.enabled: true
+
+
+#============================== Kibana =====================================
+setup.kibana:
+  host: "{{ kibana_endpoint }}"
+
+#================================ Outputs =====================================
+output.elasticsearch:
+  hosts: ["{{ es_endpoint }}"]

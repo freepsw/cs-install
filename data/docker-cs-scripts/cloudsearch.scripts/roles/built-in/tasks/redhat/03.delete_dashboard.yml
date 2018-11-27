@@ -1,0 +1,23 @@
+---
+
+
+- block:
+
+  - name: STEP 3-1-1. Delete unnecessary kibana dashboard
+    file:
+        state: absent
+        path: "{{ beats_path.path }}/{{ unzip_directory }}/kibana/6/dashboard/{{ item }}"
+    with_items: "{{ kibana_delete_dashboard }}"
+    register: output_msg
+
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=3003, error_msg={{ output_msg.msg }}
+  when: module_type != "005" and module_type != "020"
+
+# - shell: ls -1 /some/dir
+#   register: contents
+#
+# - file: path=/some/dir/{{ item }} state=absent
+#   with_items: {{ contents.stdout_lines }}

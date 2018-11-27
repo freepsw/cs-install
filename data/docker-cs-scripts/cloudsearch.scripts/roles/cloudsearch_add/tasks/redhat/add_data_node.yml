@@ -1,0 +1,86 @@
+---
+
+- name: STEP 0-0. Set variable for error processing
+  set_fact:
+    is_success: true
+
+- block:
+    - name: STEP 1-1. Create a http body message to add service(data node)
+      set_fact:
+        json_contenst: "{{ lookup('template', 'templates/create_cluster_add_node.json.j2') }}"
+      register: output_msg
+    - debug: msg="{{ json_contenst }}"
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=2001, error_msg={{ output_msg.msg }}
+    - include: redhat/return_msg.yml
+
+
+- block:
+  - name: STEP 2-1. Add elasticsearch data node
+    uri:
+      user: "{{ rancher_api_key_user }}"
+      password: "{{ rancher_api_key_pass }}"
+      headers:
+        Content-Type: "application/json"
+      url: http://{{ rancher_server }}:{{ rancher_port }}/v2-beta/projects/1a5/services
+      method: POST
+      body: "{{ json_contenst }}"
+      force_basic_auth: yes
+      body_format: json
+      status_code: 201 # Created
+    register: output_msg
+  - name: print message
+    debug: msg="{{ output_msg.msg }}"
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: result_code=2002, error_msg={{ output_msg.msg }}
+    - include: redhat/return_msg.yml
+    - set_fact: is_success=false
+  when: is_success | bool
+
+
+- name: STEP 3-0 Pause 3 seconds to update service information
+  pause:
+    seconds: 2
+  when: is_success | bool
+
+
+- block:
+    - name: STEP 5-1. Get rancher service information using rancher api
+      uri:
+        user: "{{ rancher_api_key_user }}"
+        password: "{{ rancher_api_key_pass }}"
+        headers:
+          Content-Type: "application/json"
+        url: "http://{{ rancher_server }}:{{ rancher_port }}/v2-beta/projects/1a5/stacks/{{ stack_id }}/services"
+        method: GET
+        force_basic_auth: yes
+        return_contents: yes
+      register: output_msg
+    - name: print message
+      debug: msg="{{ output_msg }}"
+
+    - name: STEP 5-3. Get All Node info(id, instance_id, ip, port) from json
+      set_fact:
+        node_info: "{{ item }}"
+      with_items: "{{ output_msg  | json_query(query) }}"
+      vars:
+        query: "json.data[?name == '{{ rancher_node_name }}'].{id: id, instance_id: instanceIds[0], name: name, ip: publicEndpoints[0].ipAddress, port: publicEndpoints[0].port}"
+
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: result_code=2003, error_msg={{ output_msg.msg }}
+    - include: redhat/return_msg.yml
+    - set_fact: is_success=false
+  when: is_success | bool
+
+- name: Print output
+  debug:
+    msg: "{{ node_info }}"
+- name: STEP 10-1. Print result message
+  include: redhat/return_msg.yml
+  when: is_success | bool

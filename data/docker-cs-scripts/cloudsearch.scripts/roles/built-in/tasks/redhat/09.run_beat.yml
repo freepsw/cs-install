@@ -1,0 +1,38 @@
+---
+
+- debug: msg="{{ beats_path.path }}/{{unzip_directory}}"
+
+- block:
+  - name: STEP 9-1-0. Run beat
+    shell: "{{ run_command }}"
+    args:
+        chdir: "{{ beats_path.path }}/{{ unzip_directory }}"
+        executable: /bin/bash
+    register: output_msg
+
+  - name: SSSSS TEST
+    debug:
+      msg: "{{ output_msg }}"
+
+  # - debug:
+  #     msg: "{{ ansible_play_hosts | map('extract', hostvars, 'output_msg') | map(attribute='stdout') | list }} : {{ ansible_all_ipv4_addresses }}"
+  #   run_once: yes
+
+  - name: STEP 9-2-0. Set process id
+    set_fact:
+      pid: "{{ ansible_host }} : {{ output_msg.stdout }}"
+
+  # - name: print host info
+  #   debug:
+  #     msg: "{{ ansible_play_hosts | map('extract', hostvars, 'pid') | list}}"
+  #   run_once: yes
+
+  - name: STEP 9-2-1. Set process id array
+    set_fact:
+      pids: "{{ ansible_play_hosts | map('extract', hostvars, 'pid') | list}}"
+    run_once: yes
+
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=3009, error_msg={{ output_msg.msg }}

@@ -1,0 +1,21 @@
+{ "Foods" :
+  [ { "Id": 456
+    , "Tags":
+      [ {"Key":"For", "Value":"Heffalump"}
+      , {"Key":"Purpose", "Value":"Food"}
+      ]
+    }
+  , { "Id": 678
+    , "Tags":
+      [ {"Key":"For", "Value":"Tigger"}
+      , {"Key":"Purpose", "Value":"Food"}
+      ]
+    }
+  , { "Id": 911
+    , "Tags":
+      [ {"Key":"For", "Value":"Roo"}
+      , {"Key":"Purpose", "Value":"Food"}
+      ]
+    }
+  ]
+}

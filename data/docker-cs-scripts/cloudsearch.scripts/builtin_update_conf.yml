@@ -1,0 +1,29 @@
+---
+
+
+- hosts: localhost
+  gather_facts: no
+  tasks:
+  # - name: test extravars
+  #   debug: msg="version - {{ item }}"
+  #   with_items: "{{ domains }}"
+
+  - name: add host
+    add_host:
+      name: "{{ item.ip }}"
+      groups: metric_nodes
+      ansible_host: "{{ item.ip }}"
+      ansible_port: "{{ item.port }}"
+      ansible_user: "{{ item.user }}"
+      ansible_ssh_pass: "{{ item.pass }}"
+    with_items : "{{ domains }}"
+
+- name: Update built-in service configuration file
+  hosts: "metric_nodes"
+  gather_facts: no
+  vars_files:
+    - inventories/group_vars/main.yml
+  vars:
+    - mode: "UPDATE"
+  roles:
+   - { role: built-in, tags: ["built-in-update"] }

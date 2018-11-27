@@ -1,0 +1,103 @@
+{
+"name": "{{ stack_name }}",
+"system": false,
+"dockerCompose": "{\
+  \"version\": \"2\",\
+  \"services\": {\
+      \"MasterNode\": {\
+          \"privileged\": true,\
+          \"mem_limit\": {{ es_mem }},\
+          \"image\": \"{{ docker_es }}\",\
+          \"labels\": { \
+             \"io.rancher.scheduler.affinity:host_label\": \"{{ label_text }}\" \
+          }, \
+          \"environment\": {\
+              \"network.host\": \"0.0.0.0\",\
+              \"cluster.name\": \"{{ es_cluster_name }}\", \
+              \"node.name\": \"MasterNode\", \
+              \"ELASTIC_PASSWORD\": \"changeme\", \
+              \"discovery.zen.join_timeout\": \"100s\", \
+              \"discovery.zen.ping_timeout\": \"100s\", \
+              \"ES_JAVA_OPTS\": \"-Xms{{ es_jvm_heap | default('1g') }} -Xmx{{ es_jvm_heap | default('1g') }}\" \
+          },\
+          \"stdin_open\": true,\
+          \"tty\": true,\
+          \"ports\": [ \"{{ es_port }}:9200/tcp\", \"8088\"  ] \
+      },\
+      \"DataNode1\": {\
+          \"mem_limit\": {{ es_mem }},\
+          \"image\": \"{{ docker_es }}\",\
+          \"labels\": { \
+             \"io.rancher.scheduler.affinity:host_label\": \"{{ label_text }}\" \
+          }, \
+          \"environment\": {\
+              \"network.host\": \"0.0.0.0\",\
+              \"cluster.name\": \"{{ es_cluster_name }}\", \
+              \"node.name\": \"DataNode1\", \
+              \"node.master\": \"false\", \
+              \"node.data\": \"true\", \
+              \"discovery.zen.ping.unicast.hosts\": \"elasticsearch\", \
+              \"discovery.zen.join_timeout\": \"100s\", \
+              \"discovery.zen.ping_timeout\": \"100s\", \
+              \"ES_JAVA_OPTS\": \"-Xms{{ es_jvm_heap | default('1g') }} -Xmx{{ es_jvm_heap | default('1g') }}\" \
+          },\
+          \"links\": [ \"MasterNode:elasticsearch\" ], \
+          \"stdin_open\": true,\
+          \"tty\": true, \
+          \"ports\": [ \"8088\"  ] \
+      },\
+      \"Kibana\": {\
+          \"mem_limit\": {{ kibana_mem }},\
+          \"image\": \"{{ docker_kibana }}\",\
+          \"labels\": { \
+             \"io.rancher.scheduler.affinity:host_label\": \"{{ label_text }}\" \
+          }, \
+          \"environment\": {\
+              \"elasticsearch.url\": \"http://elasticsearch:{{ es_port }}\" \
+          },\
+          \"links\": [ \"MasterNode:elasticsearch\" ], \
+          \"stdin_open\": true,\
+          \"tty\": true,\
+          \"ports\": [ \"{{ kibana_port }}:5601/tcp\", \"8088\" ] \
+      },\
+      \"HQNode\": {\
+          \"mem_limit\": {{ hq_mem }},\
+          \"image\": \"{{ docker_hq }}\",\
+          \"labels\": { \
+             \"io.rancher.scheduler.affinity:host_label\": \"{{ label_text }}\" \
+          }, \
+          \"links\": [ \"MasterNode:elasticsearch\" ], \
+          \"stdin_open\": true,\
+          \"tty\": true,\
+          \"ports\": [ \"5000\" ] \
+      }\
+  }\
+}",
+"rancherCompose": "{\
+    \"version\": \"2\",\
+    \"services\": {\
+        \"MasterNode\": {\
+            \"milli_cpu_reservation\": {{ es_cpu_core }},\
+            \"scale\": 1,\
+            \"start_on_create\": true \
+        },\
+        \"DataNode1\": {\
+            \"milli_cpu_reservation\": {{ es_cpu_core }},\
+            \"scale\": 1,\
+            \"start_on_create\": true \
+        },\
+        \"Kibana\": {\
+            \"milli_cpu_reservation\": {{ kibana_cpu_core }},\
+            \"scale\": 1,\
+            \"start_on_create\": true \
+        },\
+        \"HQNode\": {\
+            \"milli_cpu_reservation\": {{ hq_cpu_core }},\
+            \"scale\": 1,\
+            \"start_on_create\": true \
+        }\
+    }\
+}",
+"startOnCreate": true,
+"binding": null
+}

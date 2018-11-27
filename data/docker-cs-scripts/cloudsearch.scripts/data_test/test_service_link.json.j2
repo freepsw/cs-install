@@ -1,0 +1,205 @@
+{
+    "changed": false,
+    "msg": {
+        "changed": false,
+        "connection": "close",
+        "content_type": "application/json; charset=utf-8",
+        "date": "Thu, 08 Mar 2018 01:57:36 GMT",
+        "expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+        "json": {
+            "actions": {},
+            "createDefaults": {
+                "stackId": "1st18"
+            },
+            "createTypes": {
+                "dnsService": "http://169.56.124.19:8080/v2-beta/projects/1a5/dnsservices",
+                "externalService": "http://169.56.124.19:8080/v2-beta/projects/1a5/externalservices",
+                "loadBalancerService": "http://169.56.124.19:8080/v2-beta/projects/1a5/loadbalancerservices",
+                "networkDriverService": "http://169.56.124.19:8080/v2-beta/projects/1a5/networkdriverservices",
+                "service": "http://169.56.124.19:8080/v2-beta/projects/1a5/services",
+                "storageDriverService": "http://169.56.124.19:8080/v2-beta/projects/1a5/storagedriverservices"
+            },
+            "data": [
+                {
+                    "accountId": "1a5",
+                    "actions": {
+                        "addservicelink": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/?action=addservicelink",
+                        "deactivate": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/?action=deactivate",
+                        "remove": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/?action=remove",
+                        "removeservicelink": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/?action=removeservicelink",
+                        "restart": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/?action=restart",
+                        "setservicelinks": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/?action=setservicelinks",
+                        "update": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/?action=update",
+                        "upgrade": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/?action=upgrade"
+                    },
+                    "assignServiceIpAddress": false,
+                    "baseType": "service",
+                    "createIndex": 1,
+                    "created": "2018-03-08T01:42:15Z",
+                    "createdTS": 1520473335000,
+                    "currentScale": 1,
+                    "description": null,
+                    "externalId": null,
+                    "fqdn": null,
+                    "healthState": "healthy",
+                    "id": "1s20",
+                    "instanceIds": [
+                        "1i26"
+                    ],
+                    "kind": "service",
+                    "launchConfig": {
+                        "drainTimeoutMs": 0,
+                        "environment": {
+                            "cluster.name": "mynewclustername",
+                            "http.host": "0.0.0.0",
+                            "transport.host": "127.0.0.1"
+                        },
+                        "imageUuid": "docker:docker.elastic.co/elasticsearch/elasticsearch:6.2.2",
+                        "instanceTriggeredStop": "stop",
+                        "kind": "container",
+                        "labels": {
+                            "io.rancher.container.pull_image": "always",
+                            "io.rancher.service.hash": "f119a44d1c29a50ff93d20df89faccc7aebdbd62"
+                        },
+                        "logConfig": {
+                            "type": "logConfig"
+                        },
+                        "memory": 4294967296,
+                        "milliCpuReservation": 1000,
+                        "networkMode": "managed",
+                        "ports": [
+                            "9200:9200/tcp"
+                        ],
+                        "privileged": false,
+                        "publishAllPorts": false,
+                        "readOnly": false,
+                        "runInit": false,
+                        "startOnCreate": true,
+                        "stdinOpen": true,
+                        "system": false,
+                        "tty": true,
+                        "type": "launchConfig",
+                        "vcpu": 1,
+                        "version": "0"
+                    },
+                    "lbConfig": null,
+                    "linkedServices": null,
+                    "links": {
+                        "account": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/account",
+                        "consumedbyservices": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/consumedbyservices",
+                        "consumedservices": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/consumedservices",
+                        "containerStats": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/containerstats",
+                        "instances": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/instances",
+                        "networkDrivers": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/networkdrivers",
+                        "self": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20",
+                        "serviceExposeMaps": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/serviceexposemaps",
+                        "serviceLogs": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/servicelogs",
+                        "stack": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/stack",
+                        "storageDrivers": "http://169.56.124.19:8080/v2-beta/projects/1a5/services/1s20/storagedrivers"
+                    },
+                    "metadata": {
+                        "io.rancher.service.hash": "ccd46a18b04b5261047b992f032eac1389eb1af3"
+                    },
+                    "name": "ElkCloud",
+                    "publicEndpoints": [
+                        {
+                            "hostId": "1h1",
+                            "instanceId": "1i26",
+                            "ipAddress": "169.56.72.226",
+                            "port": 9200,
+                            "serviceId": "1s20",
+                            "type": "publicEndpoint"
+                        }
+                    ],
+                    "removed": null,
+                    "retainIp": null,
+                    "scale": 1,
+                    "scalePolicy": null,
+                    "secondaryLaunchConfigs": [],
+                    "selectorContainer": null,
+                    "selectorLink": null,
+                    "stackId": "1st18",
+                    "startOnCreate": false,
+                    "state": "active",
+                    "system": false,
+                    "transitioning": "no",
+                    "transitioningMessage": null,
+                    "transitioningProgress": null,
+                    "type": "service",
+                    "upgrade": null,
+                    "uuid": "056dc43d-c52d-42e4-af1b-9f306b9d4ba9",
+                    "vip": null
+                }
+            ],
+            "filters": {
+                "accountId": null,
+                "createIndex": null,
+                "created": null,
+                "description": null,
+                "externalId": null,
+                "healthState": null,
+                "id": null,
+                "kind": null,
+                "name": null,
+                "removeTime": null,
+                "removed": null,
+                "selectorContainer": null,
+                "selectorLink": null,
+                "skip": null,
+                "stackId": null,
+                "state": null,
+                "system": null,
+                "uuid": null,
+                "vip": null
+            },
+            "links": {
+                "self": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services"
+            },
+            "pagination": {
+                "first": null,
+                "limit": 100,
+                "next": null,
+                "partial": false,
+                "previous": null,
+                "total": null
+            },
+            "resourceType": "service",
+            "sort": null,
+            "sortLinks": {
+                "accountId": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=accountId",
+                "createIndex": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=createIndex",
+                "created": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=created",
+                "description": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=description",
+                "externalId": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=externalId",
+                "healthState": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=healthState",
+                "id": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=id",
+                "kind": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=kind",
+                "name": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=name",
+                "removeTime": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=removeTime",
+                "removed": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=removed",
+                "selectorContainer": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=selectorContainer",
+                "selectorLink": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=selectorLink",
+                "skip": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=skip",
+                "stackId": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=stackId",
+                "state": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=state",
+                "system": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=system",
+                "uuid": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=uuid",
+                "vip": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services?sort=vip"
+            },
+            "type": "collection"
+        },
+        "msg": "OK (unknown bytes)",
+        "redirected": false,
+        "server": "Jetty(9.2.11.v20150529)",
+        "set_cookie": "PL=rancher;Path=/",
+        "status": 200,
+        "transfer_encoding": "chunked",
+        "url": "http://169.56.124.19:8080/v2-beta/projects/1a5/stacks/1st18/services",
+        "vary": "Accept-Encoding, User-Agent",
+        "x_api_account_id": "1a5",
+        "x_api_client_ip": "172.17.0.1",
+        "x_api_schemas": "http://169.56.124.19:8080/v2-beta/projects/1a5/schemas",
+        "x_api_user_id": "1a1",
+        "x_rancher_version": "v1.6.14"
+    }
+}

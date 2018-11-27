@@ -1,0 +1,62 @@
+---
+
+
+- block:
+
+  # - name: STEP 4-1-0. Check directory exists.
+  #   stat:
+  #     path: "{{ beats_path.path }}/{{ unzip_directory }}"
+  #   register: directory_path
+
+  - name: STEP 4-1-1. Copy beats.yml to remote server
+    template:
+      src: "templates/{{ beats_conf_src_file }}"
+      dest: "{{ beats_path.path }}/{{ unzip_directory }}/{{ beats_conf_des_file }}"
+    register: output_msg
+
+  - name: STEP 4-1-2. Delete unnecessary system module
+    file:
+        state: absent
+        path: "{{ beats_path.path }}/{{ unzip_directory }}/modules.d/system.yml"
+    register: output_msg
+
+  # - name: STEP 4-1-3. Copy module(system, mysql etc).yml to remote server
+  #   template:
+  #     src: "templates/{{ module_conf_file }}.j2"
+  #     dest: "{{ beats_path.path }}/{{ unzip_directory }}/modules.d/{{ module_conf_file }}"
+  #     mode: "u=rw,g=r,o=r"
+  #   register: output_msg
+    # when: directory_path.stat.exists
+
+  - name: STEP 4-1-4. Write configuration contents to module(system, mysql etc).yml
+    copy:
+      # content: "{{ conf_text }}"
+      src: "../../../../conf/{{ conf_file }}"
+      dest: "{{ beats_path.path }}/{{ unzip_directory }}/modules.d/{{ module_conf_file }}"
+      mode: "u=rw,g=r,o=r"
+    register: output_msg
+
+  # - name: STEP999999
+  #   debug:
+  #     msg: "{{ output_msg }}"
+  #   # when: directory_path.stat.exists
+
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=3004, error_msg={{ output_msg.msg }}
+  when: module_type != "005" and module_type != "020"
+
+
+- block:
+  - name: STEP 4-2-1. Copy logstash conf file to remote server
+    copy:
+      src: "../../../../conf/{{ conf_file }}"
+      dest: "{{ beats_path.path }}/{{ unzip_directory }}/{{ beats_conf_des_file }}"
+      mode: "u=rw,g=r,o=r"
+    register: output_msg
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=3004, error_msg={{ output_msg.msg }}
+  when: module_type == "005" or module_type == "020"

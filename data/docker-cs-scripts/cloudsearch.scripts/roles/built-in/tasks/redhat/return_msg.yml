@@ -1,0 +1,18 @@
+---
+
+
+- block:
+  - name: STEP 99-1. Save result information to file
+    set_fact:
+      return_msg1: "{{ lookup('template', 'templates/return-msg.json.j2') }}"
+    register: output_msg
+
+  - name: STEP 99-2. [FINAL] Print output result message
+    debug:
+      msg: "{{ return_msg1 | replace('\n', '')}}"
+    run_once: yes
+
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=9001, error_msg={{ output_msg.msg }}

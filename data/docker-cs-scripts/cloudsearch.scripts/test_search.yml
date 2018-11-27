@@ -1,0 +1,39 @@
+---
+- hosts: localhost
+  vars:
+    url: "http://example.com/users/foo/resources/bar"
+
+  tasks:
+      - debug:
+          msg: "matched pattern 1"
+        when: url is match("http://example.com/users/.*/resources/.*")
+
+      - debug:
+          msg: "matched pattern 2"
+        when: url is search("/users/.*/resources/.*")
+
+      - debug:
+          msg: "matched pattern 3"
+        when: url is search("/usersw/")
+
+  tasks:
+    - debug:
+        msg: "{{ groups['all'] | join(',') }}"
+
+
+
+  # task:
+    # - name: run task depends on ip ipAddress
+    #   # hosts: "metric_nodes"
+    #   debug:
+    #     # msg: "{{ ansib le_default_ipv4.address }} : {{ hostvars[item]['ansible_default_ipv4']['address'] }}"
+    #     msg: "{{ item }}"
+    #   with_items: " {{ groups['metric_nodes'] }}"
+    #
+    # - name: Make a http body message for es master node container
+    #   set_fact:
+    #     json_contenst: "{{ lookup('template', 'templates/test_loop.yml.j2') }}"
+    #
+    # - name : print debug
+    #   debug:
+    #     msg: "{{ json_contenst }}"

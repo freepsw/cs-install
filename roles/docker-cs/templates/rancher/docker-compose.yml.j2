@@ -1,19 +1,32 @@
 version: '2'
 services:
+  core-module-cloudsearch-scripts:
+    image: {{ docker_registry_url }}/{{ dpcore_cloudsearch_scripts_image_name }}:v1.0.0
+    hostname: ansible-server
+    stdin_open: true
+    tty: true
+    extra_hosts:
+    - rancher-server:{{ rancher_ip }}
+    ports:
+    - 2202:2202/tcp
+    cpu_shares: 1024
+    labels:
+      io.rancher.scheduler.affinity:host_label: {{ dpcore_rancher_label }}
+      io.rancher.container.pull_image: always
   core-module-cloudsearch:
     image: {{ docker_registry_url }}/dpcore/core-module-cloudsearch
     hostname: core-module-cloudsearch
     stdin_open: true
+    external_links:
+    - meta-db/mariadb-cs:mariadb
     volumes:
-       - {{ dpcore_log_folder }}/core-module-cloudsearch:{{ dpcore_log_folder }}/core-module-cloudsearch
+    - /data/log_data/core-module-cloudsearch:/data/log_data/core-module-cloudsearch
     tty: true
+    links:
+    - core-module-cloudsearch-scripts:ansible-server
     ports:
     - 7081:7081/tcp
     cpu_shares: 1024
-    extra_hosts:
-    - mariadb:{{ mariadb_ip }}
-    - rancher-server:{{ rancher_ip }}
-    - ansible-server:{{ rancher_ip }}
     labels:
       io.rancher.scheduler.affinity:host_label: {{ dpcore_rancher_label }}
       io.rancher.container.pull_image: always

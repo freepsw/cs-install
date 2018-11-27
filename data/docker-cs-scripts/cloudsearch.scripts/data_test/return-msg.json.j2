@@ -1,0 +1,48 @@
+{
+{% for item in node_info %}
+{% if item['name'] == "MasterNode" %}
+  "master_node": {
+    "name": "{{ item['name']  | default("") }}",
+    "ip": "{{ item['ip']  | default("") }}",
+    {% if  item['port1']|string == es_port %}
+    "port": "{{ item['port2']  | default("") }}",
+    {% else %}
+    "port": {{ item['port1']  | default("") }},
+    {% endif %}
+    "service_id": "{{ item['id']  | default("") }}",
+    "instance_id": "{{ item['instance_id']  | default("") }}"
+  },
+{% endif %}
+{% endfor %}
+  "data_node": {[
+{% for item in node_info %}
+{% if "DataNode" in item['name']  %}
+    {
+    "name": "{{ item['name']  | default("") }}",
+    "ip": "{{ item['ip']  | default("") }}",
+    "port": "{{ item['port1']  | default("") }}",
+    "service_id": "{{ item['id']  | default("") }}",
+    "instance_id": "{{ item['instance_id']  | default("") }}"
+    }
+    {% if loop.index != loop.length-1  %}
+    ,
+    {% endif %}
+{% endif %}
+{% endfor %}
+  ]},
+  {% for item in node_info %}
+  {% if item['name'] == "Kibana" %}
+    "kibana_node": {
+      "name": "{{ item['name']  | default("") }}",
+      "ip": "{{ item['ip']  | default("") }}",
+      {% if  item['port1']|string == kibana_port %}
+      "port": "{{ item['port2']  | default("") }}",
+      {% else %}
+      "port": {{ item['port1']  | default("") }},
+      {% endif %}
+      "service_id": "{{ item['id']  | default("") }}",
+      "instance_id": "{{ item['instance_id']  | default("") }}"
+    }
+  {% endif %}
+  {% endfor %}
+}

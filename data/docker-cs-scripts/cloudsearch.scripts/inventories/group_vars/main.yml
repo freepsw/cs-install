@@ -1,0 +1,193 @@
+---
+
+# [ 01. Rancher Variables ]
+#--- Staging service rancher info
+rancher_server: "rancher-server"
+rancher_port: 8080
+rancher_api_key_user: "8EC0A7BA9B3659F5DF9B"
+rancher_api_key_pass: "SPdGTa6JtLR5KTsDEeaSyRpLEQQXLpPzXbeFBuYo"
+
+
+
+# --- public service rancher server info
+# rancher_server: "169.56.74.85"
+# rancher_port: 8080
+# rancher_api_key_user: "18F638F7CE6EDA430ED6"
+# rancher_api_key_pass: "ksqfLesPK8ouosbzWYkABhJJRCgb4VPaJswYk2JR"
+
+# [Cloudsearch] cloudsearch config
+stack_name: "cloudsearch-default"
+kibana_port: "5601"
+es_port: "9200"
+es_cluster_name: "mycluster"
+
+es_cpu_core: 1000
+es_mem: "1024"
+es_jvm_heap: "1g"
+
+kibana_cpu_core: 1000
+kibana_mem: "4096m"
+
+hq_cpu_core: 1000
+hq_mem: "1024m"
+
+es_service_name: "es_service_node"
+
+## Staging docker registry address
+# docker_es: "registry.dataplatform.io/dpcore/es-gotty:6.3.1"
+# docker_kibana: "registry.dataplatform.io/dpcore/kibana-gotty:6.3.1"
+# docker_hq: "registry.dataplatform.io/dpcore/elasticsearch-hq:3.4.1"
+
+# Auto Installing docker registry address
+docker_es: "docker.registry.server:5000/dpcore/es-gotty:6.3.1"
+docker_kibana: "docker.registry.server:5000/dpcore/kibana-gotty:6.3.1"
+docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1"
+
+
+# [ 02. Built-in(beats) Service Variables ]
+is_running: "false"
+es_endpoint: "localhost:9200"
+kibana_endpoint: "localhost:5601"
+
+module_conf_file: "system.yml" # set default value
+
+#metric_tar_file: "https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-6.2.3-linux-x86_64.tar.gz"
+metric_tar_file: "metricbeat-6.3.1-linux-x86_64.tar.gz"
+metricbeat_directory: "metricbeat-6.3.1-linux-x86_64"
+
+# filebeat_tar_file: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.2.4-linux-x86_64.tar.gz"
+filebeat_tar_file: "filebeat-6.3.1-linux-x86_64.tar.gz"
+filebeat_directory: "filebeat-6.3.1-linux-x86_64"
+
+# logstash_tar_file: "https://artifacts.elastic.co/downloads/logstash/logstash-6.2.4.tar.gz"
+logstash_tar_file: "logstash-6.3.1.tar.gz"
+logstash_directory: "logstash-6.3.1"
+
+# heartbeat_tar_file: "https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-6.2.4-linux-x86_64.tar.gz"
+heartbeat_tar_file: "heartbeat-6.3.1-linux-x86_64.tar.gz"
+heartbeat_directory: "heartbeat-6.3.1-linux-x86_64"
+
+
+# metricbeat kibana dashboard list
+delete_system_kibana_dashboards:
+  - Metricbeat-rabbitmq-overview.json
+  - Metricbeat-kubernetes-overview.json
+  - Metricbeat-redis-overview.json
+  - metricbeat-windows-service.json
+  - Metricbeat-mongodb-overview.json
+  - Metricbeat-golang-overview.json
+  - Metricbeat-uwsgi-overview.json
+  - metricbeat-windows-service.json
+  - metricbeat-nginx-overview.json
+  - Metricbeat-apache-overview.json
+  - Metricbeat-mysql-overview.json
+  # - Metricbeat-system-overview.json
+  # - Metricbeat-host-overview.json
+  # - Metricbeat-containers-overview.json
+  # - Metricbeat-docker-overview.json
+
+delete_mysql_kibana_dashboards:
+  - Metricbeat-rabbitmq-overview.json
+  - Metricbeat-kubernetes-overview.json
+  - Metricbeat-redis-overview.json
+  - metricbeat-windows-service.json
+  - Metricbeat-mongodb-overview.json
+  - Metricbeat-golang-overview.json
+  - Metricbeat-uwsgi-overview.json
+  - metricbeat-windows-service.json
+  - metricbeat-nginx-overview.json
+  - Metricbeat-apache-overview.json
+  - Metricbeat-system-overview.json
+  - Metricbeat-host-overview.json
+  - Metricbeat-containers-overview.json
+  - Metricbeat-docker-overview.json
+  # - Metricbeat-mysql-overview.json
+
+
+delete_kafka_kibana_dashboards:
+  - Metricbeat-rabbitmq-overview.json
+  - Metricbeat-kubernetes-overview.json
+  - Metricbeat-redis-overview.json
+  - metricbeat-windows-service.json
+  - Metricbeat-mongodb-overview.json
+  - Metricbeat-golang-overview.json
+  - Metricbeat-uwsgi-overview.json
+  - metricbeat-windows-service.json
+  - metricbeat-nginx-overview.json
+  - Metricbeat-apache-overview.json
+  - Metricbeat-host-overview.json
+  - Metricbeat-containers-overview.json
+  - Metricbeat-docker-overview.json
+  - Metricbeat-mysql-overview.json
+  #- Metricbeat-system-overview.json
+
+delete_apache2_kibana_dashboards:
+  - Filebeat-Kafka-overview.json
+  - Filebeat-logstash-log.json
+  - Filebeat-traefik-overview.json
+  - Filebeat-Postgresql-overview.jso
+  - Filebeat-logstash-slowlog.json
+  - ml-nginx-access-remote-ip-count-explorer.json
+  - Filebeat-Postgresql-slowlogs.json
+  - Filebeat-mysql.json
+  - ml-nginx-remote-ip-url-explorer.json
+  - Filebeat-new-users-and-groups.json
+  - ml-traefik-access-remote-ip-count-explorer.json
+  - Filebeat-auditd.json
+  - Filebeat-nginx-logs.json
+  - ml-traefik-remote-ip-url-explorer.json
+  - Filebeat-auth-sudo-commands.json
+  - Filebeat-nginx-overview.json
+  - osquery-compliance.json
+  - Filebeat-icinga-debug-log.json
+  - Filebeat-redis.json
+  - osquery-rootkit.json
+  - Filebeat-icinga-main-log.json
+  - Filebeat-ssh-login-attempts.json
+  - Filebeat-icinga-startup-errors.json
+  - Filebeat-syslog.json
+  #- Filebeat-apache2.json
+
+
+dashboard_metric_system: "/app/kibana#/dashboard/Metricbeat-system-overview?_g=(refreshInterval:('$$hashKey':'object:1869',display:'5%20seconds',pause:!f,section:1,value:5000),time:(from:now-15m,mode:quick,to:now))&_a=(description:'',filters:!(),fullScreenMode:!f,options:(darkTheme:!f,useMargins:!f),panels:!((gridData:(h:1,i:'9',w:12,x:0,y:0),id:System-Navigation,panelIndex:'9',type:visualization,version:'6.2.2'),(embeddableConfig:(vis:(defaultColors:('0%20-%20100':'rgb(0,104,55)'))),gridData:(h:2,i:'11',w:2,x:0,y:1),id:c6f2ffd0-4d17-11e7-a196-69b9a7a020a9,panelIndex:'11',type:visualization,version:'6.2.2'),(embeddableConfig:(vis:(defaultColors:('0%20-%20100':'rgb(0,104,55)'))),gridData:(h:5,i:'12',w:6,x:6,y:3),id:fe064790-1b1f-11e7-bec4-a5e9ec5cab8b,panelIndex:'12',type:visualization,version:'6.2.2'),(gridData:(h:5,i:'13',w:6,x:0,y:3),id:'855899e0-1b1c-11e7-b09e-037021c4f8df',panelIndex:'13',type:visualization,version:'6.2.2'),(embeddableConfig:(vis:(defaultColors:('0%25%20-%2015%25':'rgb(247,252,245)','15%25%20-%2030%25':'rgb(199,233,192)','30%25%20-%2045%25':'rgb(116,196,118)','45%25%20-%2060%25':'rgb(35,139,69)'))),gridData:(h:6,i:'14',w:12,x:0,y:8),id:'7cdb1330-4d1a-11e7-a196-69b9a7a020a9',panelIndex:'14',type:visualization,version:'6.2.2'),(embeddableConfig:(vis:(defaultColors:('0%20-%20100':'rgb(0,104,55)'))),gridData:(h:2,i:'16',w:2,x:8,y:1),id:'522ee670-1b92-11e7-bec4-a5e9ec5cab8b',panelIndex:'16',type:visualization,version:'6.2.2'),(gridData:(h:2,i:'17',w:2,x:10,y:1),id:'1aae9140-1b93-11e7-8ada-3df93aab833e',panelIndex:'17',type:visualization,version:'6.2.2'),(gridData:(h:2,i:'18',w:2,x:6,y:1),id:'825fdb80-4d1d-11e7-b5f2-2b7c1895bf32',panelIndex:'18',type:visualization,version:'6.2.2'),(gridData:(h:2,i:'19',w:2,x:4,y:1),id:d3166e80-1b91-11e7-bec4-a5e9ec5cab8b,panelIndex:'19',type:visualization,version:'6.2.2'),(gridData:(h:2,i:'20',w:2,x:2,y:1),id:'83e12df0-1b91-11e7-bec4-a5e9ec5cab8b',panelIndex:'20',type:visualization,version:'6.2.2')),query:(language:lucene,query:(query_string:(analyze_wildcard:!t,default_field:'*',query:'*'))),timeRestore:!f,title:'%5BMetricbeat%20System%5D%20Overview',viewMode:view)"
+
+dashboard_metric_mysql: "/app/kibana#/dashboard/66881e90-0006-11e7-bf7f-c9acc3d3e306?_g=(refreshInterval:('$$hashKey':'object:1533',display:'5%20seconds',pause:!f,section:1,value:5000),time:(from:now-15m,mode:quick,to:now))&_a=(description:'',filters:!(),fullScreenMode:!f,options:(darkTheme:!f,useMargins:!f),panels:!((gridData:(h:15,i:'10',w:24,x:0,y:15),id:d7e6bee0-f1f3-11e7-85ab-594b1652e0d1,panelIndex:'10',type:visualization,version:'6.3.1'),(gridData:(h:15,i:'11',w:48,x:0,y:0),id:'695a4f90-f1f4-11e7-85ab-594b1652e0d1',panelIndex:'11',type:visualization,version:'6.3.1'),(gridData:(h:15,i:'13',w:24,x:24,y:15),id:'124dce60-f1f5-11e7-85ab-594b1652e0d1',panelIndex:'13',type:visualization,version:'6.3.1'),(gridData:(h:15,i:'14',w:24,x:0,y:30),id:aaa326b0-f1f5-11e7-85ab-594b1652e0d1,panelIndex:'14',type:visualization,version:'6.3.1'),(gridData:(h:15,i:'15',w:24,x:24,y:30),id:fb1f3f20-f1f5-11e7-85ab-594b1652e0d1,panelIndex:'15',type:visualization,version:'6.3.1'),(gridData:(h:15,i:'16',w:24,x:24,y:45),id:f5b35930-f1f6-11e7-85ab-594b1652e0d1,panelIndex:'16',type:visualization,version:'6.3.1'),(gridData:(h:15,i:'17',w:24,x:0,y:45),id:'7404feb0-f1f7-11e7-85ab-594b1652e0d1',panelIndex:'17',type:visualization,version:'6.3.1')),query:(language:lucene,query:(query_string:(analyze_wildcard:!t,default_field:'*',query:'*'))),timeRestore:!f,title:'%5BMetricbeat%20MySQL%5D%20Overview',viewMode:view)"
+
+dashboard_metric_kafka: "/app/kibana#/discover?_g=(refreshInterval:('$$hashKey':'object:183',display:'5%20seconds',pause:!f,section:1,value:5000),time:(from:now-15m,mode:quick,to:now))&_a=(columns:!(kafka.partition.broker.id,kafka.partition.offset.newest,kafka.partition.topic.name,metricset.name,kafka.partition.partition.insync_replica,kafka.partition.partition.leader,kafka.partition.partition.replica),index:'metricbeat-*',interval:auto,query:(language:lucene,query:''),sort:!('@timestamp',desc))"
+
+dashboard_filebeat_apache2: "/app/kibana#/dashboard/Filebeat-Apache2-Dashboard?_g=(refreshInterval:('$$hashKey':'object:183',display:'5%20seconds',pause:!f,section:1,value:5000),time:(from:now-30m,mode:quick,to:now))&_a=(description:'Filebeat%20Apache2%20module%20dashboard',filters:!(),fullScreenMode:!f,options:(darkTheme:!f,useMargins:!f),panels:!((embeddableConfig:(mapBounds:(bottom_right:(lat:-3.864254615721396,lon:205.3125),top_left:(lat:67.7427590666639,lon:-205.6640625)),mapCenter:!(40.713955826286046,-0.17578125),mapCollar:(bottom_right:(lat:-39.667755,lon:180),top_left:(lat:90,lon:-180),zoom:2),mapZoom:2),gridData:(h:3,i:'1',w:12,x:0,y:0),id:Apache2-access-unique-IPs-map,panelIndex:'1',type:visualization,version:'6.2.4'),(gridData:(h:3,i:'2',w:8,x:0,y:5),id:Apache2-response-codes-of-top-URLs,panelIndex:'2',type:visualization,version:'6.2.4'),(gridData:(h:3,i:'3',w:4,x:8,y:5),id:Apache2-browsers,panelIndex:'3',type:visualization,version:'6.2.4'),(gridData:(h:2,i:'4',w:2,x:10,y:3),id:Apache2-operating-systems,panelIndex:'4',type:visualization,version:'6.2.4'),(gridData:(h:2,i:'5',w:12,x:0,y:8),id:Apache2-error-logs-over-time,panelIndex:'5',type:visualization,version:'6.2.4'),(gridData:(h:2,i:'6',w:10,x:0,y:3),id:Apache2-response-codes-over-time,panelIndex:'6',type:visualization,version:'6.2.4'),(columns:!(apache2.error.client,apache2.error.level,apache2.error.module,apache2.error.message),gridData:(h:3,i:'7',w:12,x:0,y:10),id:Apache2-errors-log,panelIndex:'7',sort:!('@timestamp',desc),type:search,version:'6.2.4')),query:(language:lucene,query:(query_string:(analyze_wildcard:!t,default_field:'*',query:'*'))),timeRestore:!f,title:'%5BFilebeat%20Apache2%5D%20Access%20and%20error%20logs',viewMode:view)"
+
+dashboard_hearbeat_http: "/goto/8deeef228a571d76d474e66f33995284"
+
+# http://169.56.72.226:5801/app/kibana#/dashboard/f3e771c0-eb19-11e6-be20-559646f8b9ba?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(description:'',filters:!(),fullScreenMode:!f,options:(darkTheme:!f,useMargins:!f),panels:!((gridData:(h:4,i:'1',w:12,x:0,y:6),id:c65ef340-eb19-11e6-be20-559646f8b9ba,panelIndex:'1',type:visualization,version:'6.2.4'),(gridData:(h:4,i:'2',w:4,x:8,y:0),id:'920e8140-eb1a-11e6-be20-559646f8b9ba',panelIndex:'2',type:visualization,version:'6.2.4'),(embeddableConfig:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),gridData:(h:4,i:'3',w:8,x:0,y:0),id:'1738dbc0-eb1d-11e6-be20-559646f8b9ba',panelIndex:'3',type:visualization,version:'6.2.4'),(gridData:(h:2,i:'4',w:12,x:0,y:4),id:'091c3a90-eb1e-11e6-be20-559646f8b9ba',panelIndex:'4',type:visualization,version:'6.2.4'),(embeddableConfig:(vis:(defaultColors:('0+-+2':'rgb(247,251,255)','10+-+11':'rgb(23,100,171)','11+-+12':'rgb(8,74,145)','2+-+3':'rgb(227,238,249)','3+-+4':'rgb(208,225,242)','4+-+5':'rgb(182,212,233)','5+-+6':'rgb(148,196,223)','6+-+8':'rgb(107,174,214)','8+-+9':'rgb(74,152,201)','9+-+10':'rgb(46,126,188)'))),gridData:(h:5,i:'5',w:12,x:0,y:10),id:'0f4c0560-eb20-11e6-9f11-159ff202874a',panelIndex:'5',type:visualization,version:'6.2.4')),query:(language:lucene,query:(query_string:(analyze_wildcard:!t,query:'*'))),timeRestore:!f,title:'Heartbeat+HTTP+monitoring',viewMode:view)
+
+# [09. Return Message Varables ]
+# Result code
+
+result_code: 200 # Success code (Default)
+# 1. Create Cluster Error Code
+# 1001 : Rancher compose yml Error
+# 1002 : Rancher stack creatte es cluster error
+# 1003 : Rancher service link connection error (Status code was not [200]: HTTP Error 404: Not Found)
+# 1004 : Rancher master_node service_link error (Status code was not [200]: HTTP Error 404: Not Found)
+# 1005 : Elasticsearch connection error ("Status code was not [200]: Request failed: <urlopen error [Errno 111] Connection refused>")
+# 1006 : Rancher data_node service_link error (Status code was not [200]: HTTP Error 404: Not Found)
+# 1007 : Rancher kibana_node service_link error (Status code was not [200]: HTTP Error 404: Not Found)
+
+# 2. Add cluster Error Code
+# 2001 : Rancher compose yml syntax error
+# 2002 : Add rancher service(data node) error
+# 2003 : Rancher service link connection error (Status code was not [200]: HTTP Error 404: Not Found)
+
+# 3. Create Beats Error Code
+# 3001 : Check beats error (ps -ef command)
+# 3002 : Download beat file error (wget command)
+# 3003 : Delete kibana error
+# 3004 : Copy conf file error
+# 3009 : Run metricbeat error
+
+# 2001 :
+error_msg: ""
+node_info: ""
+
+label_text: "cloudsearch=true"

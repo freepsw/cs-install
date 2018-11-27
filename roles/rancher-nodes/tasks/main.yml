@@ -1,5 +1,8 @@
 ---
 
+- name: Add host info to /etc/hosts
+  include: add_hosts.yml
+
 
 
 - name: determine if we're already running an agent

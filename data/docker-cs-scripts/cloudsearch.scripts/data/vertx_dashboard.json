@@ -1,0 +1,18 @@
+[
+  {
+    "_id": "e43305a0-632c-11e8-a77a-5d3582888ec3",
+    "_type": "dashboard",
+    "_source": {
+      "title": "00.VertX_Dashboard",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":6,\"h\":3,\"i\":\"1\"},\"id\":\"ba00d380-632b-11e8-a77a-5d3582888ec3\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"2\",\"gridData\":{\"x\":6,\"y\":0,\"w\":6,\"h\":3,\"i\":\"2\"},\"id\":\"c1b055f0-632c-11e8-a77a-5d3582888ec3\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"3\",\"gridData\":{\"x\":0,\"y\":3,\"w\":12,\"h\":3,\"i\":\"3\"},\"version\":\"6.2.4\",\"type\":\"visualization\",\"id\":\"78287bb0-632c-11e8-a77a-5d3582888ec3\"}]",
+      "optionsJSON": "{\"darkTheme\":false,\"hidePanelTitles\":false,\"useMargins\":true}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[],\"highlightAll\":true,\"version\":true}"
+      }
+    }
+  }
+]

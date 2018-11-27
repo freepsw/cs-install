@@ -8,7 +8,7 @@ http.port=7081
 #--------------------------------------------------------------------------------------------------#
 # cloudsearch jdbc configurations   # DEV02                                                   #
 #--------------------------------------------------------------------------------------------------#
-cloudsearch.jdbc.url=jdbc:mysql://mairadb:{{ mariadb_port }}/dpcore_search
+cloudsearch.jdbc.url=jdbc:mysql://mairadb:3306/dpcore_search
 cloudsearch.jdbc.driver.class=org.mariadb.jdbc.Driver
 cloudsearch.jdbc.user={{ mariadb_user }}
 cloudsearch.jdbc.password={{ mariadb_password }}
@@ -17,7 +17,7 @@ cloudsearch.jdbc.password={{ mariadb_password }}
 #--------------------------------------------------------------------------------------------------#
 # cloudsearch Ansible configurations  # DEV02                                                #
 #--------------------------------------------------------------------------------------------------#
-cloudsearch.ansible.server.host=10.178.50.83
+cloudsearch.ansible.server.host=ansible-server
 cloudsearch.ansible.server.ssh.port=2202
 cloudsearch.ansible.server.ssh.id=dpcore
 cloudsearch.ansible.server.ssh.password=1234qwer
@@ -28,8 +28,8 @@ cloudsearch.ansible.server.ssh.path=/home/dpcore/data-api-svc/core-module-clouds
 # Rancher configurations    # DEV01
 #--------------------------------------------------------------------------------------------------#
 
-cloudsearch.rancher.server.host={{ rancher_ip }}
-cloudsearch.rancher.server.ssh.port={{ rancher_port }}
+cloudsearch.rancher.server.host=10.178.50.90
+cloudsearch.rancher.server.ssh.port=8080
 
 #--------------------------------------------------------------------------------------------------#
 # STATUS Pooler configurations

@@ -1,0 +1,7 @@
+{% for host in domains %}
+{% if host.ip == ansible_default_ipv4.address %}
+host = {{ host.ip }} : current ip : {{ ansible_default_ipv4.address }}
+{% else %}
+not this ip
+{% endif %}
+{% endfor %}

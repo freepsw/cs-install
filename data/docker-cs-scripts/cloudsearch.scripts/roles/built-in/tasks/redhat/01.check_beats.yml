@@ -1,0 +1,19 @@
+---
+
+- block:
+    - name: STEP 1-1-1. Check metricbeat is running?
+      shell: "ps -ef | grep -v grep | grep -w '{{ process_name }}' | cat"
+      register: output_msg
+
+    - debug: msg="{{ output_msg }}"
+
+    - name: STEP 1-1-2 Set variables for running process
+      set_fact:
+        is_running: "true"
+      register: output_msg
+      when : output_msg.stdout.find('./metricbeat') > 0
+
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=3001, error_msg={{ output_msg.msg }}

@@ -1,9 +1,0 @@
----
-
-- name: Installing and configuring dpcore-module-cloudsearch
-  hosts: DPCORE
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  roles:
-   - { role: cs-ansible, tags: ["cs-ansible"] }

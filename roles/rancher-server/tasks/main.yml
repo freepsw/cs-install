@@ -1,5 +1,9 @@
 ---
 
+- name: Add host info to /etc/hosts
+  include: add_hosts.yml
+
+
 - name: Push docker images to docker registry
   include: push-docker-images.yml
 

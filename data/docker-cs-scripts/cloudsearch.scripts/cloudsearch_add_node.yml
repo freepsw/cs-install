@@ -1,0 +1,16 @@
+---
+
+- name: Add elasticsearch data node
+  hosts: Agents
+  gather_facts: no
+  pre_tasks:
+   - setup:
+      filter: "{{ item }}"
+     with_items:
+      - "ansible_date_time"
+
+  vars_files:
+   - inventories/group_vars/main.yml
+  any_errors_fatal: true
+  roles:
+   - { role: cloudsearch_add, tags: ["cloudsearch_add"] }

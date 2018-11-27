@@ -1,0 +1,14 @@
+- hosts: localhost
+
+  tasks:
+  - command: /bin/false
+    register: result
+    ignore_errors: True
+
+  - name: Print output of rancher strack api call
+    debug:
+      msg: "{{ result }}"
+
+  - name: "Test Echo"
+    shell: echo "test"
+    when: result is failed

@@ -1,0 +1,10 @@
+{
+"name": "test-service4",
+"stackId": "1st188",
+"scale": 1,
+"launchConfig": {
+  "count": 1,
+  "imageUuid": "docker:tomcat:8.0",
+},
+"startOnCreate": true,
+}

@@ -1,0 +1,28 @@
+{
+  "name": "{{ rancher_node_name | default('data-node-' + ansible_date_time.date + ansible_date_time.hour +  ansible_date_time.minute) }}",
+  "stackId": "{{ stack_id }}",
+  "scale": 1,
+  "launchConfig": {
+    "count": 1,
+    "imageUuid": "docker:{{ docker_es }}",
+    "ports": ["8088/tcp"],
+    "instanceLinks": {
+      'elasticsearch':'{{ es_master_instance_id }}'
+    },
+    "labels": {
+       "io.rancher.scheduler.affinity:host_label": "{{ label_text }}"
+    },
+    "environment": {
+      "network.host": "0.0.0.0",
+      "cluster.name": "{{ es_cluster_name }}",
+      "node.name": "{{ es_node_name }}",
+      "node.master": "false",
+      "node.data": "true",
+      "discovery.zen.ping.unicast.hosts": "elasticsearch",
+      "discovery.zen.ping_timeout": "100s",
+      "ES_JAVA_OPTS": "-Xms{{ es_jvm_heap | default('1g') }} -Xmx{{ es_jvm_heap | default('1g') }}"
+    },
+    "startOnCreate": true
+  },
+  "startOnCreate": true
+}

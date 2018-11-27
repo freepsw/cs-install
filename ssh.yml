@@ -7,14 +7,40 @@
     - inventories/group_vars/main.yml
   tasks:
 
-  - name: Set some kernel parameters
-    lineinfile:
-      dest: /etc/hosts
-      line: "{{ item }}"
-      # regexp:  "{{ item }}"
-      # backrefs: yes
-    with_items: "{{ hosts_items }}"
-    become: true
+
+  # - name: Commenting a line using the regualr expressions in Ansible.
+  #   replace:
+  #     path: /etc/hosts
+  #     regexp: '(.*rancher\.server)'
+  #     replace: '#\1'
+  #     backup: yes
+  #   become: true
+  #
+  # - name: Commenting a line using the regualr expressions in Ansible.
+  #   replace:
+  #     path: /etc/hosts
+  #     regexp: '(.*docker\.registry\.server)'
+  #     replace: '#\1'
+  #     backup: yes
+  #   become: true
+
+  # - name: Commenting a line using the regualr expressions in Ansible.
+  #   replace:
+  #     path: /etc/hosts
+  #     regexp: 'registry\.server'
+  #     replace: '#\1'
+  #     backup: yes
+      # regexp: '(*.server.*)'
+      # replace: '#\1'
+
+  # - name: Set some kernel parameters
+  #   lineinfile:
+  #     dest: /etc/hosts
+  #     line: "{{ item }}"
+  #     # regexp:  "{{ item }}"
+  #     # backrefs: yes
+  #   with_items: "{{ hosts_items }}"
+  #   become: true
 
   - name: Test connections
     shell: ls -al

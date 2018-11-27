@@ -1,0 +1,60 @@
+{
+  "result_code": "{{ result_code }}",
+  "error_msg": "{{ error_msg }}",
+  "elasticsearch_endpoint": "{{ elasticsearch_endpoint | default("") }}",
+  "kibana_endpoint": "{{ kibana_endpoint | default("") }}",
+  "project_id": "{{ project_id  | default("") }}",
+  "stack_id": "{{ stack_id  | default("") }}",
+  {% for item in node_info %}
+  {% if item['name'] == "MasterNode" %}
+    "master_node": {
+      "name": "{{ item['name']  | default("") }}",
+      "ip": "{{ item['ip']  | default("") }}",
+      {% if  item['port1']|string == es_port %}
+      "port": "{{ item['port2']  | default("") }}",
+      {% else %}
+      "port": {{ item['port1']  | default("") }},
+      {% endif %}
+      "service_id": "{{ item['id']  | default("") }}",
+      "instance_id": "{{ item['instance_id']  | default("") }}"
+    },
+  {% endif %}
+  {% endfor %}
+    "data_node": [
+  {% for item in node_info | sort(attribute='name') %}
+  {% if "DataNode" in item['name'] %}
+      {
+      "name": "{{ item['name']  | default("") }}",
+      "ip": "{{ item['ip']  | default("") }}",
+      "port": "{{ item['port1']  | default("") }}",
+      "service_id": "{{ item['id']  | default("") }}",
+      "instance_id": "{{ item['instance_id']  | default("") }}"
+      } {% if loop.index != loop.length-3  %} , {% endif %}
+  {% endif %}
+  {% endfor %}
+    ],
+  {% for item in node_info | sort(attribute='name') %}
+  {% if item['name'] == "HQNode" %}
+    "hq_node": {
+      "name": "{{ item['name']  | default("") }}",
+      "ip": "{{ item['ip']  | default("") }}",
+      "port": "{{ item['port1']  | default("") }}",
+      "service_id": "{{ item['id']  | default("") }}",
+      "instance_id": "{{ item['instance_id']  | default("") }}"
+    },
+  {% endif %}
+  {% if item['name'] == "Kibana" %}
+    "kibana_node": {
+      "name": "{{ item['name']  | default("") }}",
+      "ip": "{{ item['ip']  | default("") }}",
+      {% if  item['port1']|string == kibana_port %}
+      "port": "{{ item['port2']  | default("") }}",
+      {% else %}
+      "port": {{ item['port1']  | default("") }},
+      {% endif %}
+      "service_id": "{{ item['id']  | default("") }}",
+      "instance_id": "{{ item['instance_id']  | default("") }}"
+    }
+  {% endif %}
+  {% endfor %}
+}

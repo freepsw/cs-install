@@ -1,0 +1,9 @@
+---
+
+- name: Installing and configuring dpcore-module-cloudsearch-scripts
+  hosts: DPCORE
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-cs-scripts, tags: ["docker-cs-scripts"] }

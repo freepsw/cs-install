@@ -1,0 +1,15 @@
+version: '2'
+services:
+  core-module-cloudsearch-scripts:
+    image: {{ docker_registry_url }}/{{ dpcore_cloudsearch_scripts_image_name }}:v1.0.0
+    hostname: ansible-server
+    stdin_open: true
+    tty: true
+    ports:
+    - 2202:2202/tcp
+    cpu_shares: 1024
+    extra_hosts:
+    - rancher-server:{{ rancher_ip }}
+    labels:
+      io.rancher.scheduler.affinity:host_label: {{ dpcore_rancher_label }}
+      io.rancher.container.pull_image: always

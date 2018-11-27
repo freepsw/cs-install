@@ -1,0 +1,23 @@
+---
+
+
+- block:
+
+  # - name: STEP 2-1-1. Download beats tar file and untar
+  #   shell: wget -N "{{ tar_file }}" && tar -xvf {{ unzip_directory }}.tar.gz -C "{{ beats_path.path }}"
+  #   register: output_msg
+
+  # - debug:
+  #     msg: "wget -N {{ tar_file }} && tar -xvf {{ unzip_directory }}.tar.gz -C {{ beats_path.path }}"
+
+
+  - name: STEP 2-1-1. Copy beats tar file to host server
+    unarchive:
+      src: "../../../../data/beat_files/{{ tar_file }}"
+      dest: "{{ beats_path.path }}"
+    register: output_msg
+
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=3002, error_msg={{ output_msg.msg }}

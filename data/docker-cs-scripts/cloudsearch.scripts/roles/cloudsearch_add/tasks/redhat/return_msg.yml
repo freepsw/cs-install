@@ -1,0 +1,9 @@
+---
+
+- name: STEP 99-1. Save result information to file
+  set_fact:
+    return_msg: "{{ lookup('template', 'templates/return-msg.json.j2') }}"
+
+- name: STEP 99-2. Print output result message
+  debug:
+    msg: "{{ return_msg | replace('\n', '') }}"

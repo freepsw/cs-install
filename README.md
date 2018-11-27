@@ -32,7 +32,7 @@ Automate the cs installing process using ansible scripts in a closed network
 # run docker-registry-webui
 # --link : registry-server 실행시 입력한 컨테이너 네임
 # REGISTRY_URL : registry web ui에서 접속할 registry 서버의 IP. (gce에서 localhost로 지정하면 접속오류가 발생했음)
-> docker run -it -p 8081:8080 --name registry-web --link registry-srv -e REGISTRY_URL=http://35.220.232.130:5000/v2 -e REGISTRY_NAME=localhost:5000 hyper/docker-registry-web
+> docker run -it -p 8081:8080 --name registry-web --link registry-srv -e REGISTRY_URL=http://35.220.xxx.xxx:5000/v2 -e REGISTRY_NAME=localhost:5000 hyper/docker-registry-web
 ```
 
 ### 사용법
@@ -87,8 +87,11 @@ Automate the cs installing process using ansible scripts in a closed network
 > docker pull rancher/agent:v1.2.11
 > docker save rancher/agent:v1.2.11 | gzip -c > racher_agent.tar.gz
 
-@ copy image tar file from remote server
+# copy image tar file from remote server
 > scp -r user@35.220.xxx.xxx:/home/user/racher_server.tar.gz   .
+
+# copy files to remote server
+scp -i ~/.ssh/freepsw03_rsa cloudsearch.scripts2.tar.gz freepsw_03@35.187.xxx.xxx:~
 ```
 
 
@@ -116,7 +119,7 @@ sudo docker run -e CATTLE_HOST_LABELS='foo=bar' -d --privileged \
 -v /var/run/docker.sock:/var/run/docker.sock rancher/agent:v0.8.2 \
 http://<rancher-server-ip>:8080/v1/projects/1a5/scripts/<registrationToken>
 
-sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.11 http://35.220.211.63:8080/v1/scripts/D02ED42357B1CA64F19A:1514678400000:M0WH6CijjOICLYv3JG6dh1vwbI
+sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.11 http://35.220.xxx.xxx:8080/v1/scripts/D02ED42357B1CA64F19A:1514678400000:M0WH6CijjOICLYv3JG6dh1vwbI
 
 
 ## DB mairadb
@@ -124,31 +127,70 @@ sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/ru
 > docker save mariadb:10.3 | gzip -c > docker-mariadb.tar.gz
 ```
 
-## dpcore_cs
-### core-module 변경시 compile -> docker image build 재실행
+## docker-cs
+### core-module-cloudsearch 변경시 compile -> docker image build 재실행
 - jar 파일 변경에 따라서, 아래 과정 자동화 필요
 
 ```
 > vi /home/freepsw_02/dpbds-cloudsearch/core-module-cloudsearch/src/main/resources/profiles/docker/config-cloudsearch.properties
 > mvn clean package -DskipTests=true -P docker -pl core-module-cloudsearch -am
-> docker build . -t docker_repo:5000/dpcore/core-module-cloudsearch
-> docker tag dpcore/core-module-cloudsearch docker_repo:5000/dpcore/core-module-cloudsearch
-> docker push 35.243.72.220:5000/dpcore/core-module-cloudsearch
+> docker build . -t docker.registry.server:5000/dpcore/core-module-cloudsearch
+> docker save docker.registry.server:5000/dpcore/core-module-cloudsearch | gzip -c > ../images/core-module-cloudsearch.tar.gz
+> docker push docker.registry.server:5000/dpcore/core-module-cloudsearch
 ```
 
 
 ## Ansible docker
 
-### Install ansible in offline on centos
-- https://www.linuxschoolonline.com/how-to-install-ansible-offline-on-centos-or-redhat/
-- https://github.com/pingcap/docs/blob/master/op-guide/offline-ansible-deployment.md
+### Ansible 변수 수정
+#### hosts 파일 수정
+- localhost가 controller가 되도록 변경  (inventories/hosts)
+
+#### group_vars 변수 수정
+- inventories/group_vars/main.yml
 ```
-wget https://download.pingcap.org/ansible-2.5.0-pip.tar.gz
-tar -xzvf ansible-2.5.0-pip.tar.gz
-cd ansible-2.5.0-pip/
-chmod u+x install_ansible.sh
-./install_ansible.sh
+# Rancher가 구동중인 서버의 IP/PORT
+rancher_server: "rancher-server"
+rancher_port: 8080
+
+# Rancher에서 발급한 Access/Secret Key
+rancher_api_key_user: "8EC0A7BA9B3659F5DF9B"
+rancher_api_key_pass: "SPdGTa6JtLR5KTsDEeaSyRpLEQQXLpPzXbeFBuYo"
+
+# Docker-registry url 변경
+docker_es: "docker.registry.server:5000/dpcore/es-gotty:6.3.1"
+docker_kibana: "docker.registry.server:5000/dpcore/kibana-gotty:6.3.1"
+docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1"
 ```
+
+### Build elasticsearch docker Images and push to Docker_Registry
+```
+> docker build . -t docker.registry.server:5000/dpcore/core-module-cloudsearch-scripts:v1.0.0
+> docker save docker.registry.server:5000/dpcore/core-module-cloudsearch-scripts:v1.0.0 | gzip -c > core-module-cloudsearch-scripts.tar.gz
+> docker push docker.registry.server:5000/dpcore/core-module-cloudsearch-scripts:v1.0.0
+
+> docker load < core-module-cloudsearch-scripts.tar.gz
+
+
+
+> docker build . -t docker.registry.server:5000/dpcore/es-gotty:6.3.1
+> docker save docker.registry.server:5000/dpcore/es-gotty | gzip -c > docker-es.tar.gz
+> docker push docker.registry.server:5000/dpcore/es-gotty:6.3.1
+
+
+> docker build . -t docker.registry.server:5000/dpcore/kibana-gotty:6.3.1
+> docker save docker.registry.server:5000/dpcore/kibana-gotty:6.3.1 | gzip -c > docker-kibana.tar.gz
+> docker push docker.registry.server:5000/dpcore/kibana-gotty:6.3.1
+
+> docker build . -t docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0
+> docker save docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0 | gzip -c > docker-es-hq.tar.gz
+> docker push docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0
+>
+```
+
+
+
+
 
 
 
@@ -192,9 +234,60 @@ CMD ["/usr/sbin/sshd", "-D"]
 
 
 ```
-> docker build -t freepsw/ansible .
+> docker build -t docker.registry.server:5000:/dpcore/core-module-cloudsearch-script .
 > docker run -d -p 2202:22 freepsw/ansible
+> docker run -d -p 2202:22 -v $HOME/temp/ansible/script:/home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script --add-host rancher-server:35.187.xx.xxx  freepsw/ansible-1
+> ssh  -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no dpcore@35.187.xxx.xxx -p 2202
+
+
+
+sh /home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script/bin/create_es_cluster.sh /home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script helloworld 10001 15001 4096m 1000 2g C1 8EC0A7BA9B3659F5DF9B SPdGTa6JtLR5KTsDEeaSyRpLEQQXLpPzXbeFBuYo
 ```
+
+
+
+### Install ansible in offline on centos
+- https://www.linuxschoolonline.com/how-to-install-ansible-offline-on-centos-or-redhat/
+- https://github.com/pingcap/docs/blob/master/op-guide/offline-ansible-deployment.md
+```
+wget https://download.pingcap.org/ansible-2.5.0-pip.tar.gz
+tar -xzvf ansible-2.5.0-pip.tar.gz
+cd ansible-2.5.0-pip/
+chmod u+x install_ansible.sh
+./install_ansible.sh
+```
+
+
+### ERROR 1
+#### Problem : known_host 변경으로 인한 오류 발생
+- host_key check 없이 접속하는 방식 (known_hosts를 확인하지 않음)
+- docker container가 재구동되면, 기존 known_hosts의 내용이 변경되어 ssh connection오류 발생
+```
+> ssh dpcore@35.187.1xx.xxx -p 2202
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ECDSA key sent by the remote host is
+SHA256:fGm7ZwEwtIotwXDjtwbdLNvBp20jwzkPexEmqKPgmLM.
+Please contact your system administrator.
+Add correct host key in /home/freepsw_03/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /home/freepsw_03/.ssh/known_hosts:1
+```
+#### Solution
+- ssh connection 시에 known_host에 대한 검증을 하지 않도록 변경 (내부 네트워크에서)
+```
+> ssh  -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no dpcore@35.187.xxx.xxx -p 2202
+```
+
+
+
+
+
+
+
 
 
 
@@ -292,58 +385,6 @@ Password:
 
 
 
-# PAM configuration for the Secure Shell service
-
-# Standard Un*x authentication.
-@include common-auth
-
-# Disallow non-root logins when /etc/nologin exists.
-account    required     pam_nologin.so
-
-# Uncomment and edit /etc/security/access.conf if you need to set complex
-# access limits that are hard to express in sshd_config.
-# account  required     pam_access.so
-
-# Standard Un*x authorization.
-@include common-account
-
-# SELinux needs to be the first session rule.  This ensures that any
-# lingering context has been cleared.  Without this it is possible that a
-# module could execute code in the wrong domain.
-session [success=ok ignore=ignore module_unknown=ignore default=bad]        pam_selinux.so close
-
-# Set the loginuid process attribute.
-session optional pam_loginuid.so
-
-# Create a new session keyring.
-session    optional     pam_keyinit.so force revoke
-
-# Standard Un*x session setup and teardown.
-@include common-session
-
-# Print the message of the day upon successful login.
-# This includes a dynamically generated part from /run/motd.dynamic
-# and a static (admin-editable) part from /etc/motd.
-session    optional     pam_motd.so  motd=/run/motd.dynamic
-session    optional     pam_motd.so noupdate
-
-# Print the status of the user's mailbox upon successful login.
-session    optional     pam_mail.so standard noenv # [1]
-
-# Set up user limits from /etc/security/limits.conf.
-session    required     pam_limits.so
-
-# Read environment variables from /etc/environment and
-# /etc/security/pam_env.conf.
-session    required     pam_env.so # [1]
-# In Debian 4.0 (etch), locale-related environment variables were moved to
-# /etc/default/locale, so read that as well.
-session    required     pam_env.so user_readenv=1 envfile=/etc/default/locale
-
-# SELinux needs to intervene at login time to ensure that the process starts
-# in the proper default security context.  Only sessions which are intended
-# to run in the user's context should be run after this.
-session [success=ok ignore=ignore module_unknown=ignore default=bad]        pam_selinux.so open
-
-# Standard Un*x password updating.
-@include common-password
+## [TO-DO]
+### dpcore-module-cs
+- log4j설정에서 log directory 수정 /data/log_data (public 환경과 동일하게)

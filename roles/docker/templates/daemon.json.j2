@@ -1,3 +1,5 @@
 {
-  "insecure-registries" : ["{{ docker_registry_host_name }}:5000"]
+  "insecure-registries" : ["{{ docker_registry_host_name }}:5000"],
+  "storage-driver": "devicemapper",
+  "storage-opts": ["dm.basesize=70G"]
 }

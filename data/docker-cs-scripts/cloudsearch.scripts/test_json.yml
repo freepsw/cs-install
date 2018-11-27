@@ -1,0 +1,80 @@
+- hosts: localhost
+
+  tasks:
+    - name: STEP 1-1. Create a http body message for es master node container
+      set_fact:
+        output_msg: "{{ lookup('file', 'data_test/rancher_services-2port.json') | from_json }}"
+        es_port: "9510"
+        kibana_port: "5811"
+    # - debug: msg="{{ output_msg }}"
+
+    # - name: STEP 3-5. Set kibana service_link to variable
+    #   debug: msg={{ item }}
+    #   with_items: "{{ output_msg  | json_query('type') }}"
+
+    # - name: STEP 3-5. Set kibana service_link to variable
+    #   debug: msg={{ item }}
+    #   with_items: "{{ output_msg  | json_query('data[*].{id: id, instance_id: instanceIds[0], name: name, ip: publicEndpoints[0].ipAddress, port: publicEndpoints[0].ipAddress}') }}"
+    - name: Elasticsearch endpoint
+      debug:
+        msg: "{{ item.ip }}:{{ item.port}}"
+      with_items: "{{ output_msg  | json_query(query) }}"
+      vars:
+        query: "data[?name == 'MasterNode'].{ip: publicEndpoints[0].ipAddress, port: publicEndpoints[0].port}"
+
+    - name: Kibana endpoint
+      debug:
+        msg: "{{ item.ip }}:{{ item.port}}"
+      with_items: "{{ output_msg  | json_query(query) }}"
+      vars:
+        query: "data[?name == 'Kibana'].{ip: publicEndpoints[0].ipAddress, port: publicEndpoints[0].port}"
+
+
+    - name: Get Node info(id, instance_id, ip, port) from json
+      set_fact:
+        node_array: "{{ item }}"
+      with_items: "{{ output_msg  | json_query(query) }}"
+      vars:
+        query: "data[*].{id: id, instance_id: instanceIds[0], name: name, ip: publicEndpoints[0].ipAddress, port1: publicEndpoints[0].port, port2: publicEndpoints[1].port}"
+      register: tmp_node_arrays
+
+    - name: print_debug
+      debug: msg="{{ node_array }}"
+
+    - name: Join original items with temporary ones
+      set_fact:
+        node_array: "{{ item.item | combine(item.ansible_facts.node_array) }}"
+      with_items: "{{ tmp_node_arrays.results }}"
+      register: tmp_node_arrays
+
+    - name: Get clean results my mapping only one key from tmp_user.results
+      debug:
+        msg: "{{ tmp_node_arrays.results | map(attribute='ansible_facts.node_array') | list }}"
+
+    - name: Get clean results my mapping only one key from tmp_user.results
+      set_fact:
+        node_info: "{{ tmp_node_arrays.results | map(attribute='ansible_facts.node_array') | list }}"
+
+
+# https://ansibledaily.com/process-complex-variables-with-set_fact-and-with_items/
+
+    - name: set fact
+      set_fact:
+        return_msg: "{{ lookup('template', 'data_test/return-msg.json.j2') }}"
+
+
+    - name: STEP 99-2. Print output result message
+      debug:
+        msg: "{{ return_msg | replace('\n', '') }}"
+
+    #
+    # - name: STEP 3-5. Set kibana service_link to variable
+    #   debug: msg={{ item }}
+    #   with_items: "{{ json_contenst  | json_query('data[*].{id: id, name: name}') }}"
+
+
+    # - name: STEP 3-5. Set kibana service_link to variable
+    #   set_fact: kibana_service_link="{{ item }}"
+    #   with_items: "{{ output_msg  | json_query( query) }}"
+    #   vars:
+    #     query: "json.data[*].links.self"

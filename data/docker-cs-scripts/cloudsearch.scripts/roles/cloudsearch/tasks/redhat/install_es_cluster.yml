@@ -1,0 +1,405 @@
+---
+# Run cloudsearch cluster creation script
+
+- name: STEP 0-1. Set variable for exception handling
+  set_fact: is_success=true
+
+- block:
+    - name: STEP 1-1. Create a http body message for es master node container
+      set_fact:
+        json_contenst: "{{ lookup('template', 'templates/create_cluster_master_{{ es_type }}.json.j2') }}"
+      register: output_msg
+    - debug: msg="{{ json_contenst }}"
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: is_success=False, result_code=1001, error_msg={{ output_msg.msg }}
+    # - include: redhat/return_msg.yml
+
+- block:
+  - name: STEP 2-1. Create elasticsearch cluster
+    uri:
+      user: "{{ rancher_api_key_user }}"
+      password: "{{ rancher_api_key_pass }}"
+      headers:
+        Content-Type: "application/json"
+      url: http://{{ rancher_server }}:{{ rancher_port }}/v2-beta/projects/1a5/stacks
+      method: POST
+      body: "{{ json_contenst }}"
+      force_basic_auth: yes
+      body_format: json
+      status_code: 201 # Created
+    register: output_msg
+  - set_fact:
+      stack_link: "{{ output_msg.json.links.self }}"
+      service_link: "{{ output_msg.json.links.services }}"
+      project_id: "{{ output_msg.json.accountId}}"
+      stack_id: "{{ output_msg.json.id}}"
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+    # - include: redhat/return_msg.yml
+    - set_fact: is_success=false
+  when: is_success | bool
+
+
+- name: STEP 3-0 Pause 3 seconds to update rancher service information
+  pause:
+    seconds: 2
+  when: is_success | bool
+
+- block:
+    - name: STEP 3-1. Get rancher service information using rancher api
+      uri:
+        user: "{{ rancher_api_key_user }}"
+        password: "{{ rancher_api_key_pass }}"
+        headers:
+          Content-Type: "application/json"
+        url: "{{ service_link }}"
+        method: GET
+        force_basic_auth: yes
+        return_contents: yes
+      register: output_msg
+    - name: Print result message
+      debug: msg="{{ output_msg }}"
+
+    - name: STEP 3-2 Set elasticsearch endpoint
+      set_fact:
+        elasticsearch_endpoint: "{{ item.ip }}:{{ item.port}}"
+        elasticsearch_ip: "{{ item.ip }}"
+        elasticsearch_port: "{{ item.port}}"
+      with_items: "{{ output_msg  | json_query(query) }}"
+      vars:
+        query: "json.data[?name == 'MasterNode'].{ip: publicEndpoints[0].ipAddress, port: publicEndpoints[0].port}"
+  rescue:
+    - name: Print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+    # - include: redhat/return_msg.yml
+    - set_fact: is_success=false
+  when: is_success | bool
+
+# - name: Print output of curl command
+#   debug:
+#     msg: "{{ elasticsearch_endpoint }}"
+
+- block:
+  - name: STEP 4-1. Check elasticsearch master node status
+    action: uri
+        method=GET
+        status_code=200
+        url="http://{{ elasticsearch_endpoint }}" return_content=yes
+    register: output_msg2
+    until: output_msg2.status == 200
+    retries: 100
+    delay: 2
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg2.msg }}"
+    - set_fact: result_code=1002, error_msg={{ output_msg2.msg }}
+    # - include: redhat/return_msg.yml
+    - set_fact: is_success=false
+  when: is_success | bool
+
+
+- block:
+    - name: STEP 4-2 Check rancher stack health state
+      uri:
+        user: "{{ rancher_api_key_user }}"
+        password: "{{ rancher_api_key_pass }}"
+        headers:
+          Content-Type: "application/json"
+        url: "{{ stack_link }}"
+        method: GET
+        force_basic_auth: yes
+        return_contents: yes
+      register: output_msg
+    - name: Print result message
+      debug: msg="{{ output_msg }}"
+    - set_fact:
+        health_state: "{{ output_msg.json.healthState }}"
+    - name: Print health state
+      debug: msg="{{ health_state }}"
+  rescue:
+    - name: Print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+    # - include: redhat/return_msg.yml
+    - set_fact: is_success=false
+  when: is_success | bool
+
+
+- block:
+  - name: STEP 4-3. If stack health state is unhealthy or degrade, return error message
+    set_fact: result_code=1100, error_msg=" No healthy hosts with sufficient resources available"
+  # - include: redhat/return_msg.yml
+  - set_fact: is_success=false
+  when: is_success | bool and health_state != 'healthy'
+
+
+- block:
+    - name: STEP 5-1. Get rancher service information using rancher api
+      uri:
+        user: "{{ rancher_api_key_user }}"
+        password: "{{ rancher_api_key_pass }}"
+        headers:
+          Content-Type: "application/json"
+        url: "{{ service_link }}"
+        method: GET
+        force_basic_auth: yes
+        return_contents: yes
+      register: output_msg
+    - name: print result message
+      debug: msg="{{ output_msg }}"
+
+    - name: STEP 5-2 Set Kibana endpoint
+      set_fact:
+        kibana_endpoint: "{{ item.ip }}:{{ item.port}}"
+      with_items: "{{ output_msg  | json_query(query) }}"
+      vars:
+        query: "json.data[?name == 'Kibana'].{ip: publicEndpoints[0].ipAddress, port: publicEndpoints[0].port}"
+
+    - name: STEP 5-3. Get All Node info(id, instance_id, ip, port) from json
+      set_fact:
+        node_array: "{{ item }}"
+      with_items: "{{ output_msg  | json_query(query) }}"
+      vars:
+        query: "json.data[*].{id: id, instance_id: instanceIds[0], name: name, ip: publicEndpoints[0].ipAddress, port1: publicEndpoints[0].port, port2: publicEndpoints[1].port}"
+      register: tmp_node_arrays
+
+    - name: STEP 5-40. Join original items with temporary ones
+      set_fact:
+        node_array: "{{ item.item | combine(item.ansible_facts.node_array) }}"
+      with_items: "{{ tmp_node_arrays.results }}"
+      register: tmp_node_arrays
+
+    - name: STEP 5-41. Get clean results my mapping only one key from tmp_user.results
+      set_fact:
+        node_info: "{{ tmp_node_arrays.results | map(attribute='ansible_facts.node_array') | list }}"
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+    # - include: redhat/return_msg.yml
+    - set_fact: is_success=false
+  when: is_success | bool
+
+
+
+
+- block:
+    - name: STEP 6-1 Set HQ endpoint
+      set_fact:
+        hq_endpoint: "{{ item.ip }}:{{ item.port}}"
+      with_items: "{{ output_msg  | json_query(query) }}"
+      vars:
+        query: "json.data[?name == 'HQNode'].{ip: publicEndpoints[0].ipAddress, port: publicEndpoints[0].port}"
+
+    - name: print result message
+      debug: msg="{{ hq_endpoint }}"
+
+    - name: STEP 6-2. Set connection between hq and elasticsearch
+      uri:
+        headers:
+          Content-Type: "application/json"
+        url: http://{{ hq_endpoint }}/api/clusters/_connect
+        method: POST
+        body: "{{ lookup('template', 'templates/hq_connect.json.j2') }}"
+        force_basic_auth: yes
+        body_format: json
+        status_code: 201 # Created
+      register: output_msg
+
+    - name: print result message
+      debug: msg="{{ output_msg }}"
+
+  rescue:
+    - name: print error message
+      debug: msg="{{ output_msg.msg }}"
+    - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+    # - include: redhat/return_msg.yml
+    - set_fact: is_success=false
+  when: is_success | bool
+
+- name: STEP 10-1. Print result message
+  include: redhat/return_msg.yml
+  # when: is_success | bool
+
+
+# - name: Print output of curl command
+#   debug:
+#     msg: "{{ data_service_link }}"
+
+# - block:
+#     - name: STEP 3-1. Get rancher service information using rancher api
+#       uri:
+#         user: "{{ rancher_api_key_user }}"
+#         password: "{{ rancher_api_key_pass }}"
+#         headers:
+#           Content-Type: "application/json"
+#         url: "{{ service_link }}"
+#         method: GET
+#         force_basic_auth: yes
+#         return_contents: yes
+#       register: output_msg
+#     - name: print error message
+#       debug: msg="{{ output_msg }}"
+#     - name: STEP 3-2. Set ES master ip to variable
+#       set_fact: master_ip="{{ item }}"
+#       with_items: "{{ output_msg  | json_query( query) }}"
+#       vars:
+#         query: "json.data[?name == 'MasterNode'].publicEndpoints[0].ipAddress"
+#     - name: STEP 3-3. Set ES Master node service_link  to variable
+#       set_fact: master_service_link="{{ item }}"
+#       with_items: "{{ output_msg  | json_query( query) }}"
+#       vars:
+#         query: "json.data[?name == 'MasterNode'].links.self"
+#     - name: STEP 3-4. Set ES data node service_link to variable
+#       set_fact: data_service_link="{{ item }}"
+#       with_items: "{{ output_msg  | json_query( query) }}"
+#       vars:
+#         query: "json.data[?name == 'DataNode%'].links.self"
+#     - name: STEP 3-5. Set kibana service_link to variable
+#       set_fact: kibana_service_link="{{ item }}"
+#       with_items: "{{ output_msg  | json_query( query) }}"
+#       vars:
+#         query: "json.data[?name == 'Kibana'].links.self"
+#   rescue:
+#     - name: print error message
+#       debug: msg="{{ output_msg.msg }}"
+#     - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+#     - include: redhat/return_msg.yml
+#     - set_fact: is_success=false
+#   when: is_success | bool
+
+        # query: "json.data[?name == 'DataNode'].links.self"
+
+# - block:
+#   - name: STEP 4-1. Get master node info using rancher api
+#     action: uri
+#         method=GET
+#         status_code=200
+#         url="{{ master_service_link }}" return_content=yes
+#     register: output_msg
+#   - name: STEP 4-2. Set Master node info
+#     set_fact:
+#       master_name: "{{ output_msg.json.name  }}"
+#       master_ip:  "{{ output_msg.json.publicEndpoints[0].ipAddress  }}"
+#       master_service_id: "{{ output_msg.json.id  }}"
+#       master_instance_id: "{{ output_msg.json.instanceIds  }}"
+#   rescue:
+#     - name: print error message
+#       debug: msg="{{ output_msg.msg }}"
+#     - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+#     - include: redhat/return_msg.yml
+#     - set_fact: is_success=false
+#   when: is_success | bool
+
+#
+# - block:
+#   - name: STEP 5-1. Check elasticsearch master node status
+#     action: uri
+#         method=GET
+#         status_code=200
+#         url="http://{{ master_ip }}:{{ es_port }}" return_content=yes
+#     register: output_msg
+#     until: output_msg.status == 200
+#     retries: 20
+#     delay: 10
+#   rescue:
+#     - name: print error message
+#       debug: msg="{{ output_msg.msg }}"
+#     - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+#     - include: redhat/return_msg.yml
+#     - set_fact: is_success=false
+#   when: is_success | bool
+
+
+# - block:
+#   - name: STEP 6-1. Get data node status
+#     action: uri
+#         method=GET
+#         status_code=200
+#         url="{{ data_service_link }}" return_content=yes
+#     register: output_msg
+#   - name: STEP 6-2. Set Data node info
+#     set_fact:
+#       data_name: "{{ output_msg.json.name  }}"
+#       data_service_id: "{{ output_msg.json.id  }}"
+#       data_instance_id: "{{ output_msg.json.instanceIds  }}"
+#   rescue:
+#     - name: print error message
+#       debug: msg="{{ output_msg.msg }}"
+#     - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+#     - include: redhat/return_msg.yml
+#     - set_fact: is_success=false
+#   when: is_success | bool
+#
+#
+# - block:
+#   - name: STEP 7-1. Get Kiabna node status
+#     action: uri
+#         method=GET
+#         status_code=200
+#         url="{{ kibana_service_link }}" return_content=yes
+#     register: output_msg
+#   - name: STEP 7-2 Set Kibana node info
+#     set_fact:
+#       kibana_name: "{{ output_msg.json.name  }}"
+#       kibana_service_id: "{{ output_msg.json.id  }}"
+#       kibana_instance_id: "{{ output_msg.json.instanceIds  }}"
+#       elasticsearch_endpoint : "{{ master_ip }}:{{ es_port }}"
+#       kibana_endpoint : "{{ output_msg.json.publicEndpoints[0].ipAddress }}:{{ kibana_port }}"
+#   rescue:
+#     - name: print error message
+#       debug: msg="{{ output_msg.msg }}"
+#     - set_fact: result_code=1002, error_msg={{ output_msg.msg }}
+#     - include: redhat/return_msg.yml
+#     - set_fact: is_success=false
+#   when: is_success | bool
+#
+#
+# # - name: Print output of curl command
+# #   debug:
+# #     msg: "{{ elasticsearch_endpoint }}, {{ master_ip }}"
+#
+# - name: STEP 10-1. Print result message
+#   include: redhat/return_msg.yml
+#   when: is_success | bool
+
+
+# # - name : Create elasticsearch index (ba_realtime)
+# #   shell: >
+# #     curl
+# #     -X PUT
+# #     -H 'Content-Type: application/json'
+# #     -d '{}'
+# #     '{{ rancher_server }}:9200/ba_realtime3?pretty'
+#
+#
+#
+# # - name: Print output of curl command
+# #   debug:
+# #     msg: "{{ elk_result['actions']['activateservices'] }}"
+#
+# # - name : set stack id
+# #   set_fact:
+# #     elk_activate: "{{ elk_result['actions']['activateservices'] }}"
+# #
+# # - name : Activate elk service
+# #   shell: >
+# #    curl -u "BAF2FFEB1637F9A4F735:pitwPkiXLDYQnQrJWDo618q2REVnxVuNZ2AM2Bq2"
+# #    -X POST
+# #    -H 'Accept: application/json'
+# #    -H 'Content-Type: application/json'
+# #    -d '{}'
+# #    "{{ elk_activate }}"
+
+# # - name: "Set Master node info"
+# #   set_fact:
+# #     master_info : "{{ item  }}"
+# #   with_items: "{{ out_shell  | json_query( query) }}"
+# #   vars:
+# #     query: "json.data[?name == 'MasterNode'].{name: name, service_id: id, instance_id: instanceIds, ip: publicEndpoints[0].ipAddress }"
+#

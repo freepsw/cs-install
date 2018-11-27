@@ -1,0 +1,43 @@
+---
+
+# - name: Copy ansible related files
+#   copy:
+#     src: "data/docker-cs-scripts/"
+#     dest: "{{ remote_temp_directory }}"
+#     force: no
+
+- name: Create temporary directory to save rancher compose file
+  file: path="{{ remote_temp_directory }}/dpcore-cs-scripts" state=directory mode=0755
+
+- name: Copy docker-compose / rancher-compose files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - {src: 'templates/rancher/docker-compose.yml.j2',  dest: '{{ remote_temp_directory }}/dpcore-cs-scripts/docker-compose.yml'}
+    - {src: 'templates/rancher/rancher-compose.yml.j2', dest: '{{ remote_temp_directory }}/dpcore-cs-scripts/rancher-compose.yml'}
+
+- name: Run ranche cli for dpcore-module-cloudsearc-scripts container
+  shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s dpcore -d"
+  args:
+    chdir: "{{ remote_temp_directory }}/dpcore-cs-scripts/"
+
+
+
+
+# - name: Run mariadb container
+#   docker:
+#     image: mariadb:10.3
+#     name: mariadb
+#     ports: "{{ mariadb_port }}:3306"
+#     volumes:
+#       - "{{ remote_temp_directory }}/db/{{ mariadb_dump_file }}:/docker-entrypoint-initdb.d/dpcore_search.sql"
+#     pull: missing
+#     restart_policy: unless-stopped
+#     state: started
+#     env:
+#       MYSQL_ROOT_PASSWORD: secret
+#       MYSQL_DATABASE: dpcore_search
+#       MYSQL_USER: user
+#       MYSQL_PASSWORD: password

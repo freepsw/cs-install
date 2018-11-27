@@ -51,10 +51,20 @@
   roles:
    - { role: docker-db, tags: ["docker-db"] }
 
-- name: Deploy dpcore-module-cloudsearch conainer using rancher cli
+# - name: Deploy dpcore-module-cloudsearch conainer using rancher cli
+#   hosts: DPCORE
+#   gather_facts: no
+#   vars_files:
+#    - inventories/group_vars/main.yml
+#   roles:
+#    - { role: docker-cs, tags: ["docker-cs"] }
+
+
+
+- name: Deploy dpcore-module-cloudsearch-scripts conainer using rancher cli
   hosts: DPCORE
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml
   roles:
-   - { role: docker-cs, tags: ["docker-cs"] }
+   - { role: docker-cs-scripts, tags: ["docker-cs-scripts"] }
