@@ -1,7 +1,19 @@
 # cs-install-automation
 Automate the cs installing process using ansible scripts in a closed network
 
-## Docker
+## Install Ansible
+### Install ansible in offline on centos
+- https://www.linuxschoolonline.com/how-to-install-ansible-offline-on-centos-or-redhat/
+- https://github.com/pingcap/docs/blob/master/op-guide/offline-ansible-deployment.md
+```
+wget https://download.pingcap.org/ansible-2.5.0-pip.tar.gz
+tar -xzvf ansible-2.5.0-pip.tar.gz
+cd ansible-2.5.0-pip/
+chmod u+x install_ansible.sh
+./install_ansible.sh
+```
+
+## Install Docker
 
 ### Get pip
 ```
@@ -115,7 +127,7 @@ secret-key: aJx6x9976D2qnBVaZrLBUqF8p7ZiNG6HbV9baV43
 ```
 
 ### create host label when create rancher-agent
-sudo docker run -e CATTLE_HOST_LABELS='foo=bar' -d --privileged \
+> sudo docker run -e CATTLE_HOST_LABELS='foo=bar' -d --privileged \
 -v /var/run/docker.sock:/var/run/docker.sock rancher/agent:v0.8.2 \
 http://<rancher-server-ip>:8080/v1/projects/1a5/scripts/<registrationToken>
 
@@ -142,7 +154,7 @@ sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/ru
 ```
 
 
-## Ansible docker
+## docker-cs-scripts
 
 ### Ansible 변수 수정
 #### hosts 파일 수정
@@ -170,10 +182,7 @@ docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1"
 > docker build . -t docker.registry.server:5000/dpcore/core-module-cloudsearch-scripts:v1.0.0
 > docker save docker.registry.server:5000/dpcore/core-module-cloudsearch-scripts:v1.0.0 | gzip -c > core-module-cloudsearch-scripts.tar.gz
 > docker push docker.registry.server:5000/dpcore/core-module-cloudsearch-scripts:v1.0.0
-
 > docker load < core-module-cloudsearch-scripts.tar.gz
-
-
 
 > docker build . -t docker.registry.server:5000/dpcore/es-gotty:6.3.1
 > docker save docker.registry.server:5000/dpcore/es-gotty | gzip -c > docker-es.tar.gz
@@ -191,7 +200,13 @@ docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1"
 ```
 
 
-
+## docker-core-oauth
+```
+> mvn clean package -DskipTests=true -Pdocker-stg -pl core-oauth-server -am
+> docker build . -t docker.registry.server:5000/dpcore/core-oauth-server:stg02
+> docker save docker.registry.server:5000/dpcore/core-oauth-server:stg02 | gzip -c > core-module-oauth.tar.gz
+> docker push docker.registry.server:5000/dpcore/core-oauth-server:stg02
+```
 
 
 
@@ -248,16 +263,7 @@ sh /home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script/bin/cre
 
 
 
-### Install ansible in offline on centos
-- https://www.linuxschoolonline.com/how-to-install-ansible-offline-on-centos-or-redhat/
-- https://github.com/pingcap/docs/blob/master/op-guide/offline-ansible-deployment.md
-```
-wget https://download.pingcap.org/ansible-2.5.0-pip.tar.gz
-tar -xzvf ansible-2.5.0-pip.tar.gz
-cd ansible-2.5.0-pip/
-chmod u+x install_ansible.sh
-./install_ansible.sh
-```
+
 
 
 ### ERROR 1

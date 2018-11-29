@@ -1,0 +1,24 @@
+---
+
+- name: Create dpcore-module-oauth log directory
+  file: path="{{ dpcore_log_folder }}/{{ dpcore_oauth_folder }}" state=directory mode=0755
+  become: true
+
+- name: Create temporary directory to save rancher compose file
+  file: path="{{ dpcore_compose_files_folder }}/{{ dpcore_oauth_folder }}" state=directory mode=0755
+
+- name: Copy rancher-compose file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - {src: 'templates/docker-compose.yml.j2',  dest: '{{ dpcore_compose_files_folder }}/{{ dpcore_oauth_folder }}/docker-compose.yml'}
+    - {src: 'templates/rancher-compose.yml.j2', dest: '{{ dpcore_compose_files_folder }}/{{ dpcore_oauth_folder }}/rancher-compose.yml'}
+
+
+#
+- name: Run ranche cli for dpcore-module-oauth  container
+  shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s dpcore -d"
+  args:
+    chdir: "{{ dpcore_compose_files_folder }}/{{ dpcore_oauth_folder }}"

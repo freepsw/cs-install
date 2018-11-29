@@ -105,12 +105,23 @@
     force: yes
   with_items: "{{ dpcore_elasticsearch_images }}"
   become: true
-#
-# - name: Load elasticsearch image from archive and push to a private registry
-#   docker_image:
-#     name: "dpcore_elasticsearch_image_name"
-#     repository: "dpcore_elasticsearch_image_name"
-#     push: yes
-#     load_path: "{{ remote_temp_directory }}/images/docker-es.tar.gz"
-#     force: yes
-#   become: true
+
+
+# dpcore-module-oauth
+- name: Copy cpcore-module-oauth  related images to server
+  copy:
+    src: "data/images/{{ item.file }}"
+    dest: "{{ remote_temp_directory }}/images/"
+    force: no
+  with_items: "{{ dpcore_oauth_images }}"
+
+
+- name: Load cpcore-module-oauth image from archive and push to a private registry
+  docker_image:
+    name: "{{ item.image }}"
+    repository: "{{ item.image }}"
+    push: yes
+    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+    force: yes
+  with_items: "{{ dpcore_oauth_images }}"
+  become: true

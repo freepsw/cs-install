@@ -1,0 +1,17 @@
+version: '2'
+services:
+  core-sso-server:
+    image: {{ docker_registry_url }}/dpcore/core-sso-server:stg02
+    hostname: core-sso-server                 #도커클라이언트서버의 호스트명
+    ports:
+    - 7080:7080/tcp
+    stdin_open: true
+    tty: true
+    cpu_shares: 1024
+    volumes:
+    - {{ dpcore_log_folder }}/core-sso-server:{{ dpcore_log_folder }}/core-sso-server
+    external_links:
+    - meta-db/mariadb-sso:mariadb
+    labels:
+      io.rancher.scheduler.affinity:host_label: {{ dpcore_rancher_label }}
+      io.rancher.container.pull_image: always

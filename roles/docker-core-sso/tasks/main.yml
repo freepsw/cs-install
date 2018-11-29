@@ -1,0 +1,24 @@
+---
+
+- name: Create dpcore-module sso log directory
+  file: path="{{ dpcore_log_folder }}/core-sso-server" state=directory mode=0755
+  become: true
+
+- name: Create temporary directory to save rancher compose file
+  file: path="{{ remote_temp_directory }}/docker-cs/core-module" state=directory mode=0755
+
+- name: Copy docker-cs/rancher-compose file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - {src: 'templates/docker-compose.yml.j2',  dest: '{{ remote_temp_directory }}/{{ dpcore_sso_folder }}docker-compose.yml'}
+    - {src: 'templates/rancher-compose.yml.j2', dest: '{{ remote_temp_directory }}/{{ dpcore_sso_folder }}/rancher-compose.yml'}
+
+
+#
+- name: Run ranche cli for dpcore-module-sso  container
+  shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s dpcore -d"
+  args:
+    chdir: "{{ remote_temp_directory }}/{{ dpcore_sso_folder }}"

@@ -6,4 +6,4 @@
   vars_files:
    - inventories/group_vars/main.yml
   roles:
-   - { role: docker-cs, tags: ["docker-cs"] }
+   - { role: docker-core-cs, tags: ["docker-core-cs"] }

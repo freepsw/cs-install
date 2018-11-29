@@ -1,0 +1,9 @@
+---
+
+- name: Installing and configuring dpcore-module-sso
+  hosts: Server
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-core-sso, tags: ["docker-core-sso"] }

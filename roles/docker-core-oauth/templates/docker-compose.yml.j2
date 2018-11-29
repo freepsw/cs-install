@@ -1,0 +1,15 @@
+version: '2'
+services:
+  core-oauth-server:
+    image: {{ docker_registry_url }}/dpcore/core-oauth-server:stg02
+    hostname: core-oauth-server                 #도커클라이언트서버의 호스트명
+    ports:
+    - 8090:8090/tcp
+    stdin_open: true
+    tty: true
+    cpu_shares: 1024
+    volumes:
+    - {{ dpcore_log_folder }}/core-oauth-server:{{ dpcore_log_folder }}/core-oauth-server
+    labels:
+      io.rancher.scheduler.affinity:host_label: {{ dpcore_rancher_label }}
+      io.rancher.container.pull_image: always
