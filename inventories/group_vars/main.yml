@@ -50,18 +50,32 @@ docker_registry_web_expose_port: 8081
 
 # mariadb
 mariadb_ip: "{{ hostvars['agent1'].ansible_ssh_host }}"
-mariadb_port: 3308
-mariadb_dump_file: dpcore_search_dump.sql
-mariadb_data_folder: data/docker-db
+mariadb_sso_port: 3307
+mariadb_cs_port: 3308
+mariadb_data_folder: docker-db
+mariadb_dump_cs_folder: core-cs
+mariadb_dump_sso_folder: core-sso
+mariadb_compose_files_folder: "{{ remote_temp_directory }}/{{ mariadb_data_folder }}/compose-folder"
 mairadb_image: docker-mariadb-10-3.tar.gz
 mairadb_rancher_label: io.rancher.host.os=linux
-mariadb_user: cloudsearch
-mariadb_password: '!cloudsearch00'
+mariadb_cs_user: cloudsearch
+mariadb_cs_password: '!cloudsearch00'
 
 # dpcore-cloudsearch
 dpcore_log_folder: /data/log_data
 dpcore_rancher_label: io.rancher.host.os=linux
 dpcore_cloudsearch_image: core-module-cloudsearch.tar.gz
+dpcore_elasticsearch_images:
+  - file: docker-es.tar.gz
+    image: "{{ docker_registry_url}}/dpcore/es-gotty:6.3.1"
+  - file: docker-es-hq.tar.gz
+    image: "{{ docker_registry_url}}/dpcore/elasticsearch-hq:3.4.0"
+  - file: docker-kibana.tar.gz
+    image: "{{ docker_registry_url}}/dpcore/kibana-gotty:6.3.1"
+# dpcore_elasticsearch_image_name: "{{ docker_registry_url}}/dpcore/es-gotty:6.3.1"
+# dpcore_elasticsearch_kibana_name: "{{ docker_registry_url}}/dpcore/kibana-gotty:6.3.1"
+# dpcore_elasticsearch_hq_name: "{{ docker_registry_url}}/dpcore/elasticsearch-hq:3.4.0"
+
 ## dpcore-cloudsearh
 
 # dpcore-cloudsearch-scripts

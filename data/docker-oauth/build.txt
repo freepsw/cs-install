@@ -1,0 +1,18 @@
+
+clean package -DskipTests=true -Pdocker-stg -pl core-oauth-server -am
+
+#=================================================
+#poc04
+
+#!/bin/bash
+# 젠킨스 서버에서 사설 도커허브에 로그인합니다.
+docker login -u dpcore -p !Dpcore00 registry.dataplatform.io
+
+rancher --url http://169.xxxxxxx:8080 --access-key xxx --secret-key xxxx --env Default up --force-upgrade --confirm-upgrade -d --pull -f /jenkins_dind_home/workspace/core-oauth-server-rancher-stg/core-oauth-server/src/main/share/docker-compose-core-oauth-server-stg02.yml  -s dpcore
+
+#=================================================
+
+
+dpcore/core-oauth-server
+
+tag :stg02

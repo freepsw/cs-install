@@ -63,7 +63,7 @@
 
 - name: Load dpcore-module-cloudsearch image from archive and push to a private registry
   docker_image:
-    name: "dpcore/core-module-cloudsearch"
+    name: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch"
     repository: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch"
     push: yes
     load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_image }}"
@@ -86,3 +86,31 @@
     load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_scripts_image }}"
     force: yes
   become: true
+
+# elastic search images
+- name: Copy elasticsearch related images to server
+  copy:
+    src: "data/images/{{ item.file }}"
+    dest: "{{ remote_temp_directory }}/images/"
+    force: no
+  with_items: "{{ dpcore_elasticsearch_images }}"
+
+
+- name: Load elasticsearch image from archive and push to a private registry
+  docker_image:
+    name: "{{ item.image }}"
+    repository: "{{ item.image }}"
+    push: yes
+    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+    force: yes
+  with_items: "{{ dpcore_elasticsearch_images }}"
+  become: true
+#
+# - name: Load elasticsearch image from archive and push to a private registry
+#   docker_image:
+#     name: "dpcore_elasticsearch_image_name"
+#     repository: "dpcore_elasticsearch_image_name"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/docker-es.tar.gz"
+#     force: yes
+#   become: true

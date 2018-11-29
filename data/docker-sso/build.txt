@@ -1,0 +1,17 @@
+clean package -DskipTests=true -Pdocker-stg -pl core-sso-server -am
+
+
+#=================================================
+#poc04
+
+#!/bin/bash
+# 젠킨스 서버에서 사설 도커허브에 로그인합니다.
+
+rancher --url http://169.xxxx:8080 --access-key xxx --secret-key xxx --env Default up --force-upgrade --confirm-upgrade -d --pull -f /jenkins_dind_home/workspace/core-sso-server-rancher-stg/core-sso-server/src/main/share/docker-compose-core-sso-server-stg02.yml  -s dpcore
+
+#=================================================
+
+
+dpcore/core-sso-server
+
+tag : stg02

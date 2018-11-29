@@ -1,7 +1,23 @@
 ---
 
+- name: Copy mariadb-cs dump file
+  hosts: Agents
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  tasks:
+    - name: Create temporary directory to save rancher compose file
+      file: path="{{ remote_temp_directory }}/{{ mariadb_data_folder }}" state=directory mode=0755
+
+    - name: Copy db dump file
+      copy:
+        src: "data/{{ mariadb_data_folder }}"
+        dest: "{{ remote_temp_directory }}"
+        mode: 0777
+        force: no
+
 - name: Installing and configuring Mariadb container
-  hosts: DB
+  hosts: Server
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml

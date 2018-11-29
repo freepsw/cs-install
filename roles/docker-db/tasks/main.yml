@@ -1,30 +1,45 @@
 ---
 
+# - name: Set facts
+#   set_fact:
+#     mariadb_compose_files_folder: "{{ remote_temp_directory }}/docker-db/compose-files"
+
 - name: Create temporary directory to save rancher compose file
-  file: path="{{ remote_temp_directory }}/mariadb" state=directory mode=0755
+  file: "path={{ item }} state=directory mode=0755"
+  with_items:
+  - "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}"
+  - "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}"
 
-- name: Copy db dump file
-  copy:
-    src: "{{ mariadb_data_folder }}"
-    dest: "{{ remote_temp_directory }}"
-    force: no
 
-- name: Copy docker/rancher-compose file
+# Mariadb for cloudsearch
+- name: Copy docker/rancher-compose file for cloudserach database
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: 0644
   with_items:
-    - {src: 'templates/docker-compose.yml.j2',  dest: '{{ remote_temp_directory }}/mariadb/docker-compose.yml'}
-    - {src: 'templates/rancher-compose.yml.j2', dest: '{{ remote_temp_directory }}/mariadb/rancher-compose.yml'}
+    - {src: 'templates/{{ mariadb_dump_cs_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}/docker-compose.yml'}
+    - {src: 'templates/{{ mariadb_dump_cs_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}/rancher-compose.yml'}
 
-
-#
-- name: Run ranche cli for mariadb container
+- name: Run ranche cli for mariadb container (Cloudsearch)
   shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s meta-db -d"
   args:
-    chdir: "{{ remote_temp_directory }}/mariadb"
+    chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}"
 
+
+- name: Copy docker/rancher-compose file for cloudserach database
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - {src: 'templates/{{ mariadb_dump_sso_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}/docker-compose.yml'}
+    - {src: 'templates/{{ mariadb_dump_sso_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}/rancher-compose.yml'}
+
+- name: Run ranche cli for mariadb container (SSO)
+  shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s meta-db -d"
+  args:
+    chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}"
 
 
 

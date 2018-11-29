@@ -35,36 +35,51 @@
    - { role: rancher-nodes, tags: ["rancher-node"] }
 
 - name: Install Rancher CLI
-  hosts: DB
+  hosts: Server
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml
   roles:
    - { role: rancher-cli, tags: ["rancher-cli"] }
 
+- name: Copy mariadb-cs dump file
+  hosts: Agents
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  tasks:
+    - name: Create temporary directory to save rancher compose file
+      file: path="{{ remote_temp_directory }}/{{ mariadb_data_folder }}" state=directory mode=0755
+
+    - name: Copy db dump file
+      copy:
+        src: "data/{{ mariadb_data_folder }}"
+        dest: "{{ remote_temp_directory }}"
+        mode: 0777
+        force: no
 
 - name: Deploy mariadb conainer using rancher cli
-  hosts: DB
+  hosts: Server
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml
   roles:
    - { role: docker-db, tags: ["docker-db"] }
 
-# - name: Deploy dpcore-module-cloudsearch conainer using rancher cli
-#   hosts: DPCORE
-#   gather_facts: no
-#   vars_files:
-#    - inventories/group_vars/main.yml
-#   roles:
-#    - { role: docker-cs, tags: ["docker-cs"] }
-
-
-
-- name: Deploy dpcore-module-cloudsearch-scripts conainer using rancher cli
-  hosts: DPCORE
+- name: Deploy dpcore-module-cloudsearch  & scripts conainers using rancher cli
+  hosts: Server
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml
   roles:
-   - { role: docker-cs-scripts, tags: ["docker-cs-scripts"] }
+   - { role: docker-cs, tags: ["docker-cs"] }
+
+
+#
+# - name: Deploy dpcore-module-cloudsearch-scripts conainer using rancher cli
+#   hosts: Server
+#   gather_facts: no
+#   vars_files:
+#    - inventories/group_vars/main.yml
+#   roles:
+#    - { role: docker-cs-scripts, tags: ["docker-cs-scripts"] }

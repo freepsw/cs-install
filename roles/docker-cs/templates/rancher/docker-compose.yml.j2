@@ -9,7 +9,6 @@ services:
     - rancher-server:{{ rancher_ip }}
     ports:
     - 2202:2202/tcp
-    cpu_shares: 1024
     labels:
       io.rancher.scheduler.affinity:host_label: {{ dpcore_rancher_label }}
       io.rancher.container.pull_image: always

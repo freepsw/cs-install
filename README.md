@@ -124,6 +124,8 @@ sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/ru
 
 ## DB mairadb
 ```
+> docker run --name some-mariadb -v /home/freepsw_03/temp/docker-db/dpcore_search_dump.sql:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mariadb:tag
+
 > docker save mariadb:10.3 | gzip -c > docker-mariadb.tar.gz
 ```
 
@@ -135,7 +137,7 @@ sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/ru
 > vi /home/freepsw_02/dpbds-cloudsearch/core-module-cloudsearch/src/main/resources/profiles/docker/config-cloudsearch.properties
 > mvn clean package -DskipTests=true -P docker -pl core-module-cloudsearch -am
 > docker build . -t docker.registry.server:5000/dpcore/core-module-cloudsearch
-> docker save docker.registry.server:5000/dpcore/core-module-cloudsearch | gzip -c > ../images/core-module-cloudsearch.tar.gz
+> docker save docker.registry.server:5000/dpcore/core-module-cloudsearch | gzip -c > core-module-cloudsearch.tar.gz
 > docker push docker.registry.server:5000/dpcore/core-module-cloudsearch
 ```
 

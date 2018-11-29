@@ -1,7 +1,7 @@
 ---
 
 - name: Installing and configuring dpcore-module-cloudsearch
-  hosts: DPCORE
+  hosts: Server
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml
