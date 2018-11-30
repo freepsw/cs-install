@@ -10,6 +10,8 @@ services:
     cpu_shares: 1024
     volumes:
     - {{ dpcore_log_folder }}/core-oauth-server:{{ dpcore_log_folder }}/core-oauth-server
+    external_links:
+    - meta-db/mariadb-sso:mariadb
     labels:
       io.rancher.scheduler.affinity:host_label: {{ dpcore_rancher_label }}
       io.rancher.container.pull_image: always

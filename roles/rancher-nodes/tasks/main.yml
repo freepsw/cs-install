@@ -4,6 +4,10 @@
   include: add_hosts.yml
 
 
+- name: Create dpcore-module log directory for core-modules
+  file: path="{{ dpcore_log_folder }}/{{ item }}" state=directory mode=0777
+  with_items: "{{ dpcore_log_module_folder }}"
+  become: true
 
 - name: determine if we're already running an agent
   shell: "docker ps | fgrep -q rancher/agent"

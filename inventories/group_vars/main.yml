@@ -63,6 +63,10 @@ mariadb_cs_password: '!cloudsearch00'
 
 # dpcore-cloudsearch
 dpcore_log_folder: /data/log_data
+dpcore_log_module_folder:
+  - core-sso-server
+  - core-oauth-server
+  - core-module-cloudsearch
 dpcore_compose_files_folder: "{{ remote_temp_directory }}/core-modules/compose-folder"
 dpcore_rancher_label: io.rancher.host.os=linux
 dpcore_cloudsearch_image: core-module-cloudsearch.tar.gz
@@ -85,14 +89,14 @@ dpcore_cloudsearch_scripts_image_name: dpcore/core-module-cloudsearch-scripts
 
 
 ## dpcore-sso module
-dpcore_sso_folder: core-module-sso
+dpcore_sso_folder: core-sso-server
 dpcore_sso_images:
-  - file: docker-core-sso.tar.gz
+  - file: core-module-sso.tar.gz
     image: "{{ docker_registry_url}}/dpcore/core-sso-server:stg02"
 
 
 ## dpcore-oauth module
-dpcore_oauth_folder: core-module-oauth
+dpcore_oauth_folder: core-oauth-server
 dpcore_oauth_images:
   - file: core-module-oauth.tar.gz
     image: "{{ docker_registry_url}}/dpcore/core-oauth-server:stg02"

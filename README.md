@@ -209,8 +209,23 @@ docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1"
 ```
 
 
+## docker-core-sso
+```
+> mvn clean package -DskipTests=true -Pdocker-stg -pl core-sso-server -am
+> docker build . -t docker.registry.server:5000/dpcore/core-sso-server:stg02
+> docker save docker.registry.server:5000/dpcore/core-sso-server:stg02 | gzip -c > core-module-sso.tar.gz
+> docker push docker.registry.server:5000/dpcore/core-sso-server:stg02
+```
 
 
+
+
+
+
+
+
+
+# ETC
 ### ssh server + ansible dockerfile
 - https://docs.docker.com/engine/examples/running_ssh_service/#run-a-test_sshd-container
 - https://github.com/ansible/ansible-docker-base

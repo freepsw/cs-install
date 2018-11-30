@@ -1,11 +1,11 @@
 ---
 
-- name: Create dpcore-module-oauth log directory
-  file: path="{{ dpcore_log_folder }}/{{ dpcore_oauth_folder }}" state=directory mode=0755
-  become: true
+# - name: Create dpcore-module-oauth log directory
+#   file: path="{{ dpcore_log_folder }}/{{ dpcore_oauth_folder }}" state=directory mode=0777
+#   become: true
 
 - name: Create temporary directory to save rancher compose file
-  file: path="{{ dpcore_compose_files_folder }}/{{ dpcore_oauth_folder }}" state=directory mode=0755
+  file: path="{{ dpcore_compose_files_folder }}/{{ dpcore_oauth_folder }}" state=directory mode=0777
 
 - name: Copy rancher-compose file
   template:

@@ -125,3 +125,23 @@
     force: yes
   with_items: "{{ dpcore_oauth_images }}"
   become: true
+
+
+# dpcore-module-sso
+- name: Copy cpcore-module-sso related images to server
+  copy:
+    src: "data/images/{{ item.file }}"
+    dest: "{{ remote_temp_directory }}/images/"
+    force: no
+  with_items: "{{ dpcore_sso_images }}"
+
+
+- name: Load cpcore-module-sso image from archive and push to a private registry
+  docker_image:
+    name: "{{ item.image }}"
+    repository: "{{ item.image }}"
+    push: yes
+    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+    force: yes
+  with_items: "{{ dpcore_sso_images }}"
+  become: true
