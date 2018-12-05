@@ -166,20 +166,20 @@
   become: true
 
 # dpcore-web-cloudsearh
-# - name: Copy dpcore-web-cloudsearh related images to server
-#   copy:
-#     src: "data/images/{{ item.file }}"
-#     dest: "{{ remote_temp_directory }}/images/"
-#     force: no
-#   with_items: "{{ dpcore_web_cs_images }}"
-#
-#
-# - name: Load dpcore-web-cloudsearh image from archive and push to a private registry
-#   docker_image:
-#     name: "{{ item.image }}"
-#     repository: "{{ item.image }}"
-#     push: yes
-#     load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
-#     force: yes
-#   with_items: "{{ dpcore_web_cs_images }}"
-#   become: true
+- name: Copy dpcore-web-cloudsearh related images to server
+  copy:
+    src: "data/images/{{ item.file }}"
+    dest: "{{ remote_temp_directory }}/images/"
+    force: no
+  with_items: "{{ dpcore_web_cs_images }}"
+
+
+- name: Load dpcore-web-cloudsearh image from archive and push to a private registry
+  docker_image:
+    name: "{{ item.image }}"
+    repository: "{{ item.image }}"
+    push: yes
+    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+    force: yes
+  with_items: "{{ dpcore_web_cs_images }}"
+  become: true

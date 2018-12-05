@@ -244,7 +244,7 @@ docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0"
 > docker push docker.registry.server:5000/dpcore/core-api-gateway:stg02
 ```
 
-## docker-frontweb-cs
+## docker-web-cs
 ```
 > git clone  --recurse-submodules https://xxxx.xxxx/scm/dpbds/cloudsearch.web.git
 > cd cloudsearch.web
@@ -253,12 +253,70 @@ docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0"
 > docker push docker.registry.server:5000/dpcore/cloudsearch-nginx-stg
 ```
 
-### cz 인증없이, 자제 인증서버(core-api-sso)를 활용하기 위한 설정들 ()
+### On-premis 환경
+- z 인증없이, 자제 인증서버(core-api-sso)를 활용하기 위한 설정들
+- nginx reverse proxy를 이용하여 web nginx에서 요청을 forwarding
+  - web(nginx) -> core-sso
+  - web(nginx) -> core-cs
+
+#### WEB NGINX 설정
+```
+upstream cloudsearch_backend_api {
+  server core-module-portal:7070;
+}
+
+# SSO 인증을 위한 API, 추후 변경 필요
+upstream auth_api {
+  server core-module-portal:7080;
+}
+
+server {
+listen       80;
+server_name  cloudsearch-web;
+
+gzip on;
+gzip_http_version 1.1;
+gzip_disable      "MSIE [1-6]\.";
+gzip_min_length   256;
+gzip_vary         on;
+gzip_proxied      expired no-cache no-store private auth;
+gzip_types        text/plain text/css application/json application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+gzip_comp_level   9;
+
+location /api {
+  proxy_pass         http://cloudsearch_backend_api;
+  proxy_redirect     off;
+  proxy_set_header   Host $host;
+  proxy_set_header   X-Real-IP $remote_addr;
+  proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header   X-Forwarded-Host $server_name;
+}
+
+location /auth {
+  rewrite ^/auth(.*) $1 break;
+  proxy_pass         http://auth_api;
+  proxy_redirect     off;
+  proxy_set_header   Host $host;
+  proxy_set_header   X-Real-IP $remote_addr;
+  proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header   X-Forwarded-Host $server_name;
+}
+
+location / {
+  root   /usr/share/nginx/html;
+  index  index.html index.htm;
+}
+}
+```
 
 #### envieonment.stg.ts
 - core-api-gateway의 url로 변경
 ```
-api: changeDomain('http://35.187.xxx.xxx:7080'),
+# portal을 사용하는 경우
+api: changeDomain('http://core-module-portal:7080'),
+
+# api-gateway로 직접 연결하는 경우
+api: 'http://localhost:4203/api/v1/cloudsearch',
 ```
 
 #### common-module-environment.common.ts
@@ -272,7 +330,7 @@ api: changeDomain('http://35.187.xxx.xxx:7080'),
 ```
 export const CommonModuleEnvironmentSTG = {
   apiToken: {
-    url: 'http://35.187.xxx.xxx:7080'
+    url: 'http://localhost:4203/auth'
   },
   xxxx_sso: {
     domainName: '.xxxx.co.kr',
@@ -293,7 +351,15 @@ export const CommonModuleEnvironmentSTG = {
     },
 ```
 
+### browser에서 직접 sso, api-gateway에 접속하도록 hosts 설정 추가
+```
+> vi /etc/hosts
+35.200.xxx.xxx core-module-portal
+```
 
+### browser 접속
+- http://core-module-portal:4203
+- ip로 접속시 CORS 오류 발생
 
 
 

@@ -44,3 +44,11 @@
   with_items:
     - { line: 'vm.max_map_count = 262144' }
   become: true
+
+- name: Increase nmap count to 262144 with commmand
+  shell: sysctl -p
+  become: true
+
+- name: Increase nmap count to 262144 with commmand
+  shell: sysctl -w vm.max_map_count=262144
+  become: true
