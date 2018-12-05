@@ -897,7 +897,7 @@ label_text: "cloudsearch=true"
 ## ETC 5) Ansible script 설치 절차
 
 ### 1. Install ansible and edit configuration
-- SSH host key 설정 
+- SSH host key 설정
 - https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html#host-key-checking
 ```
 > sudo yum install -y ansible
@@ -935,7 +935,42 @@ label_text: "cloudsearch=true" # 설치할 대상 host의 label로 변경
 ```
 > sysctl -w vm.max_map_count=262144
 ```
+```
+- virtual memory error 해결
+시스템의 nmap count를 증가기켜야 한다.
+https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
+# 1) 현재 서버상태에서만 적용하는 방식
+> sudo sysctl -w vm.max_map_count=262144
 
+# 2) 영구적으로 적용 (서버 재부팅시 자동 적용)
+> sudo vi /etc/sysctl.conf
+# 아래 내용 추가
+vm.max_map_count = 262144
+
+> sudo sysctl -p
+```
+
+#### File Descriptor 오류 해결
+```
+> sudo vi /etc/security/limits.conf
+# 아래 내용 추가 (rts는 사용자 계정명)
+* hard nofile 70000
+* soft nofile 70000
+root hard nofile 70000
+root soft nofile 70000
+
+# 적용을 위해 콘솔을 닫고 다시 연결한다.
+# 적용되었는지 확인
+> ulimit -a
+core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 59450
+max locked memory       (kbytes, -l) 64
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 70000  #--> 정상적으로 적용됨을 확인함
+```
 
 #### Disable swapping (선택)
 ```

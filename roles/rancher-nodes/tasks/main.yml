@@ -88,5 +88,7 @@
         - /var/lib/rancher:/var/lib/rancher
       command: "{{ rancher_token.json['registrationUrl'] }}"
       state: started
+      env:
+        CATTLE_HOST_LABELS: "{{ host_rancher_label }}"
   when: "{{ 'rancher-agent' not in containers.stdout }}"
   become: true

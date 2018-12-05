@@ -33,10 +33,7 @@ hq_mem: "1024m"
 
 es_service_name: "es_service_node"
 
-## Staging docker registry address
-# docker_es: "registry.dataplatform.io/dpcore/es-gotty:6.3.1"
-# docker_kibana: "registry.dataplatform.io/dpcore/kibana-gotty:6.3.1"
-# docker_hq: "registry.dataplatform.io/dpcore/elasticsearch-hq:3.4.1"
+
 
 # Auto Installing docker registry address
 docker_es: "docker.registry.server:5000/dpcore/es-gotty:6.3.1"

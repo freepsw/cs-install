@@ -13,6 +13,19 @@ chmod u+x install_ansible.sh
 ./install_ansible.sh
 ```
 
+## System setting
+### Add user
+- 패스워드 암호화
+```
+> python -c 'import crypt; print crypt.crypt("freepsw", "$1$SomeSalt$")'
+```
+
+- AWS에서 ssh 암호로 접속가능하도록 사용자 생성하기
+- https://aws.amazon.com/ko/premiumsupport/knowledge-center/new-user-accounts-linux-instance/
+```
+> sudo adduser new_user --disabled-password
+```
+
 ## Install Docker
 
 ### Get pip
@@ -147,7 +160,7 @@ sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/ru
 
 ```
 > vi /home/freepsw_02/dpbds-cloudsearch/core-module-cloudsearch/src/main/resources/profiles/docker/config-cloudsearch.properties
-> mvn clean package -DskipTests=true -P docker -pl core-module-cloudsearch -am
+> mvn clean package -DskipTests=true -P docker_staging -pl core-module-cloudsearch -am
 > docker build . -t docker.registry.server:5000/dpcore/core-module-cloudsearch
 > docker save docker.registry.server:5000/dpcore/core-module-cloudsearch | gzip -c > core-module-cloudsearch.tar.gz
 > docker push docker.registry.server:5000/dpcore/core-module-cloudsearch
@@ -174,7 +187,7 @@ rancher_api_key_pass: "SPdGTa6JtLR5KTsDEeaSyRpLEQQXLpPzXbeFBuYo"
 # Docker-registry url 변경
 docker_es: "docker.registry.server:5000/dpcore/es-gotty:6.3.1"
 docker_kibana: "docker.registry.server:5000/dpcore/kibana-gotty:6.3.1"
-docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1"
+docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0"
 ```
 
 ### Build elasticsearch docker Images and push to Docker_Registry
@@ -193,9 +206,14 @@ docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1"
 > docker save docker.registry.server:5000/dpcore/kibana-gotty:6.3.1 | gzip -c > docker-kibana.tar.gz
 > docker push docker.registry.server:5000/dpcore/kibana-gotty:6.3.1
 
-> docker build . -t docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0
-> docker save docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0 | gzip -c > docker-es-hq.tar.gz
-> docker push docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0
+
+# ElasticHQ는 build하여 사용했을때 gunicorn 오류가 발생함
+# 그래서 docker pull로 다운받은 이미지를 save하여 저장함.
+> docker build . -t docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1
+> docker pull elastichq/elasticsearch-hq:latest
+>  docker tag elastichq/elasticsearch-hq docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1
+> docker save docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1 | gzip -c > docker-es-hq.tar.gz
+> docker push docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1
 >
 ```
 
@@ -215,6 +233,64 @@ docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.1"
 > docker build . -t docker.registry.server:5000/dpcore/core-sso-server:stg02
 > docker save docker.registry.server:5000/dpcore/core-sso-server:stg02 | gzip -c > core-module-sso.tar.gz
 > docker push docker.registry.server:5000/dpcore/core-sso-server:stg02
+```
+
+
+## docker-core-api
+```
+> mvn clean package -DskipTests=true -Pdocker-stg -pl core-api-gateway -am
+> docker build . -t docker.registry.server:5000/dpcore/core-api-gateway:stg02
+> docker save docker.registry.server:5000/dpcore/core-api-gateway:stg02 | gzip -c > core-module-api.tar.gz
+> docker push docker.registry.server:5000/dpcore/core-api-gateway:stg02
+```
+
+## docker-frontweb-cs
+```
+> git clone  --recurse-submodules https://xxxx.xxxx/scm/dpbds/cloudsearch.web.git
+> cd cloudsearch.web
+> docker build . --build-arg PROFILE="stg" -t docker.registry.server:5000/dpcore/cloudsearch-nginx-stg
+> docker save docker.registry.server:5000/dpcore/cloudsearch-nginx-stg | gzip -c > web-module-cs.tar.gz
+> docker push docker.registry.server:5000/dpcore/cloudsearch-nginx-stg
+```
+
+### cz 인증없이, 자제 인증서버(core-api-sso)를 활용하기 위한 설정들 ()
+
+#### envieonment.stg.ts
+- core-api-gateway의 url로 변경
+```
+api: changeDomain('http://35.187.xxx.xxx:7080'),
+```
+
+#### common-module-environment.common.ts
+##### xxx_sso 설정
+- 실행할 Environment에 해당하는 apiToken 변경
+- cloudz를 이용한 인증을 하지 않으므로, enable: false 변경
+- useCookieDomain를 false로 변경 (cookie명을 domain name을 사용하지 않음)
+- Service url은 로그인 했을때 연결되는 url을 의미함.
+  - 포털이 있는 경우 : 포털의 해당 url을 지정하며, nginx에서 url mapping을 하여 서비스로 연결됨. (Loadbalance를 주로 활용)
+  - 서비스만 존재하는 경우 : 해당 서비스로 직접 연결할 수 있도록 url을 변경
+```
+export const CommonModuleEnvironmentSTG = {
+  apiToken: {
+    url: 'http://35.187.xxx.xxx:7080'
+  },
+  xxxx_sso: {
+    domainName: '.xxxx.co.kr',
+    login: {
+      enable: false, // false : on-premiss 용 login
+      url: 'https://dev-auth.xxxx.co.kr/auth',
+      tokenRefreshConditionMin : 5,
+      requestMessageId: ''
+    }
+  },
+  useCookieDomain: false,
+  serviceUrls: {
+    CLOUD_SEARCH: {
+      label: 'Cloud Search',
+      url: 'http://localhost:4203',
+      console: '#',
+      use: true
+    },
 ```
 
 
@@ -271,9 +347,7 @@ CMD ["/usr/sbin/sshd", "-D"]
 > docker run -d -p 2202:22 -v $HOME/temp/ansible/script:/home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script --add-host rancher-server:35.187.xx.xxx  freepsw/ansible-1
 > ssh  -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no dpcore@35.187.xxx.xxx -p 2202
 
-
-
-sh /home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script/bin/create_es_cluster.sh /home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script helloworld 10001 15001 4096m 1000 2g C1 8EC0A7BA9B3659F5DF9B SPdGTa6JtLR5KTsDEeaSyRpLEQQXLpPzXbeFBuYo
+> sh /home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script/bin/create_es_cluster.sh /home/dpcore/data-api-svc/core-module-cloudsearch-1.0-SNAPSHOT/script helloworld 10001 15001 4096m 1000 2g C1 8EC0A7BA9B3659F5DF9B SPdGTa6JtLR5KTsDEeaSyRpLEQQXLpPzXbeFBuYo
 ```
 
 

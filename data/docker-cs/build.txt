@@ -1,0 +1,15 @@
+#=================================================
+#poc04 젠킨스서버에서
+
+#!/bin/bash
+# 젠킨스 서버에서 사설 도커허브에 로그인합니다.
+docker login -u dpcore -p !Dpcore00 registry.dataplatform.io
+
+# 랜처에 frontweb스택의 cloudSearch-nginx 컨테이너 도커 이미지를 업데이트하여 배포합니다.
+# yml파일에 io.rancher.container.pull_image: always   옵션이 있는지 확인 필
+
+rancher --url http://xxx.xxx.xx:8080 --access-key 8EC0A7BA9B3659F5DF9B --secret-key SPdGTa6JtLR5KTsDEeaSyRpLEQQXLpPzXbeFBuYo --env Default up --force-upgrade -confirm-upgrade -d --pull -f /jenkins_dind_home/workspace/CloudSearch.WEB.STG/docker-compose-cloudsearch-stg.yml -s cloudsearch
+
+
+
+#=================================================

@@ -1,36 +1,32 @@
 ---
 
 - name: Install Rancher Server
-  hosts: "Server"
+  hosts: "AWS"
   gather_facts: no
   vars_files:
     - inventories/group_vars/main.yml
+  vars:
+     # created with:
+     # python -c 'import crypt; print crypt.crypt("freepsw", "$1$SomeSalt$")'
+    password: $1$SomeSalt$cb7pl7OwHhez6RBCGnxjL1
   tasks:
 
+  - name: Create a login user
+    user:
+      name: "{{ remote_user }}"
+      password: "{{ password }}"
+      groups: wheel  # Empty by default.
+      state: present
+      disabled-password: true
+    become: yes
 
-
-  # - name: Increase file descriptor count to 70000
-  #   lineinfile:
-  #     dest: ./limits.conf
-  #     backup: yes
-  #     regexp: "{{ item.regexp }}"
-  #     line: "{{ item.line }}"
-  #   with_items:
-  #     - { regexp: '\* hard nofile 70000',   line: '* hard nofile 70000' }
-  #     - { regexp: '\* soft nofile 70000',   line: '* soft nofile 70000' }
-  #     - { regexp: 'root hard nofile 70000', line: 'root hard nofile 70000' }
-  #     - { regexp: 'root soft nofile 70000', line: 'root soft nofile 70000' }
-  #   become: true
-
-  - name: Increase nmap count to 262144
+  - name: Add user to sudoers file
     lineinfile:
-      dest: ./sysctl.conf
-      backup: yes
-      line: "{{ item.line }}"
-    with_items:
-      - { regexp: 'vm.max_map_count = 262144',    line: 'vm.max_map_count = 262144' }
-    become: true
-
+      path: /etc/sudoers
+      regexp: '^ansibleuser'
+      line: '{{ remote_user }} ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+    become: yes
 
   # - name: Commenting a line using the regualr expressions in Ansible.
   #   replace:
@@ -73,10 +69,6 @@
 
   - name: Print results
     debug: msg="{{ output_msg }}"
-
-
-  - name: Create temporary directory to save install file
-    file: path="{{ remote_temp_directory }}" state=directory mode=0755
 
 # - name: copy server's public key to agent server
 #   hosts: all

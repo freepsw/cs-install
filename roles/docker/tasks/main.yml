@@ -32,6 +32,7 @@
 - name: Create temporary directory to save install file
   file: path="{{ remote_temp_directory }}" state=directory mode=0755
 
+
 - name: Copy docker install files to ~/home/user/temp directory
   copy:
     src: "{{ docker_data_folder }}"

@@ -1,9 +1,24 @@
 ---
 
-- name: Installing and configuring Docker
-  hosts: "Agents"
+# - name: Installing Rancher-Agents for core api
+#   hosts: "CORE_API"
+#   gather_facts: no
+#   vars_files:
+#    - inventories/group_vars/main.yml
+#   vars:
+#   vars:
+#     host_rancher_label: backend=01
+#   roles:
+#    - { role: rancher-nodes, tags: ["rancher-node"] }
+
+
+- name: Installing Rancher-Agents for Elasticsearch cluster
+  hosts: "ES_CLUSTER"
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml
+  vars:
+  vars:
+    host_rancher_label: cloudsearch=true
   roles:
    - { role: rancher-nodes, tags: ["rancher-node"] }

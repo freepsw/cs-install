@@ -26,13 +26,29 @@
    - { role: rancher-server, tags: ["rancher-server"] }
 
 
-- name: Install Rancher Agents
-  hosts: "Agents"
+- name: Installing Rancher-Agents for core api
+  hosts: "CORE_API"
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml
+  vars:
+  vars:
+    host_rancher_label: backend=01
   roles:
    - { role: rancher-nodes, tags: ["rancher-node"] }
+
+
+- name: Installing Rancher-Agents for Elasticsearch cluster
+  hosts: "ES_CLUSTER"
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  vars:
+  vars:
+    host_rancher_label: cloudsearch=true
+  roles:
+   - { role: rancher-nodes, tags: ["rancher-node"] }
+
 
 - name: Install Rancher CLI
   hosts: Server
@@ -73,6 +89,40 @@
    - inventories/group_vars/main.yml
   roles:
    - { role: docker-core-cs, tags: ["docker-core-cs"] }
+
+
+- name: Installing and configuring dpcore-module-oauth
+  hosts: Server
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-core-oauth, tags: ["docker-core-oauth"] }
+
+- name: Installing and configuring dpcore-module-sso
+  hosts: Server
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-core-sso, tags: ["docker-core-sso"] }
+
+
+- name: Installing and configuring dpcore-module-api
+  hosts: Server
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-core-api, tags: ["docker-core-api"] }
+
+- name: Installing and configuring dpcore-web-cs
+  hosts: Server
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-web-cs, tags: ["docker-web-cs"] }
 
 
 #

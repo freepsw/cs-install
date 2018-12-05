@@ -11,7 +11,7 @@ docker_registry_host_name: docker.registry.server
 hosts_items:
   - "{{ hostvars['server1'].ansible_ssh_host }} {{ rancher_server_host_name }}"
   - "{{ hostvars['server1'].ansible_ssh_host }} {{ docker_registry_host_name }}"
-
+hosts_rancher_label: "io.rancher.host.os=linux"
 
 # Rancher
 rancher_server_version: "v1.6.23"
@@ -57,7 +57,7 @@ mariadb_dump_cs_folder: core-cs
 mariadb_dump_sso_folder: core-sso
 mariadb_compose_files_folder: "{{ remote_temp_directory }}/{{ mariadb_data_folder }}/compose-folder"
 mairadb_image: docker-mariadb-10-3.tar.gz
-mairadb_rancher_label: io.rancher.host.os=linux
+mairadb_rancher_label: backend=01
 mariadb_cs_user: cloudsearch
 mariadb_cs_password: '!cloudsearch00'
 
@@ -67,14 +67,15 @@ dpcore_log_module_folder:
   - core-sso-server
   - core-oauth-server
   - core-module-cloudsearch
+  - core-api-gateway
 dpcore_compose_files_folder: "{{ remote_temp_directory }}/core-modules/compose-folder"
-dpcore_rancher_label: io.rancher.host.os=linux
+dpcore_rancher_label: backend=01
 dpcore_cloudsearch_image: core-module-cloudsearch.tar.gz
 dpcore_elasticsearch_images:
   - file: docker-es.tar.gz
     image: "{{ docker_registry_url}}/dpcore/es-gotty:6.3.1"
   - file: docker-es-hq.tar.gz
-    image: "{{ docker_registry_url}}/dpcore/elasticsearch-hq:3.4.0"
+    image: "{{ docker_registry_url}}/dpcore/elasticsearch-hq:3.4.1"
   - file: docker-kibana.tar.gz
     image: "{{ docker_registry_url}}/dpcore/kibana-gotty:6.3.1"
 # dpcore_elasticsearch_image_name: "{{ docker_registry_url}}/dpcore/es-gotty:6.3.1"
@@ -100,3 +101,16 @@ dpcore_oauth_folder: core-oauth-server
 dpcore_oauth_images:
   - file: core-module-oauth.tar.gz
     image: "{{ docker_registry_url}}/dpcore/core-oauth-server:stg02"
+
+## dpcore-api module
+dpcore_api_folder: core-sso-server
+dpcore_api_images:
+  - file: core-module-api.tar.gz
+    image: "{{ docker_registry_url}}/dpcore/core-api-gateway:stg02"
+
+
+## dpcore-web-cs frontend
+dpcore_web_cs_folder: web-module-cs
+dpcore_web_cs_images:
+  - file: web-module-cs.tar.gz
+    image: "{{ docker_registry_url}}/dpcore/cloudsearch-nginx-stg"

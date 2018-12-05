@@ -108,7 +108,7 @@
 
 
 # dpcore-module-oauth
-- name: Copy cpcore-module-oauth  related images to server
+- name: Copy dpcore-module-oauth  related images to server
   copy:
     src: "data/images/{{ item.file }}"
     dest: "{{ remote_temp_directory }}/images/"
@@ -116,7 +116,7 @@
   with_items: "{{ dpcore_oauth_images }}"
 
 
-- name: Load cpcore-module-oauth image from archive and push to a private registry
+- name: Load dpcore-module-oauth image from archive and push to a private registry
   docker_image:
     name: "{{ item.image }}"
     repository: "{{ item.image }}"
@@ -128,7 +128,7 @@
 
 
 # dpcore-module-sso
-- name: Copy cpcore-module-sso related images to server
+- name: Copy dpcore-module-sso related images to server
   copy:
     src: "data/images/{{ item.file }}"
     dest: "{{ remote_temp_directory }}/images/"
@@ -136,7 +136,7 @@
   with_items: "{{ dpcore_sso_images }}"
 
 
-- name: Load cpcore-module-sso image from archive and push to a private registry
+- name: Load dpcore-module-sso image from archive and push to a private registry
   docker_image:
     name: "{{ item.image }}"
     repository: "{{ item.image }}"
@@ -145,3 +145,41 @@
     force: yes
   with_items: "{{ dpcore_sso_images }}"
   become: true
+
+# dpcore-module-api
+- name: Copy dpcore-module-api related images to server
+  copy:
+    src: "data/images/{{ item.file }}"
+    dest: "{{ remote_temp_directory }}/images/"
+    force: no
+  with_items: "{{ dpcore_api_images }}"
+
+
+- name: Load dpcore-module-api image from archive and push to a private registry
+  docker_image:
+    name: "{{ item.image }}"
+    repository: "{{ item.image }}"
+    push: yes
+    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+    force: yes
+  with_items: "{{ dpcore_api_images }}"
+  become: true
+
+# dpcore-web-cloudsearh
+# - name: Copy dpcore-web-cloudsearh related images to server
+#   copy:
+#     src: "data/images/{{ item.file }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
+#   with_items: "{{ dpcore_web_cs_images }}"
+#
+#
+# - name: Load dpcore-web-cloudsearh image from archive and push to a private registry
+#   docker_image:
+#     name: "{{ item.image }}"
+#     repository: "{{ item.image }}"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+#     force: yes
+#   with_items: "{{ dpcore_web_cs_images }}"
+#   become: true

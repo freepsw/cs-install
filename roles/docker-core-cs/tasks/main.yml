@@ -32,9 +32,9 @@
 #   become: true
 
 
-- name: Create dpcore-module cloudsearch log directory
-  file: path="{{ dpcore_log_folder }}/core-module-cloudsearch" state=directory mode=0755
-  become: true
+# - name: Create dpcore-module cloudsearch log directory
+#   file: path="{{ dpcore_log_folder }}/core-module-cloudsearch" state=directory mode=0755
+#   become: true
 
 - name: Create temporary directory to save rancher compose file
   file: path="{{ remote_temp_directory }}/docker-cs/core-module" state=directory mode=0755

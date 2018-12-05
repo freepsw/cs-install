@@ -1,0 +1,9 @@
+---
+
+- name: Installing and configuring dpcore-web-cs
+  hosts: Server
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  roles:
+   - { role: docker-web-cs, tags: ["docker-web-cs"] }

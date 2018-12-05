@@ -1,0 +1,15 @@
+version: '2'
+services:
+  core-api-gateway: #랜처 dpcore스택 (그룹)안에서 사용핧 서비스컨테이너명
+    image: {{ docker_registry_url }}/dpcore/core-api-gateway:stg02
+    hostname: core-api-gateway                 #도커클라이언트서버의 호스트명
+    ports:
+    - 7070:7070/tcp               #호스트서버포트:도커클라이언트서버포트 expose포트들 기입
+    stdin_open: true
+    tty: true                     #using bash TTY mode (pseudo-TTY)
+    cpu_shares: 1024              #default cpu shares constant
+    volumes:
+    - {{ dpcore_log_folder }}/core-api-gateway:{{ dpcore_log_folder }}/core-api-gateway  #로그들의 경로는 호스트 서버의 log_data/app이름 이며, 도커 클라이언트서버의 볼륨마운트를 호스트로 뺍니다.
+    labels:
+      io.rancher.scheduler.affinity:host_label: {{ dpcore_rancher_label }}
+      io.rancher.container.pull_image: always
