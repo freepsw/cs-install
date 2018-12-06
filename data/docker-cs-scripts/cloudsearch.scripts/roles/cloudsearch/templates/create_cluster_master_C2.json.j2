@@ -12,6 +12,7 @@
              \"io.rancher.scheduler.affinity:host_label\": \"{{ label_text }}\" \
           }, \
           \"environment\": {\
+              \"TZ\": \"Asia/Seoul\",\
               \"network.host\": \"0.0.0.0\",\
               \"cluster.name\": \"{{ es_cluster_name }}\", \
               \"node.name\": \"MasterNode\", \
@@ -31,6 +32,7 @@
              \"io.rancher.scheduler.affinity:host_label\": \"{{ label_text }}\" \
           }, \
           \"environment\": {\
+              \"TZ\": \"Asia/Seoul\",\
               \"network.host\": \"0.0.0.0\",\
               \"cluster.name\": \"{{ es_cluster_name }}\", \
               \"node.name\": \"DataNode1\", \
@@ -53,6 +55,7 @@
              \"io.rancher.scheduler.affinity:host_label\": \"{{ label_text }}\" \
           }, \
           \"environment\": {\
+              \"TZ\": \"Asia/Seoul\",\
               \"network.host\": \"0.0.0.0\",\
               \"cluster.name\": \"{{ es_cluster_name }}\", \
               \"node.name\": \"DataNode2\", \

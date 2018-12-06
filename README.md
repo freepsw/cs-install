@@ -551,3 +551,6 @@ Password:
 ## [TO-DO]
 ### dpcore-module-cs
 - log4j설정에서 log directory 수정 /data/log_data (public 환경과 동일하게)
+
+### Configurable Docker containers for multiple environments
+- https://tryolabs.com/blog/2015/03/26/configurable-docker-containers-for-multiple-environments/
