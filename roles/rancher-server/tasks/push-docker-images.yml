@@ -5,20 +5,39 @@
   file: path="{{ remote_temp_directory }}/images" state=directory mode=0755
 
 
-- name: Copy rancher/agent image file to ~/home/user/temp directory
+# - name: Copy rancher/agent image file to ~/home/user/temp directory
+#   copy:
+#     src: "{{ docker_image_file_folder }}/{{ rancher_agent_image }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
+#
+# - name: Load rancher/agent image from archive and push to a private registry
+#   docker_image:
+#     name: "rancher/agent"
+#     repository: docker.registry.server:5000/rancher/agent
+#     tag: "{{ rancher_agent_version }}"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ rancher_agent_image }}"
+#   become: true
+
+- name: Copy rancher/agent related images to server
   copy:
-    src: "{{ docker_image_file_folder }}/{{ rancher_agent_image }}"
+    src: "data/images/{{ item.file }}"
     dest: "{{ remote_temp_directory }}/images/"
     force: no
+  with_items: "{{ rancher_agents_images }}"
 
-- name: Load rancher/agent image from archive and push to a private registry
+
+- name: Load rancher/agent related images to a private registry
   docker_image:
-    name: "rancher/agent"
-    repository: docker.registry.server:5000/rancher/agent
-    tag: "{{ rancher_agent_version }}"
+    name: "{{ item.name }}"
+    repository: "{{ item.image }}"
     push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ rancher_agent_image }}"
+    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+    force: yes
+  with_items: "{{ rancher_agents_images }}"
   become: true
+
 
 # Rancher/Server
 - name: Copy rancher/server image file to ~/home/user/temp directory
@@ -54,57 +73,57 @@
   become: true
 
 
-# Dpcore-core-cloudsearch
-- name: Copy dpcore-module-cloudsearch image file to ~/home/user/temp directory
-  copy:
-    src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_image }}"
-    dest: "{{ remote_temp_directory }}/images/"
-    force: no
-
-- name: Load dpcore-module-cloudsearch image from archive and push to a private registry
-  docker_image:
-    name: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch"
-    repository: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_image }}"
-    force: yes
-  become: true
-
-# Dpcpre-core-cloudsearch-scripts
-- name: Copy dpcore-module-cloudsearch-scripts image file to ~/home/user/temp directory
-  copy:
-    src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_scripts_image }}"
-    dest: "{{ remote_temp_directory }}/images/"
-    force: no
-
-- name: Load dpcore-module-cloudsearch-scripts image from archive and push to a private registry
-  docker_image:
-    name: "{{ docker_registry_url }}/{{ dpcore_cloudsearch_scripts_image_name }}"
-    repository: "{{ docker_registry_url }}/{{ dpcore_cloudsearch_scripts_image_name }}"
-    tag: "v1.0.0"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_scripts_image }}"
-    force: yes
-  become: true
-
-# elastic search images
-- name: Copy elasticsearch related images to server
-  copy:
-    src: "data/images/{{ item.file }}"
-    dest: "{{ remote_temp_directory }}/images/"
-    force: no
-  with_items: "{{ dpcore_elasticsearch_images }}"
-
-
-- name: Load elasticsearch image from archive and push to a private registry
-  docker_image:
-    name: "{{ item.image }}"
-    repository: "{{ item.image }}"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
-    force: yes
-  with_items: "{{ dpcore_elasticsearch_images }}"
-  become: true
+# # Dpcore-core-cloudsearch
+# - name: Copy dpcore-module-cloudsearch image file to ~/home/user/temp directory
+#   copy:
+#     src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_image }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
+#
+# - name: Load dpcore-module-cloudsearch image from archive and push to a private registry
+#   docker_image:
+#     name: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch"
+#     repository: "{{ docker_registry_url }}/dpcore/core-module-cloudsearch"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_image }}"
+#     force: yes
+#   become: true
+#
+# # Dpcpre-core-cloudsearch-scripts
+# - name: Copy dpcore-module-cloudsearch-scripts image file to ~/home/user/temp directory
+#   copy:
+#     src: "{{ docker_image_file_folder }}/{{ dpcore_cloudsearch_scripts_image }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
+#
+# - name: Load dpcore-module-cloudsearch-scripts image from archive and push to a private registry
+#   docker_image:
+#     name: "{{ docker_registry_url }}/{{ dpcore_cloudsearch_scripts_image_name }}"
+#     repository: "{{ docker_registry_url }}/{{ dpcore_cloudsearch_scripts_image_name }}"
+#     tag: "v1.0.0"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ dpcore_cloudsearch_scripts_image }}"
+#     force: yes
+#   become: true
+#
+# # elastic search images
+# - name: Copy elasticsearch related images to server
+#   copy:
+#     src: "data/images/{{ item.file }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
+#   with_items: "{{ dpcore_elasticsearch_images }}"
+#
+#
+# - name: Load elasticsearch image from archive and push to a private registry
+#   docker_image:
+#     name: "{{ item.image }}"
+#     repository: "{{ item.image }}"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+#     force: yes
+#   with_items: "{{ dpcore_elasticsearch_images }}"
+#   become: true
 
 
 # dpcore-module-oauth
@@ -165,21 +184,21 @@
   with_items: "{{ dpcore_api_images }}"
   become: true
 
-# dpcore-web-cloudsearh
-- name: Copy dpcore-web-cloudsearh related images to server
-  copy:
-    src: "data/images/{{ item.file }}"
-    dest: "{{ remote_temp_directory }}/images/"
-    force: no
-  with_items: "{{ dpcore_web_cs_images }}"
-
-
-- name: Load dpcore-web-cloudsearh image from archive and push to a private registry
-  docker_image:
-    name: "{{ item.image }}"
-    repository: "{{ item.image }}"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
-    force: yes
-  with_items: "{{ dpcore_web_cs_images }}"
-  become: true
+# # dpcore-web-cloudsearh
+# - name: Copy dpcore-web-cloudsearh related images to server
+#   copy:
+#     src: "data/images/{{ item.file }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
+#   with_items: "{{ dpcore_web_cs_images }}"
+#
+#
+# - name: Load dpcore-web-cloudsearh image from archive and push to a private registry
+#   docker_image:
+#     name: "{{ item.image }}"
+#     repository: "{{ item.image }}"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+#     force: yes
+#   with_items: "{{ dpcore_web_cs_images }}"
+#   become: true

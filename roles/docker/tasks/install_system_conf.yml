@@ -1,8 +1,0 @@
----
-
-- name: Add host name and ip to /etc/hosts 
-  lineinfile:
-    dest: /etc/hosts
-    line: "{{ item }}"
-  with_items: "{{ hosts_items }}"
-  become: true

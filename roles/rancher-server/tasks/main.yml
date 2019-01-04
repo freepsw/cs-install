@@ -37,6 +37,8 @@
 #     push: yes
 #     load_path: "{{ remote_temp_directory }}/{{ rancher_server_image }}"
 
+# 그리고 rancher-server 설치시 sudo docker run -d
+# -v /data/rancher_mysql:/var/lib/mysql --restart=unless-stopped -p 8080:8080 rancher/server
 
 - name: Run the Rancher/server contianer
   docker_container:
@@ -45,6 +47,11 @@
       restart_policy: always
       ports:
         - "{{ rancher_port }}:8080"
+      volumes:
+         - "/data/rancher_mysql:/var/lib/mysql" 
+      # devices:
+      #  - "/data/rancher_mysql:/var/lib/mysql"
+      restart: yes
   become: true
 
 - name: Wait for the Rancher server to start

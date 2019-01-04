@@ -1,0 +1,46 @@
+---
+
+
+
+
+- name: Add user(dpcore)
+  hosts: All
+  gather_facts: no
+  vars_files:
+    - inventories/group_vars/main.yml
+  vars:
+     # created with:
+     # python -c 'import crypt; print crypt.crypt("hadoop1234", "$1$SomeSalt$")'
+    password: $1$SomeSalt$Nr4pB1yhv/M4Is8EsMBMJ1
+  tasks:
+
+  - name: Create a login user
+    user:
+      name: "{{ remote_user }}"
+      password: "{{ password }}"
+      groups: wheel  # Empty by default.
+      state: present
+      # disabled-password: true
+    become: yes
+
+  - name: Add user to sudoers file
+    lineinfile:
+      path: /etc/sudoers
+      regexp: '^ansibleuser'
+      line: '{{ remote_user }} ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+    become: yes
+
+
+- name: Copy system shell to all host
+  hosts: All
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  tasks:
+    - name: Copy db dump file
+      copy:
+        src: "data/system/docker_lvcreate.sh"
+        dest: "/home/{{ remote_user }}/docker_lvcreate.sh"
+        mode: 0777
+        force: no

@@ -25,9 +25,6 @@ rancher_port: 8080
 rancher_server_image: "racher_server.tar.gz"
 rancher_agent_image: "racher_agent.tar.gz"
 rancher_agents_images:
-  - file: racher_agent.tar.gz
-    name: rancher/agent:v1.2.11
-    image: "{{ docker_registry_url}}/rancher/agent:v1.2.11"
   - file: rancher_net-v0.13.tar.gz
     name: rancher/net:v0.13.17
     image: "{{ docker_registry_url}}/rancher/net:v0.13.17"

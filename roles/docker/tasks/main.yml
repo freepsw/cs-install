@@ -43,6 +43,7 @@
   yum:
      name: "{{ remote_temp_directory }}/docker/{{ docker_rpm_file }}"
      state: present
+     use_backend: yum3
   become: true
 
 

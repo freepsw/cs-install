@@ -13,6 +13,7 @@
        "io.rancher.scheduler.affinity:host_label": "{{ label_text }}"
     },
     "environment": {
+      "TZ": "Asia/Seoul",
       "network.host": "0.0.0.0",
       "cluster.name": "{{ es_cluster_name }}",
       "node.name": "{{ es_node_name }}",

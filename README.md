@@ -527,7 +527,7 @@ ENV ANSIBLE_LIBRARY /ansible/library
 WORKDIR /ansible/playbooks
 
 ENTRYPOINT ["ansible-playbook"]
-```
+```7
 
 ### docker build and run
 ```
@@ -554,3 +554,15 @@ Password:
 
 ### Configurable Docker containers for multiple environments
 - https://tryolabs.com/blog/2015/03/26/configurable-docker-containers-for-multiple-environments/
+
+
+### Mariadb
+#### backup files
+- https://www.elliotjreed.com/backup-and-restore-mysql-mariadb-database-from-docker-container/
+```
+> docker exec DATABASECONTAINER /usr/bin/mysqldump -u DATABASEUSER --password=DATABASEPASSWORD DATABASE > backup.sql
+> cat backup.sql | docker exec -i DATABASECONTAINER /usr/bin/mysql -u DATABASEUSER --password=DATABASEPASSWORD DATABASE
+```
+#### update rancher info
+- https://stackoverflow.com/questions/34779894/executing-sql-scripts-on-docker-container
+- docker exec <container_id> /bin/sh -c 'mysql -u root -ppassword </dummy.sql'

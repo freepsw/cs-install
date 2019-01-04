@@ -13,7 +13,7 @@
 
 
 - name: Installing Rancher-Agents for Elasticsearch cluster
-  hosts: "ES_CLUSTER"
+  hosts: "Agents"
   gather_facts: no
   vars_files:
    - inventories/group_vars/main.yml

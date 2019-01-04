@@ -55,6 +55,7 @@
              \"io.rancher.scheduler.affinity:host_label\": \"{{ label_text }}\" \
           }, \
           \"environment\": {\
+              \"TZ\": \"Asia/Seoul\",\
               \"elasticsearch.url\": \"http://elasticsearch:{{ es_port }}\" \
           },\
           \"links\": [ \"MasterNode:elasticsearch\" ], \
@@ -68,6 +69,9 @@
           \"labels\": { \
              \"io.rancher.scheduler.affinity:host_label\": \"{{ label_text }}\" \
           }, \
+          \"environment\": {\
+              \"TZ\": \"Asia/Seoul\"\
+          },\
           \"links\": [ \"MasterNode:elasticsearch\" ], \
           \"stdin_open\": true,\
           \"tty\": true,\

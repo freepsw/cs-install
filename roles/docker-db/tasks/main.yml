@@ -12,21 +12,22 @@
 
 
 # Mariadb for cloudsearch
-- name: Copy docker/rancher-compose file for cloudserach database
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: 0644
-  with_items:
-    - {src: 'templates/{{ mariadb_dump_cs_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}/docker-compose.yml'}
-    - {src: 'templates/{{ mariadb_dump_cs_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}/rancher-compose.yml'}
+# - name: Copy docker/rancher-compose file for cloudserach database
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ item.dest }}"
+#     mode: 0644
+#   with_items:
+#     - {src: 'templates/{{ mariadb_dump_cs_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}/docker-compose.yml'}
+#     - {src: 'templates/{{ mariadb_dump_cs_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}/rancher-compose.yml'}
+#
+# - name: Run ranche cli for mariadb container (Cloudsearch)
+#   shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s meta-db -d"
+#   args:
+#     chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}"
 
-- name: Run ranche cli for mariadb container (Cloudsearch)
-  shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s meta-db -d"
-  args:
-    chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}"
 
-
+# Mariadb for sso
 - name: Copy docker/rancher-compose file for cloudserach database
   template:
     src: "{{ item.src }}"
