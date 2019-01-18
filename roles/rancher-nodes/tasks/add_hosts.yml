@@ -11,7 +11,7 @@
 - name:  Comment out existing docker.registry.server ip
   replace:
     path: /etc/hosts
-    regexp: '(.*docker\.registry\.server)'
+    regexp: '(.*registry\.accuinsight\.io)'
     replace: '#\1'
     backup: yes
   become: true

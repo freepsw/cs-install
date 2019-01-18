@@ -40,6 +40,11 @@
 # 그리고 rancher-server 설치시 sudo docker run -d
 # -v /data/rancher_mysql:/var/lib/mysql --restart=unless-stopped -p 8080:8080 rancher/server
 
+- name: Create /data/rancher_mysql directory
+  file: path=/data/rancher_mysql state=directory mode=0777
+  become: true
+
+
 - name: Run the Rancher/server contianer
   docker_container:
       name: "{{ rancher_name }}"
@@ -48,9 +53,7 @@
       ports:
         - "{{ rancher_port }}:8080"
       volumes:
-         - "/data/rancher_mysql:/var/lib/mysql" 
-      # devices:
-      #  - "/data/rancher_mysql:/var/lib/mysql"
+         - "/data/rancher_mysql:/var/lib/mysql"
       restart: yes
   become: true
 

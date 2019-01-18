@@ -1,78 +1,68 @@
 ---
-
-- name: Installing and configuring Docker
-  hosts: Server:Agents
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  roles:
-   - { role: docker, tags: ["docker"] }
-
-
-- name: Install Docker-registry and registry-web
-  hosts: "Server"
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  roles:
-   - { role: docker-registry, tags: ["docker-registry"] }
-
-- name: Install Rancher server and push docker images to docker-registry
-  hosts: "Server"
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  roles:
-   - { role: rancher-server, tags: ["rancher-server"] }
-
-
-- name: Installing Rancher-Agents for core api
-  hosts: "CORE_API"
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  vars:
-  vars:
-    host_rancher_label: backend=01
-  roles:
-   - { role: rancher-nodes, tags: ["rancher-node"] }
-
-
-- name: Installing Rancher-Agents for Elasticsearch cluster
-  hosts: "ES_CLUSTER"
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  vars:
-  vars:
-    host_rancher_label: cloudsearch=true
-  roles:
-   - { role: rancher-nodes, tags: ["rancher-node"] }
-
-
-- name: Install Rancher CLI
-  hosts: Server
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  roles:
-   - { role: rancher-cli, tags: ["rancher-cli"] }
-
-# - name: Copy mariadb-cs dump file
-#   hosts: Agents
+# - import_playbook: system_setting.yml
+#
+# - name: Installing and configuring Docker
+#   hosts: Server:Agents
 #   gather_facts: no
 #   vars_files:
 #    - inventories/group_vars/main.yml
-#   tasks:
-#     - name: Create temporary directory to save rancher compose file
-#       file: path="{{ remote_temp_directory }}/{{ mariadb_data_folder }}" state=directory mode=0755
+#   roles:
+#    - { role: docker, tags: ["docker"] }
+
+# - name: Install Docker-registry and registry-web
+#   hosts: "Server"
+#   gather_facts: no
+#   vars_files:
+#    - inventories/group_vars/main.yml
+#   roles:
+#    - { role: docker-registry, tags: ["docker-registry"] }
 #
-#     - name: Copy db dump file
-#       copy:
-#         src: "data/{{ mariadb_data_folder }}"
-#         dest: "{{ remote_temp_directory }}"
-#         mode: 0777
-#         force: no
+# - name: Install Rancher server and push docker images to docker-registry
+#   hosts: "Server"
+#   gather_facts: no
+#   vars_files:
+#    - inventories/group_vars/main.yml
+#   roles:
+#    - { role: rancher-server, tags: ["rancher-server"] }
+#
+#
+# - name: Installing Rancher-Agents for core api
+#   hosts: "CORE_API"
+#   gather_facts: no
+#   vars_files:
+#    - inventories/group_vars/main.yml
+#   vars:
+#   vars:
+#     host_rancher_label: backend=01
+#   roles:
+#    - { role: rancher-nodes, tags: ["rancher-node"] }
+
+# - name: Install Rancher CLI
+#   hosts: Server
+#   gather_facts: no
+#   vars_files:
+#    - inventories/group_vars/main.yml
+#   roles:
+#    - { role: rancher-cli, tags: ["rancher-cli"] }
+#
+
+## mariadb container가 실행되는 서버를 지정할 수 있다면,
+## hosts: DB 와 같이 특정 host에만 dump파일을 복사하도록 변경한다.
+- name: Copy mariadb dump file
+  hosts: Agents
+  gather_facts: no
+  vars_files:
+   - inventories/group_vars/main.yml
+  tasks:
+    - name: Create temporary directory to save rancher compose file
+      file: path="{{ remote_temp_directory }}/{{ mariadb_data_folder }}" state=directory mode=0755
+
+    - name: Copy db dump file
+      copy:
+        src: "data/{{ mariadb_data_folder }}"
+        dest: "{{ remote_temp_directory }}"
+        mode: 0777
+        force: no
 
 - name: Deploy mariadb conainer using rancher cli
   hosts: Server
@@ -81,69 +71,57 @@
    - inventories/group_vars/main.yml
   roles:
    - { role: docker-db, tags: ["docker-db"] }
-
-# - name: Deploy dpcore-module-cloudsearch  & scripts conainers using rancher cli
-#   hosts: Server
-#   gather_facts: no
-#   vars_files:
-#    - inventories/group_vars/main.yml
-#   roles:
-#    - { role: docker-core-cs, tags: ["docker-core-cs"] }
-
-
-- name: Installing and configuring dpcore-module-oauth
-  hosts: Server
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  roles:
-   - { role: docker-core-oauth, tags: ["docker-core-oauth"] }
-
-- name: Installing and configuring dpcore-module-sso
-  hosts: Server
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  roles:
-   - { role: docker-core-sso, tags: ["docker-core-sso"] }
-
-
-- name: Installing and configuring dpcore-module-api
-  hosts: Server
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  roles:
-   - { role: docker-core-api, tags: ["docker-core-api"] }
 #
-# - name: Installing and configuring dpcore-web-cs
-#   hosts: Server
-#   gather_facts: no
-#   vars_files:
-#    - inventories/group_vars/main.yml
-#   roles:
-#    - { role: docker-web-cs, tags: ["docker-web-cs"] }
-
-
+# # - name: Deploy dpcore-module-cloudsearch  & scripts conainers using rancher cli
+# #   hosts: Server
+# #   gather_facts: no
+# #   vars_files:
+# #    - inventories/group_vars/main.yml
+# #   roles:
+# #    - { role: docker-core-cs, tags: ["docker-core-cs"] }
 #
-# - name: Deploy dpcore-module-cloudsearch-scripts conainer using rancher cli
+#
+# - name: Installing and configuring dpcore-module-oauth
 #   hosts: Server
 #   gather_facts: no
 #   vars_files:
 #    - inventories/group_vars/main.yml
 #   roles:
-#    - { role: docker-cs-scripts, tags: ["docker-cs-scripts"] }
-
-
-- name: Copy system shell to all host
-  hosts: All
-  gather_facts: no
-  vars_files:
-   - inventories/group_vars/main.yml
-  tasks:
-    - name: Copy db dump file
-      copy:
-        src: "data/system/docker_lvcreate.sh"
-        dest: "/home/{{ remote_user }}/docker_lvcreate.sh"
-        mode: 0777
-        force: no
+#    - { role: docker-core-oauth, tags: ["docker-core-oauth"] }
+#
+# - name: Installing and configuring dpcore-module-sso
+#   hosts: Server
+#   gather_facts: no
+#   vars_files:
+#    - inventories/group_vars/main.yml
+#   roles:
+#    - { role: docker-core-sso, tags: ["docker-core-sso"] }
+#
+#
+# - name: Installing and configuring dpcore-module-api
+#   hosts: Server
+#   gather_facts: no
+#   vars_files:
+#    - inventories/group_vars/main.yml
+#   roles:
+#    - { role: docker-core-api, tags: ["docker-core-api"] }
+# #
+# # - name: Installing and configuring dpcore-web-cs
+# #   hosts: Server
+# #   gather_facts: no
+# #   vars_files:
+# #    - inventories/group_vars/main.yml
+# #   roles:
+# #    - { role: docker-web-cs, tags: ["docker-web-cs"] }
+#
+#
+# #
+# # - name: Deploy dpcore-module-cloudsearch-scripts conainer using rancher cli
+# #   hosts: Server
+# #   gather_facts: no
+# #   vars_files:
+# #    - inventories/group_vars/main.yml
+# #   roles:
+# #    - { role: docker-cs-scripts, tags: ["docker-cs-scripts"] }
+#
+#

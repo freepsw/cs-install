@@ -1,0 +1,23 @@
+version: '2'
+services:
+  rp-mariadb:
+    image: mariadb:10.3.10
+    hostname: rp-mariadb
+    cpu_shares: 3096
+    ulimits:
+      nofile:
+        soft: 500000
+        hard: 540000
+    environment:
+      MYSQL_ROOT_PASSWORD: '!Dpcore00'
+      TZ : 'Asia/Seoul'
+    ports:
+    - 3306/tcp
+    volumes:
+    - /data/rp_db:/var/lib/mysql
+    command: --character-set-server=utf8 --collation-server=utf8_general_ci
+    stdin_open: true
+    tty: true
+    privileged: true
+    labels:
+      io.rancher.scheduler.affinity:host_label: amp=12

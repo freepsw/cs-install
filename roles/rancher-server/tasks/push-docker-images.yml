@@ -73,6 +73,74 @@
   become: true
 
 
+
+
+#
+# # dpcore-module-oauth
+# - name: Copy dpcore-module-oauth  related images to server
+#   copy:
+#     src: "data/images/{{ item.file }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
+#   with_items: "{{ dpcore_oauth_images }}"
+#
+#
+# - name: Load dpcore-module-oauth image from archive and push to a private registry
+#   docker_image:
+#     name: "{{ item.image }}"
+#     repository: "{{ item.image }}"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+#     force: yes
+#   with_items: "{{ dpcore_oauth_images }}"
+#   become: true
+#
+#
+# # dpcore-module-sso
+# - name: Copy dpcore-module-sso related images to server
+#   copy:
+#     src: "data/images/{{ item.file }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
+#   with_items: "{{ dpcore_sso_images }}"
+#
+#
+# - name: Load dpcore-module-sso image from archive and push to a private registry
+#   docker_image:
+#     name: "{{ item.image }}"
+#     repository: "{{ item.image }}"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+#     force: yes
+#   with_items: "{{ dpcore_sso_images }}"
+#   become: true
+#
+# # dpcore-module-api
+# - name: Copy dpcore-module-api related images to server
+#   copy:
+#     src: "data/images/{{ item.file }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
+#   with_items: "{{ dpcore_api_images }}"
+#
+#
+# - name: Load dpcore-module-api image from archive and push to a private registry
+#   docker_image:
+#     name: "{{ item.image }}"
+#     repository: "{{ item.image }}"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
+#     force: yes
+#   with_items: "{{ dpcore_api_images }}"
+#   become: true
+
+
+
+################################################################################
+# Cloudsearch
+################################################################################
+
+
 # # Dpcore-core-cloudsearch
 # - name: Copy dpcore-module-cloudsearch image file to ~/home/user/temp directory
 #   copy:
@@ -124,65 +192,6 @@
 #     force: yes
 #   with_items: "{{ dpcore_elasticsearch_images }}"
 #   become: true
-
-
-# dpcore-module-oauth
-- name: Copy dpcore-module-oauth  related images to server
-  copy:
-    src: "data/images/{{ item.file }}"
-    dest: "{{ remote_temp_directory }}/images/"
-    force: no
-  with_items: "{{ dpcore_oauth_images }}"
-
-
-- name: Load dpcore-module-oauth image from archive and push to a private registry
-  docker_image:
-    name: "{{ item.image }}"
-    repository: "{{ item.image }}"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
-    force: yes
-  with_items: "{{ dpcore_oauth_images }}"
-  become: true
-
-
-# dpcore-module-sso
-- name: Copy dpcore-module-sso related images to server
-  copy:
-    src: "data/images/{{ item.file }}"
-    dest: "{{ remote_temp_directory }}/images/"
-    force: no
-  with_items: "{{ dpcore_sso_images }}"
-
-
-- name: Load dpcore-module-sso image from archive and push to a private registry
-  docker_image:
-    name: "{{ item.image }}"
-    repository: "{{ item.image }}"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
-    force: yes
-  with_items: "{{ dpcore_sso_images }}"
-  become: true
-
-# dpcore-module-api
-- name: Copy dpcore-module-api related images to server
-  copy:
-    src: "data/images/{{ item.file }}"
-    dest: "{{ remote_temp_directory }}/images/"
-    force: no
-  with_items: "{{ dpcore_api_images }}"
-
-
-- name: Load dpcore-module-api image from archive and push to a private registry
-  docker_image:
-    name: "{{ item.image }}"
-    repository: "{{ item.image }}"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ item.file }}"
-    force: yes
-  with_items: "{{ dpcore_api_images }}"
-  become: true
 
 # # dpcore-web-cloudsearh
 # - name: Copy dpcore-web-cloudsearh related images to server

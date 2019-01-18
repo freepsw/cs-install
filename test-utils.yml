@@ -6,5 +6,17 @@
   vars_files:
     - inventories/group_vars/main.yml
   tasks:
-  - name: print host var
-    debug: msg="{{ rancher_ip }}"
+  # - name: print host var
+  #   debug: msg="{{ rancher_ip }}"
+
+  - name: set rancher_cli string
+    set_fact:
+      output_msg: "{{ lookup('file', 'rancher_cli_log.json') | string }}"
+
+  - debug: msg="{{ output_msg }}"
+
+  - name: get rancher service id
+    set_fact:
+      rid: "{{ output_msg | regex_search('(?<=Found service core-mariadb.. .n)[1-9].{3}') }}"
+
+  - debug: msg="{{ rid }}"

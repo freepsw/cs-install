@@ -1,14 +1,96 @@
 ---
-
-# - name: Set facts
-#   set_fact:
-#     mariadb_compose_files_folder: "{{ remote_temp_directory }}/docker-db/compose-files"
-
+#
+- name: Set facts
+  set_fact:
+    mariadb_compose_files_folder: "{{ remote_temp_directory }}/docker-db/compose-files"
+#
 - name: Create temporary directory to save rancher compose file
   file: "path={{ item }} state=directory mode=0755"
   with_items:
-  - "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}"
+  - "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_api_folder }}"
   - "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}"
+  - "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}"
+#
+#
+#
+#
+# Mariadb for core-api-streaming, common, global_workflow
+- name: Copy docker/rancher-compose file for core-api database
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - {src: 'templates/{{ mariadb_dump_api_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_api_folder }}/docker-compose.yml'}
+    - {src: 'templates/{{ mariadb_dump_api_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_api_folder }}/rancher-compose.yml'}
+
+- name: Run ranche cli for mariadb container (core-api)
+  shell: "{{ remote_temp_directory }}/rancher/rancher --wait --debug --env Default up -s meta-db -d"
+  args:
+    chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_api_folder }}"
+  register: output_logs
+
+- name: prnint output log
+  debug: var=output_logs.stdout
+#
+
+- name: Run ranche cli for mariadb container (core-api)
+  shell: "{{ remote_temp_directory }}/rancher/get-core-mariadb-host.sh"
+  args:
+    chdir: "{{ remote_temp_directory }}/rancher"
+  register: output_logs
+
+
+
+
+# # Create user/database and import databases for core-api-streaming, common, global_workflow
+
+
+- name: Copy docker/rancher-compose file for core-dump
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - {src: 'templates/{{ mariadb_dump_others_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}/docker-compose.yml'}
+    - {src: 'templates/{{ mariadb_dump_others_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}/rancher-compose.yml'}
+
+- name: Run ranche cli for mariadb container (core-api)
+  shell: "{{ remote_temp_directory }}/rancher/rancher --wait --debug --env Default up -s meta-db -d"
+  args:
+    chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}"
+  register: output_logs
+
+- name: prnint output log
+  debug: var=output_logs.stdout
+
+
+#
+#
+# - name: prnint output log
+#   debug: var=output_logs
+#
+
+
+
+
+
+
+# # Mariadb for sso
+# - name: Copy docker/rancher-compose file for cloudserach database
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ item.dest }}"
+#     mode: 0644
+#   with_items:
+#     - {src: 'templates/{{ mariadb_dump_sso_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}/docker-compose.yml'}
+#     - {src: 'templates/{{ mariadb_dump_sso_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}/rancher-compose.yml'}
+#
+# - name: Run ranche cli for mariadb container (SSO)
+#   shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s meta-db -d"
+#   args:
+#     chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}"
+
 
 
 # Mariadb for cloudsearch
@@ -25,23 +107,26 @@
 #   shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s meta-db -d"
 #   args:
 #     chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_cs_folder }}"
+#
+#
 
 
-# Mariadb for sso
-- name: Copy docker/rancher-compose file for cloudserach database
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: 0644
-  with_items:
-    - {src: 'templates/{{ mariadb_dump_sso_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}/docker-compose.yml'}
-    - {src: 'templates/{{ mariadb_dump_sso_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}/rancher-compose.yml'}
-
-- name: Run ranche cli for mariadb container (SSO)
-  shell: "{{ remote_temp_directory }}/rancher/rancher --env Default up -s meta-db -d"
-  args:
-    chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_sso_folder }}"
-
+################################################################################
+# Test script
+################################################################################
+# - name: Run docker mariadb and execute sql (create users and databases)
+#   docker_container:
+#       name: mariadb-dump
+#       image: "{{ docker_registry_url }}/mariadb:10.3"
+#       volumes:
+#          - "{{ remote_temp_directory }}/{{ mariadb_data_folder }}/{{ mariadb_dump_others_folder }}:/home/"
+#       # command: "mysql -h{{ output_logs.stdout }} -P3306 -uroot -p'!root*00' < /tmp/db_user_grant_2019-01-04.sql"
+#       env:
+#         MYSQL_ROOT_PASSWORD: secret
+#         MYSQL_DATABASE: dpcore_search
+#       state: started
+#   register: output_logs
+#   become: yes
 
 
 # - name: Run mariadb container

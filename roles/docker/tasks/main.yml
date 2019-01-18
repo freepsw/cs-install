@@ -39,7 +39,15 @@
     dest: "{{ remote_temp_directory }}/docker"
     force: no
 
-- name: Install docker package.
+- name: Install container-selinux-2.9-4.el7.noarch.rpm.
+  yum:
+     name: "{{ remote_temp_directory }}/docker/{{ docker_container_selinux_rpm_file }}"
+     state: present
+     use_backend: yum3
+  become: true
+
+
+- name: Install docker-ce package.
   yum:
      name: "{{ remote_temp_directory }}/docker/{{ docker_rpm_file }}"
      state: present

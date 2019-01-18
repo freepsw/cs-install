@@ -108,7 +108,11 @@
     restart_policy: unless-stopped
     # "reloaded" does not appear to be idempotent
     state: started
+    volumes:
+       - "/docker-registry/registry:/registry"
     env:
       REGISTRY_URL: "http://registry-srv:5000/v2"
       REGISTRY_NAME: private-dockerhub
+      SETTINGS_FLAVOR: local
+      STORAGE_PATH: /registry
   become: true

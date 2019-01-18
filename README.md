@@ -13,6 +13,19 @@ chmod u+x install_ansible.sh
 ./install_ansible.sh
 ```
 
+### edit configuration
+- SSH host key 설정
+- https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html#host-key-checking
+```
+> sudo yum install -y ansible
+> sudo vi /etc/ansible/ansible.cfg
+# SSH key host checking을 비활성화 한다. (주석 해제)
+host_key_checking = False
+
+또는
+> export ANSIBLE_HOST_KEY_CHECKING=False
+```
+
 ## System setting
 ### Add user
 - 패스워드 암호화
@@ -37,6 +50,20 @@ chmod u+x install_ansible.sh
 ```
 > pip download docker-py
 ```
+
+### Get docker-
+### Get container-selinux-2.74-1.el7.noarch.rpm
+- 해당 rpm이 없으면, 아래와 같은 에러가 발생
+```
+Error: Package: docker-ce-17.06.0.ce-1.el7.centos.x86_64 (docker-ce-stable)
+           Requires: container-selinux >= 2.9
+```
+- 설치 파일 다운로드
+  * http://mirror.centos.org/centos/7/extras/x86_64/Packages/
+```
+>
+```
+
 
 ## Docker Registry & Web UI
 
@@ -153,6 +180,107 @@ sudo docker run -e CATTLE_AGENT_IP="35.220.xx.xx "  --rm --privileged -v /var/ru
 
 > docker save mariadb:10.3 | gzip -c > docker-mariadb.tar.gz
 ```
+### rp dump
+- service name : core-mariadb
+  - dpcore_collector_2019-01-04.sql
+  - dpcore_common_2019-01-04
+  - dpcore_globalworkflow_2019-01-04
+  - dpcore_streaming_2019-01-04`
+
+- service naem : rp-mariadb
+  - pipeline_2019-01-04
+  db : pipeline
+  spring.datasource.username=pipeline
+  spring.datasource.password=pipeline
+
+### run script
+- db_user_grant_2019-01-04.sql (core, rp-web)
+```
+> mysql -u username -p < example.sql
+```
+
+
+
+## docker-core-module-streaming
+### config-streaming.properties
+```
+# dpcore/streaming --> docker run 시점에
+streaming.monitoring.host=10.178.50.88:9999
+streaming.hdfs.check=true
+```
+
+## docker-core-module-common
+### config-common.properties
+```
+use.dhp=true
+log4j.tcp.host=10.1.1.2
+```
+
+## docker realtime-backend
+### application.properties
+```
+api.context.path=http://10.60.15.46:7070/api/v1
+```
+
+## docker realtime-frontend
+### environment.hana.ts
+```
+apiToken: {
+  url: 'http://10.84.115.106:4206/authapi',
+  coreModuleUrl: 'http://10.84.115.106:4202/coreapi'
+},
+
+BATCH_PIPELINE: {
+  label: 'Batch Pipeline',
+  url: 'http://10.84.115.106:4202',
+  console: 'https://dev-console.cloudz.co.kr/manage/CZ/52',
+  use: true
+},
+REALTIME_PIPELINE: {
+  label: 'Realtime Pipeline',
+  url: 'http://10.84.115.106:4206',
+  console: 'https://dev-console.cloudz.co.kr/manage/CZ/53',
+  use: true
+},
+DYNAMIC_HADOOP_PROVISIONING: {
+  label: 'DHP',
+  url: 'http://10.84.115.106:4205',
+  console: 'https://dev-console.cloudz.co.kr/manage/CZ/46',
+  use: true
+},
+DATA_INSIGHT: {
+  label: 'Data Insight',
+  url: 'http://10.84.115.106:4204',
+  console: 'https://dev-console.cloudz.co.kr/manage/CZ/47',
+  use: false
+},
+CLOUD_SEARCH: {
+  label: 'Cloud Search',
+  url: 'http://10.84.115.106:4203',
+  console: 'https://dev-console.cloudz.co.kr/manage/CZ/51',
+  use: false
+},
+ML_MODELER: {
+  label: 'ML Modeler',
+  url: 'http://10.84.115.106:4208',
+  console: 'https://dev-console.cloudz.co.kr/manage/CZ/49',
+  use: true
+},
+DL_MODELER: {
+  label: 'DL Modeler',
+  url: 'http://10.84.115.106:4207',
+  console: 'https://dev-console.cloudz.co.kr/manage/CZ/50',
+  use: true
+}
+
+api: 'http://10.84.115.106:4206/api',
+cloudz: {
+  login: {
+    accessVerifyClientId: 'AccuInsight_Batch_Pipeline',
+    accessVerifySecretId: '7c0fa17a6000676a0b7192cf187d97b8460da022cb55c9f970730adf85b1e915'
+  }
+}
+```
 
 ## docker-cs
 ### core-module-cloudsearch 변경시 compile -> docker image build 재실행
@@ -221,9 +349,9 @@ docker_hq: "docker.registry.server:5000/dpcore/elasticsearch-hq:3.4.0"
 ## docker-core-oauth
 ```
 > mvn clean package -DskipTests=true -Pdocker-stg -pl core-oauth-server -am
-> docker build . -t docker.registry.server:5000/dpcore/core-oauth-server:stg02
-> docker save docker.registry.server:5000/dpcore/core-oauth-server:stg02 | gzip -c > core-module-oauth.tar.gz
-> docker push docker.registry.server:5000/dpcore/core-oauth-server:stg02
+> docker build . -t dpcore/core-oauth-server:stg02
+> docker save dpcore/core-oauth-server:stg02 | gzip -c > core-module-oauth.tar.gz
+> docker push dpcore/core-oauth-server:stg02
 ```
 
 
@@ -527,7 +655,7 @@ ENV ANSIBLE_LIBRARY /ansible/library
 WORKDIR /ansible/playbooks
 
 ENTRYPOINT ["ansible-playbook"]
-```7
+```
 
 ### docker build and run
 ```
@@ -546,7 +674,12 @@ Password:
 - udondan.ssh-reconnect (master) was installed successfully
 ```
 
+#### docker devicemapper 설정
+* 설정 방법
+- https://docs.docker.com/storage/storagedriver/device-mapper-driver/#how-the-devicemapper-storage-driver-works
 
+* linux lvm설정 가이드
+- http://sgbit.tistory.com/13
 
 ## [TO-DO]
 ### dpcore-module-cs
@@ -565,4 +698,226 @@ Password:
 ```
 #### update rancher info
 - https://stackoverflow.com/questions/34779894/executing-sql-scripts-on-docker-container
-- docker exec <container_id> /bin/sh -c 'mysql -u root -ppassword </dummy.sql'
+```
+- " docker exec <container_id> /bin/sh -c 'mysql -u root -ppassword </dummy.sql' "
+```
+
+
+#### Find service id from rancher cli
+```
+- regular expression : (?<=Found service core-mariadb\W" \Wn)\d\S{3}
+```
+
+```yml
+{
+    "output_logs.stdout": "time=\"2019-01-17T08:58:21Z\" level=debug msg=\"Opening compose files: docker-compose.yml,/home/freepsw_03/temp/docker-db/compose-folder/core-api/rancher-compose.yml\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Looking for stack meta-db\" \ntime=\"2019-01-17T08:58:21Z\" level=info msg=\"Creating stack meta-db\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Launching action for core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Finding service core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Project [meta-db]: Creating project \" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Finding service core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=info msg=\"[core-mariadb]: Creating \" \ntime=\"2019-01-17T08:58:21Z\" level=info msg=\"Creating service core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Creating service core-mariadb with hash: digest.ServiceHash{Service:\\\"2c399a65fd1d3d7316dfcd4a952827ba36f39244\\\", LaunchConfig:\\\"bf964da7f8465829b270e7fcff84901897ff900b\\\", SecondaryLaunchConfigs:map[string]string(nil)}\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Finding service core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Found service core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=info msg=\"[core-mariadb]: Created \" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Project [meta-db]: Project created \" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Launching action for core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Finding service core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Project [meta-db]: Starting project \" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Finding service core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=info msg=\"[core-mariadb]: Starting \" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Found service core-mariadb\" \n1s13\ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Found service core-mariadb\" \ntime=\"2019-01-17T08:58:21Z\" level=debug msg=\"Comparing hashes for core-mariadb: old: digest.ServiceHash{Service:\\\"2c399a65fd1d3d7316dfcd4a952827ba36f39244\\\", LaunchConfig:\\\"bf964da7f8465829b270e7fcff84901897ff900b\\\", SecondaryLaunchConfigs:map[string]string{}} new: digest.ServiceHash{Service:\\\"2c399a65fd1d3d7316dfcd4a952827ba36f39244\\\", LaunchConfig:\\\"bf964da7f8465829b270e7fcff84901897ff900b\\\", SecondaryLaunchConfigs:map[string]string(nil)}\" \ntime=\"2019-01-17T08:58:24Z\" level=info msg=\"[core-mariadb]: Started \" \ntime=\"2019-01-17T08:58:24Z\" level=debug msg=\"Project [meta-db]: Project started \" "
+}
+```
+
+#### Find Container name and ip
+```
+> ./rancher ps -c --format json | grep core-mariadb
+> rancher ps -c --format '{{.Container.PrimaryIpAddress}} : {{.Container.Name}}' | grep core-mariadb | awk '{print $1}'
+```
+
+```json
+{  
+   "ID":"1i25",
+   "Container":{  
+      "id":"1i25",
+      "type":"container",
+      "links":{  
+         "account":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/account",
+         "containerStats":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/containerstats",
+         "credentials":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/credentials",
+         "healthcheckInstanceHostMaps":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/healthcheckinstancehostmaps",
+         "hosts":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/hosts",
+         "instanceLabels":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/instancelabels",
+         "instanceLinks":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/instancelinks",
+         "instances":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/instances",
+         "mounts":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/mounts",
+         "ports":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/ports",
+         "self":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25",
+         "serviceEvents":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/serviceevents",
+         "serviceExposeMaps":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/serviceexposemaps",
+         "serviceLogs":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/servicelogs",
+         "services":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/services",
+         "stats":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/stats",
+         "targetInstanceLinks":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/targetinstancelinks",
+         "volumes":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/volumes"
+      },
+      "actions":{  
+         "execute":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/?action=execute",
+         "logs":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/?action=logs",
+         "migrate":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/?action=migrate",
+         "proxy":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/?action=proxy",
+         "update":"http://35.221.108.142:8080/v2-beta/projects/1a5/containers/1i25/?action=update"
+      },
+      "accountId":"1a5",
+      "command":[  ],
+      "created":"2019-01-18T01:11:29Z",
+      "dataVolumes":[  
+         "/var/run/docker.sock:/var/run/docker.sock",
+         "/var/run/rancher/storage:/var/run/rancher/storage",
+         "/lib/modules:/lib/modules:ro",
+         "/proc:/host/proc",
+         "/dev:/host/dev",
+         "rancher-cni:/.r",
+         "rancher-agent-state:/var/lib/cattle",
+         "/var/lib/rancher:/var/lib/rancher"
+      ],
+      "entryPoint":[  
+         "/run.sh"
+      ],
+      "environment":{  
+         "CATTLE_ACCESS_KEY":"E45591EBDAA06568527B",
+         "CATTLE_AGENT_IP":"",
+         "CATTLE_AGENT_PIDNS":"host",
+         "CATTLE_CHECK_NAMESERVER":"",
+         "CATTLE_DETECT_CLOUD_PROVIDER":"",
+         "CATTLE_DOCKER_UUID":"",
+         "CATTLE_HOST_API_PROXY":"",
+         "CATTLE_HOST_LABELS":"backend=01",
+         "CATTLE_LOCAL_STORAGE_MB_OVERRIDE":"",
+         "CATTLE_MEMORY_OVERRIDE":"",
+         "CATTLE_MILLI_CPU_OVERRIDE":"",
+         "CATTLE_PHYSICAL_HOST_UUID":"",
+         "CATTLE_RUN_FIO":"",
+         "CATTLE_SCHEDULER_IPS":"",
+         "CATTLE_SCHEDULER_REQUIRE_ANY":"",
+         "CATTLE_SCRIPT_DEBUG":"",
+         "CATTLE_SECRET_KEY":"nDpD3mQrHsyRytMNC3B2izc92NahHpRSCBvMeFbw",
+         "CATTLE_URL":"http://35.221.108.142:8080/v1",
+         "CATTLE_VOLMGR_ENABLED":"",
+         "HTTPS_PROXY":"",
+         "HTTP_PROXY":"",
+         "NO_PROXY":"",
+         "PATH":"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+         "RANCHER_AGENT_IMAGE":"rancher/agent:v1.2.11",
+         "RANCHER_DEBUG":"",
+         "SSL_SCRIPT_COMMIT":"98660ada3d800f653fc1f105771b5173f9d1a019",
+         "http_proxy":"",
+         "https_proxy":"",
+         "no_proxy":""
+      },
+      "externalId":"3b01cde3938cf741213bd8706978e0b5e91ef2e3455e4f5c42d367cdc3ffe251",
+      "firstRunning":"2019-01-18T01:11:31Z",
+      "hostId":"1h2",
+      "hostname":"cs-node-2",
+      "imageUuid":"rancher/agent:v1.2.11",
+      "instanceTriggeredStop":"stop",
+      "ipcMode":"shareable",
+      "kind":"container",
+      "labels":{  
+         "io.rancher.container.system":"rancher-agent",
+         "io.rancher.environment.uuid":"adminProject"
+      },
+      "logConfig":{  
+         "type":"logConfig",
+         "links":null,
+         "actions":null,
+         "driver":"json-file"
+      },
+      "mounts":[  
+         {  
+            "type":"mountEntry",
+            "links":null,
+            "actions":null,
+            "instanceId":"1i25",
+            "instanceName":"rancher-agent",
+            "path":"/var/lib/cattle",
+            "volumeId":"1v55",
+            "volumeName":"rancher-agent-state"
+         },
+         {  
+            "type":"mountEntry",
+            "links":null,
+            "actions":null,
+            "instanceId":"1i25",
+            "instanceName":"rancher-agent",
+            "path":"/var/lib/rancher",
+            "volumeId":"1v56",
+            "volumeName":"/var/lib/rancher"
+         },
+         {  
+            "type":"mountEntry",
+            "links":null,
+            "actions":null,
+            "instanceId":"1i25",
+            "instanceName":"rancher-agent",
+            "path":"/var/run/docker.sock",
+            "volumeId":"1v53",
+            "volumeName":"/var/run/docker.sock"
+         },
+         {  
+            "type":"mountEntry",
+            "links":null,
+            "actions":null,
+            "instanceId":"1i25",
+            "instanceName":"rancher-agent",
+            "path":"/var/run/rancher/storage",
+            "volumeId":"1v57",
+            "volumeName":"/var/run/rancher/storage"
+         },
+         {  
+            "type":"mountEntry",
+            "links":null,
+            "actions":null,
+            "instanceId":"1i25",
+            "instanceName":"rancher-agent",
+            "path":"/lib/modules",
+            "volumeId":"1v58",
+            "volumeName":"/lib/modules"
+         },
+         {  
+            "type":"mountEntry",
+            "links":null,
+            "actions":null,
+            "instanceId":"1i25",
+            "instanceName":"rancher-agent",
+            "path":"/host/proc",
+            "volumeId":"1v59",
+            "volumeName":"/proc"
+         },
+         {  
+            "type":"mountEntry",
+            "links":null,
+            "actions":null,
+            "instanceId":"1i25",
+            "instanceName":"rancher-agent",
+            "path":"/host/dev",
+            "volumeId":"1v60",
+            "volumeName":"/dev"
+         }
+      ],
+      "name":"rancher-agent",
+      "nativeContainer":true,
+      "networkMode":"host",
+      "oomScoreAdj":-500,
+      "pidMode":"host",
+      "primaryNetworkId":"1n1",
+      "privileged":true,
+      "requestedHostId":"1h2",
+      "restartPolicy":{  },
+      "securityOpt":[  ],
+      "shmSize":67108864,
+      "startCount":1,
+      "startOnCreate":true,
+      "state":"running",
+      "stopSignal":"SIGTERM",
+      "transitioning":"no",
+      "uuid":"013ada67-d81f-472b-b4ab-da92b6234575",
+      "version":"0"
+   },
+   "CombinedState":"running",
+   "DockerID":"3b01cde3938c"
+}
+
+```
+
+
+2019. 1. 18. 오후 7:08:522019-01-18 19:08:52 10 [Warning] 'proxies_priv' entry '@% root@486ed2b066b6' ignored in --skip-name-resolve mode.
+2019. 1. 18. 오후 7:08:52
+2019. 1. 18. 오후 7:08:52/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/run-dump-script.sh
+2019. 1. 18. 오후 7:08:52ERROR 1064 (42000) at line 5: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '`globalworkflow` with grant option' at line 1
+2019. 1. 18. 오후 7:08:52

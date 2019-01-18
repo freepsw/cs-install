@@ -1,0 +1,23 @@
+version: '2'
+services:
+  core-mariadb:
+    image: {{ docker_registry_url }}/mariadb:10.3
+    container_name: core-mairadb
+    environment:
+      MYSQL_ROOT_PASSWORD: '{{ mariadb_common_root_password }}'
+      MYSQL_DATABASE: dpcore_common
+      MYSQL_USER: {{ mariadb_common_user }}
+      MYSQL_PASSWORD: {{ mariadb_common_password }}
+      TZ: Asia/Seoul
+    stdin_open: true
+    volumes:
+    - {{ remote_temp_directory }}/{{ mariadb_data_folder }}/{{ mariadb_dump_api_folder }}:/docker-entrypoint-initdb.d/
+    tty: true
+    ports:
+    - {{ mariadb_api_port }}:3306/tcp
+    command:
+    - --character-set-server=utf8
+    - --collation-server=utf8_general_ci
+    labels:
+      io.rancher.scheduler.affinity:host_label: {{ mairadb_rancher_label }}
+      io.rancher.container.pull_image: always

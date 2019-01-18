@@ -3,10 +3,10 @@
 # Common
 dpcore_user: dpcore
 dpcore_password: 1234qwer
-remote_user: 'dpcore'
+remote_user: 'freepsw_03'
 remote_temp_directory: "/home/{{ remote_user }}/temp"
 rancher_server_host_name: rancher.server
-docker_registry_host_name: docker.registry.server
+docker_registry_host_name: registry.accuinsight.io
 # docker_registry_host_name: registry.accuinsight.io
 
 hosts_items:
@@ -60,6 +60,7 @@ docker_data_folder: data/docker/
 docker_image_file_folder: data/images/
 docker_repo_file: docker-ce.repo
 docker_rpm_file: docker-ce-17.12.1.ce-1.el7.centos.x86_64.rpm
+docker_container_selinux_rpm_file: container-selinux-2.9-4.el7.noarch.rpm
 
 # docker registry
 docker_registry_image: docker-registry.tar.gz
@@ -76,14 +77,22 @@ docker_registry_web_expose_port: 8081
 
 # mariadb
 mariadb_ip: "{{ hostvars['agent1'].ansible_ssh_host }}"
+mariadb_api_port: 3306
 mariadb_sso_port: 3307
 mariadb_cs_port: 3308
 mariadb_data_folder: docker-db
 mariadb_dump_cs_folder: core-cs
 mariadb_dump_sso_folder: core-sso
+mariadb_dump_api_folder: core-api
+mariadb_dump_others_folder: core-dump
 mariadb_compose_files_folder: "{{ remote_temp_directory }}/{{ mariadb_data_folder }}/compose-folder"
 mairadb_image: docker-mariadb-10-3.tar.gz
 mairadb_rancher_label: backend=01
+mariadb_common_user: dpcore_common
+mariadb_common_password: common
+mariadb_common_root_password: '!root*00'
+
+
 mariadb_cs_user: cloudsearch
 mariadb_cs_password: '!cloudsearch00'
 

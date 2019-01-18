@@ -1,29 +1,24 @@
-#erver1 ansible_ssh_port=22 ansible_ssh_host=35.187.194.82  ansible_user=freepsw_03 ansible_ssh_private_key_file=~/.ssh/freepsw03_rsa
-#agent1 ansible_ssh_port=22 ansible_ssh_host=35.200.108.139  ansible_user=freepsw_03 ansible_ssh_private_key_file=~/.ssh/freepsw03_rsa
+server1 ansible_ssh_port=22 ansible_ssh_host=35.221.108.142  ansible_user=freepsw_03 ansible_ssh_private_key_file=~/.ssh/freepsw03_rsa
+agent1 ansible_ssh_port=22 ansible_ssh_host=35.187.208.165   ansible_user=freepsw_03 ansible_ssh_private_key_file=~/.ssh/freepsw03_rsa
 
 #agent3 ansible_ssh_port=22 ansible_ssh_host=13.209.75.166  ansible_user=freepsw_03 ansible_ssh_pass=freepsw
 
 
 #test1 ansible_ssh_port=2202 ansible_ssh_host=169.56.124.28  ansible_user=dpcore ansible_ssh_pass=1234qwer
 
-server1 ansible_ssh_port=22 ansible_ssh_host=10.178.253.250  ansible_user=dpcore ansible_ssh_pass=hadoop1234
-#agent1 ansible_ssh_port=22 ansible_ssh_host=10.178.253.252  ansible_user=dpcore ansible_ssh_pass=hadoop1234
-#agent5 ansible_ssh_port=22 ansible_ssh_host=10.178.253.142  ansible_user=dpcore ansible_ssh_pass=hadoop1234
-
-agent4 ansible_ssh_port=22 ansible_ssh_host=10.178.253.141  ansible_user=dpcore ansible_ssh_pass=hadoop1234
 
 [Server]
 server1
 
 [Agents]
-agent4
+agent1
 
 
 [DB]
-agent5
+agent1
 
 [CORE_API]
-agent4
+agent1
 
 [ES_CLUSTER]
-agent4
+agent1
