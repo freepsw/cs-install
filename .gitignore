@@ -2,7 +2,7 @@
 staging
 rancher-hosts
 dump
-.sql
+*.sql
 
 # Directories #
 /build/
