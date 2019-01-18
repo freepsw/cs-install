@@ -8,7 +8,7 @@ dump
 /build/
 /bin/
 target/
-
+/data/docker-db
 # OS Files #
 .DS_Store
 
