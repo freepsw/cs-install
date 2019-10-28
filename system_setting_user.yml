@@ -1,0 +1,38 @@
+---
+
+- name: Add user(poc)
+  hosts: all
+  gather_facts: no
+  vars:
+    user: poc
+     # created with:
+     # python -c 'import crypt; print crypt.crypt("hadoop1234", "$1$SomeSalt$")'
+    password: $1$SomeSalt$Nr4pB1yhv/M4Is8EsMBMJ1
+  tasks:
+
+  - name: Create a login user
+    user:
+      name: "{{ user }}"
+      password: "{{ password }}"
+      groups: wheel  # Empty by default.
+      state: present
+      # disabled-password: true
+    become: yes
+
+  # - name: Add user to sudoers file
+  #   lineinfile:
+  #     path: /etc/sudoers
+  #     regexp: '^ansibleuser'
+  #     line: '{{ user }} ALL=(ALL) NOPASSWD: ALL'
+  #     validate: 'visudo -cf %s'
+  #   become: yes
+
+  - name: Add user to sudoers file
+    lineinfile:
+      path: "/etc/sudoers.d/{{ user }}"
+      line: '{{ user }} ALL=(ALL) NOPASSWD: ALL'
+      state: present
+      mode: 0440
+      create: yes
+      validate: 'visudo -cf %s'
+    become: yes

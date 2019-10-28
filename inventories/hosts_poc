@@ -1,0 +1,18 @@
+#agent1 ansible_ssh_port=22 ansible_ssh_host=34.83.177.229   ansible_user=freepsw ansible_ssh_private_key_file=~/.ssh/freepsw_sk
+#server1 ansible_ssh_port=22 ansible_ssh_host=34.74.130.247    ansible_user=freepsw ansible_ssh_private_key_file=~/.ssh/freepsw_sk
+
+server1 ansible_ssh_port=22 ansible_ssh_host=49.50.39.193    ansible_user=root ansible_ssh_pass='password12#'
+accfront ansible_ssh_port=22 ansible_ssh_host=49.50.39.194     ansible_user=poc ansible_ssh_pass='hadoop1234'
+accback ansible_ssh_port=22 ansible_ssh_host=49.50.39.195      ansible_user=poc ansible_ssh_pass='hadoop1234'
+accworker01 ansible_ssh_port=22 ansible_ssh_host=49.50.39.196  ansible_user=poc ansible_ssh_pass='hadoop1234'  
+accworker02 ansible_ssh_port=22 ansible_ssh_host=49.50.39.197  ansible_user=poc ansible_ssh_pass='hadoop1234'
+accworker03 ansible_ssh_port=22 ansible_ssh_host=49.50.39.198  ansible_user=poc ansible_ssh_pass='hadoop1234'
+
+[Agents]
+accworker01
+accworker02
+accworker03
+
+
+[Server]
+server1

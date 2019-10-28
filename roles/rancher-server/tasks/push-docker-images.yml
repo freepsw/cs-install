@@ -56,21 +56,21 @@
   become: true
 
 
-# MariaDB
-- name: Copy mariadb image file to ~/home/user/temp directory
-  copy:
-    src: "{{ docker_image_file_folder }}/{{ mairadb_image }}"
-    dest: "{{ remote_temp_directory }}/images/"
-    force: no
+# # MariaDB
+# - name: Copy mariadb image file to /home/user/temp directory
+#   copy:
+#     src: "{{ docker_image_file_folder }}/{{ mairadb_image }}"
+#     dest: "{{ remote_temp_directory }}/images/"
+#     force: no
 
-- name: Load mariadb image from archive and push to a private registry
-  docker_image:
-    name: "mariadb"
-    repository: "{{ docker_registry_url }}/mariadb:10.3"
-    tag: "10.3"
-    push: yes
-    load_path: "{{ remote_temp_directory }}/images/{{ mairadb_image }}"
-  become: true
+# - name: Load mariadb image from archive and push to a private registry
+#   docker_image:
+#     name: "mariadb"
+#     repository: "{{ docker_registry_url }}/mariadb:10.3"
+#     tag: "10.3"
+#     push: yes
+#     load_path: "{{ remote_temp_directory }}/images/{{ mairadb_image }}"
+#   become: true
 
 
 

@@ -46,23 +46,23 @@
 # # Create user/database and import databases for core-api-streaming, common, global_workflow
 
 
-- name: Copy docker/rancher-compose file for core-dump
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: 0644
-  with_items:
-    - {src: 'templates/{{ mariadb_dump_others_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}/docker-compose.yml'}
-    - {src: 'templates/{{ mariadb_dump_others_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}/rancher-compose.yml'}
-
-- name: Run ranche cli for mariadb container (core-api)
-  shell: "{{ remote_temp_directory }}/rancher/rancher --wait --debug --env Default up -s meta-db -d"
-  args:
-    chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}"
-  register: output_logs
-
-- name: prnint output log
-  debug: var=output_logs.stdout
+# - name: Copy docker/rancher-compose file for core-dump
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ item.dest }}"
+#     mode: 0644
+#   with_items:
+#     - {src: 'templates/{{ mariadb_dump_others_folder }}/docker-compose.yml.j2',  dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}/docker-compose.yml'}
+#     - {src: 'templates/{{ mariadb_dump_others_folder }}/rancher-compose.yml.j2', dest: '{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}/rancher-compose.yml'}
+#
+# - name: Run ranche cli for mariadb container (core-api)
+#   shell: "{{ remote_temp_directory }}/rancher/rancher --wait --debug --env Default up -s meta-db -d"
+#   args:
+#     chdir: "{{ mariadb_compose_files_folder }}/{{ mariadb_dump_others_folder }}"
+#   register: output_logs
+#
+# - name: prnint output log
+#   debug: var=output_logs.stdout
 
 
 #

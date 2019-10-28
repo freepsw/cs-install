@@ -3,7 +3,7 @@
 # Common
 dpcore_user: dpcore
 dpcore_password: 1234qwer
-remote_user: 'poc'
+remote_user: 'freepsw'
 remote_temp_directory: "/home/{{ remote_user }}/temp"
 rancher_server_host_name: rancher.server
 docker_registry_host_name: registry.accuinsight.io

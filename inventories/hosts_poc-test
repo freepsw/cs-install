@@ -1,0 +1,11 @@
+
+server1 ansible_ssh_port=22 ansible_ssh_host=49.50.39.119    ansible_user=poc ansible_ssh_pass='hadoop1234'
+accworker01 ansible_ssh_port=22 ansible_ssh_host=49.50.39.120  ansible_user=poc ansible_ssh_pass='hadoop1234'
+accworker02 ansible_ssh_port=22 ansible_ssh_host=49.50.39.121  ansible_user=poc ansible_ssh_pass='hadoop1234'
+
+[Agents]
+accworker01
+accworker02
+
+[Server]
+server1

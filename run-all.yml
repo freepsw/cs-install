@@ -24,10 +24,10 @@
 #    - inventories/group_vars/main.yml
 #   roles:
 #    - { role: rancher-server, tags: ["rancher-server"] }
-#
-#
+
+
 # - name: Installing Rancher-Agents for core api
-#   hosts: "CORE_API"
+#   hosts: Agents
 #   gather_facts: no
 #   vars_files:
 #    - inventories/group_vars/main.yml
@@ -44,7 +44,7 @@
 #    - inventories/group_vars/main.yml
 #   roles:
 #    - { role: rancher-cli, tags: ["rancher-cli"] }
-#
+
 
 ## mariadb container가 실행되는 서버를 지정할 수 있다면,
 ## hosts: DB 와 같이 특정 host에만 dump파일을 복사하도록 변경한다.
@@ -63,7 +63,7 @@
         dest: "{{ remote_temp_directory }}"
         mode: 0777
         force: no
-
+#
 - name: Deploy mariadb conainer using rancher cli
   hosts: Server
   gather_facts: no

@@ -1,0 +1,115 @@
+---
+
+# - name: Create temporary directory to save install file
+#   file: path="{{ remote_temp_directory }}" state=directory mode=0755
+
+
+# - name: Copy docker install files to /home/user/temp directory
+#   copy:
+#     src: "{{ docker_data_folder }}"
+#     dest: "{{ remote_temp_directory }}/docker"
+#     force: no
+
+# - name: Install device-mapper-persistent-data
+#   yum:
+#      name: "{{ remote_temp_directory }}/docker/device-mapper-persistent-data-0.7.3-3.el7.x86_64.rpm"
+#      state: present
+#      use_backend: yum3
+#   become: true
+
+# - name: Install lvm2
+#   yum:
+#      name: "{{ remote_temp_directory }}/docker/lvm2-2.02.180-10.el7_6.7.x86_64.rpm"
+#      state: present
+#      use_backend: yum3
+#   become: true  
+
+
+- name: installing lvm2
+  yum:
+    name:
+      - device-mapper-persistent-data
+      - lvm2
+    state: present
+  become: true
+
+- name: setting device name 
+  set_fact:
+    # device_name: "/dev/sdb"
+    # volume_name: "/dev/sdb1"
+    device_name: "/dev/vdd"
+    volume_name: "/dev/vdd1"
+
+
+- name : Remove partition number 1
+  parted:
+    device: "{{ device_name }}"
+    number: 1
+    state: absent
+  ignore_errors: true
+  become: true
+
+- name: Create a new primary partition for LVM
+  parted:
+    device: "{{ device_name }}"
+    number: 2
+    flags: [ lvm ]
+    label: gpt
+    state: present
+  become: true
+
+- name: check
+  shell: lsblk
+  register: output_result
+  become: true
+  changed_when: false
+
+- name: print lsblk result
+  debug: msg="{{ output_result }}"
+
+- name: Remove a volume group with name vg.services
+  lvg:
+    vg: docker
+    state: absent
+
+- name: create physical volume for thinpool
+  shell: rm -rf /dev/docker
+  become: true
+
+
+- name: Create a physical and logical volume group on top of /dev/sdb
+  lvg:
+    vg: docker
+    pvs: "{{ volume_name }}"
+  become: true
+
+# - name: create physical volume for thinpool
+#   shell: pvcreate -y {{ volume_name }}
+#   become: true
+
+# - name: create logical volume group for thinpool
+#   shell: vgcreate docker /dev/vdd1
+#   become: true
+
+- name: create logical volume for thinpool
+  shell: lvcreate --wipesignatures y -n thinpool docker -l 96%VG
+  become: true
+  ignore_errors: yes
+
+- name: create logical volume for thinpoolmeta
+  shell: lvcreate --wipesignatures y -n thinpoolmeta docker -l 1%VG
+  become: true
+  ignore_errors: yes
+
+- name: Converting docker/thinpool and docker/thinpoolmeta to thin pool's data and metadata volumes with metadata wiping.
+  shell: lvconvert -y --zero n -c 512k --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta
+  become: true
+  ignore_errors: yes
+
+
+- name: Copy docker-thinpool.profile
+  template:
+    src: "templates/docker-thinpool.profile.j2"
+    dest: /etc/lvm/profile/docker-thinpool.profile
+    mode: 0644
+  become: true

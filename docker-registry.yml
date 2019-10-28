@@ -1,6 +1,6 @@
 ---
 
-- name: Installing and configuring Docker
+- name: Installing and configuring Docker registry
   hosts: "Server"
   gather_facts: no
   vars_files:

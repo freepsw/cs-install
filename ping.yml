@@ -1,0 +1,14 @@
+- name: Test Ping
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: ping
+    ping:
+      
+  - name: Test connections
+    shell: ls -al
+    register: output_msg
+
+
+  - name: Print results
+    debug: msg="{{ output_msg }}"

@@ -6,7 +6,7 @@
 #     path: "{{ docker_registry_data_directory }}"
 #     mode: "0755"
 
-- name: Copy docker-registry images file to ~/home/user/temp/docker directory
+- name: Copy docker-registry images file to /home/user/temp/docker directory
   copy:
     src: "{{ docker_image_file_folder }}/{{ docker_registry_image }}"
     dest: "{{ remote_temp_directory }}/images/"

@@ -126,6 +126,32 @@ Error: Package: docker-ce-17.06.0.ce-1.el7.centos.x86_64 (docker-ce-stable)
 > docker tag rancher/server 35.220.xxx.xx:5000/rancher/server
 ```
 
+### docker daemon option 수정
+- 관련 설정 참고 : https://docs.docker.com/engine/reference/commandline/dockerd/
+- /etc/docker/daemon.json 설정 변경
+
+#### docker image 생성시 default disk 사이즈 변경
+- default 10G
+```
+> sudo dockerd --storage-opt dm.basesize=50G
+
+daemon.json
+{
+    "storage-opts": ["dm.basesize=100G"]
+}
+```
+#### docker image 데이터, 컨테이너 정보를 저장하는 디렉토리 변경
+- 기본 /var/lib/docker를 사용시 image를 저장하면서 / 디렉토리가 꽉 차는 경우 발생
+- data-root is the path where persisted data such as images, volumes, and cluster state are stored.
+```
+> sudo dockerd --data-root=/var/lib/docker-bootstrap
+
+daemon.json
+{
+    "data-root": "",
+}
+```
+
 ### Docker Registry Web ui
 
 ## Rancher
@@ -916,8 +942,22 @@ Password:
 ```
 
 
-2019. 1. 18. 오후 7:08:522019-01-18 19:08:52 10 [Warning] 'proxies_priv' entry '@% root@486ed2b066b6' ignored in --skip-name-resolve mode.
-2019. 1. 18. 오후 7:08:52
-2019. 1. 18. 오후 7:08:52/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/run-dump-script.sh
-2019. 1. 18. 오후 7:08:52ERROR 1064 (42000) at line 5: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '`globalworkflow` with grant option' at line 1
-2019. 1. 18. 오후 7:08:52
+```
+select * from INFORMATION_SCHEMA.SCHEMA_PRIVILEGES;
+SELECT Host, User FROM mysql.user;
+```
+
+
+#### docker centos:7 locale 설정
+```
+> yum update
+> yum reinstall glibc-common
+> yum install -y glibc
+> localedef -i en_US -f UTF-8 en_US.UTF-8
+> locale -a
+> localedef -f UTF-8 -i ko_KR ko_KR.utf8
+> locale -a
+> export LANG=ko_KR.utf8
+> export LC_ALL=ko_KR.utf8
+> locale
+```

@@ -1,0 +1,11 @@
+{
+    "insecure-registries" : ["{{ docker_registry_host_name }}:5000"],
+    "data-root": "/accu/lib/docker",
+    "storage-driver": "devicemapper",
+    "storage-opts": [
+    "dm.basesize=300G",
+    "dm.thinpooldev=/dev/mapper/docker-thinpool",
+    "dm.use_deferred_removal=true",
+    "dm.use_deferred_deletion=true"
+    ]
+}

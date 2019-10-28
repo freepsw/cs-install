@@ -77,12 +77,13 @@
 - name: print ip
   debug: msg="{{ rancher_token.json['image'] }}"
 
-
 - name: Pull an rancher/agents related image
   docker_image:
     name: "{{ item.image}}"
     # repository: "{{ item.image}}"
   with_items: "{{ rancher_agents_images }}"
+
+
 
 - name: Remove docker-registry url from rancher/agents related Images
   shell: "docker tag {{ item.image}} {{ item.name }}"
